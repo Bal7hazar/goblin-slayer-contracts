@@ -9,6 +9,7 @@ sierra-replace-ids = true
 [dependencies]
 dojo = { git = "https://github.com/dojoengine/dojo", tag = "v0.4.1" }
 origami = { git = "https://github.com/Bal7hazar/origami", rev = "397785b" }
+pragma_lib = { git = "https://github.com/astraly-labs/pragma-lib", rev = "24bb4da" }
 
 [[target.dojo]]
 
