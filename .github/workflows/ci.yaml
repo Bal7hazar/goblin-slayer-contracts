@@ -1,0 +1,42 @@
+name: Goblin'Slayer CI
+
+on: [push, pull_request]
+
+env:
+  DOJO_VERSION: v0.4.1
+  SCARB_VERSION: v2.4.0
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: Check format
+    steps:
+      - uses: actions/checkout@v4
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: ${{ env.SCARB_VERSION }}
+      - name: Format
+        run: scarb fmt --check
+        shell: bash
+
+  build:
+    needs: check
+    runs-on: ubuntu-latest
+    name: Build package
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Build
+        run: sozo build
+        shell: bash
+
+  test:
+    needs: [check, build]
+    runs-on: ubuntu-latest
+    name: Test crates
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Test
+        run: sozo test
+        shell: bash
