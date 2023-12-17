@@ -69,7 +69,7 @@ struct Duel {
 trait DuelTrait {
     fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel;
     fn start(ref self: Duel);
-    fn play(ref self: Duel, orders: u8);
+    fn roll(ref self: Duel, orders: u8);
     fn add_round(ref self: Duel);
     fn add_dice(ref self: Duel);
 }
@@ -100,24 +100,24 @@ impl DuelImpl of DuelTrait {
         assert(turn == Turn::None, errors::DUEL_INVALID_TURN);
         self.nonce += 1;
         // [Effect] Run Goblin turn
-        let (dices, score) = self.roll(self.goblin_dices, BoundedU8::max());
+        let (dices, score) = self.iter(self.goblin_dices, BoundedU8::max());
         self.goblin_dices = dices;
         self.goblin_score = score.value;
     }
 
-    fn play(ref self: Duel, orders: u8) {
+    fn roll(ref self: Duel, orders: u8) {
         // [Check] Duel not over
         assert(!self.over, errors::DUEL_IS_OVER);
         // [Check] Slayer turn
         let turn: Turn = self.nonce.into();
         assert(turn == Turn::Slayer, errors::DUEL_INVALID_TURN);
         // [Effect] Roll slayer ordered dices
-        let (dices, score) = self.roll(self.slayer_dices, orders);
+        let (dices, score) = self.iter(self.slayer_dices, orders);
         self.slayer_dices = dices;
         self.slayer_score = score.value;
         // [Effect] Roll goblin dices
         // FIXME: Reroll only relevant dices
-        let (dices, score) = self.roll(self.goblin_dices, BoundedU8::max());
+        let (dices, score) = self.iter(self.goblin_dices, BoundedU8::max());
         self.goblin_dices = dices;
         self.goblin_score = score.value;
         // [Effect] Update duel state
@@ -137,7 +137,7 @@ impl DuelImpl of DuelTrait {
 
 #[generate_trait]
 impl PrivateImpl of PrivateTrait {
-    fn roll(ref self: Duel, packed_dices: u64, packed_orders: u8) -> (u64, Score) {
+    fn iter(ref self: Duel, packed_dices: u64, packed_orders: u8) -> (u64, Score) {
         // [Effect] Unpack dices to roll (true = roll, false = keep)
         let mut orders = PrivateTrait::unpack_orders(packed_orders, self.dice_count);
         // [Effect] Roll corresponding dices
@@ -285,7 +285,7 @@ mod tests {
         let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         duel.start();
         let goblin_dices = duel.goblin_dices;
-        duel.play(BoundedU8::max());
+        duel.roll(BoundedU8::max());
         assert_eq!(duel.nonce, 4);
         assert(duel.slayer_dices != 0, 'Duel: wrong slayer dices');
         assert(duel.goblin_dices != goblin_dices, 'Duel: wrong goblin dices');
@@ -301,7 +301,7 @@ mod tests {
             if index == 0 {
                 break;
             }
-            duel.play(BoundedU8::max());
+            duel.roll(BoundedU8::max());
             index -= 1;
         };
     }
@@ -316,16 +316,16 @@ mod tests {
             if index == 0 {
                 break;
             }
-            duel.play(BoundedU8::max());
+            duel.roll(BoundedU8::max());
             index -= 1;
         };
-        duel.play(BoundedU8::max());
+        duel.roll(BoundedU8::max());
     }
 
     #[test]
     #[should_panic(expected: ('Duel: invalid turn',))]
     fn test_duel_play_revert_invalid_turn() {
         let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
-        duel.play(BoundedU8::max());
+        duel.roll(BoundedU8::max());
     }
 }

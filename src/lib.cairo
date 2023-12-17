@@ -17,4 +17,6 @@ mod tests {
     mod create;
     mod seek;
     mod play;
+    mod buy;
+    mod consume;
 }

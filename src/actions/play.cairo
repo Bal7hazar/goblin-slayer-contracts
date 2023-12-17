@@ -2,6 +2,10 @@
 
 use dojo::world::IWorldDispatcher;
 
+// Model imports
+
+use slayer::models::slayer::Item;
+
 // System trait
 
 #[starknet::interface]
@@ -9,6 +13,8 @@ trait IPlay<TContractState> {
     fn create(self: @TContractState, world: IWorldDispatcher, name: felt252,);
     fn seek(self: @TContractState, world: IWorldDispatcher,);
     fn roll(self: @TContractState, world: IWorldDispatcher, orders: u8,);
+    fn buy(self: @TContractState, world: IWorldDispatcher, item: Item,);
+    fn consume(self: @TContractState, world: IWorldDispatcher, item: Item,);
 }
 
 // System implementation
@@ -26,12 +32,13 @@ mod play {
 
     // Models imports
 
-    use slayer::models::slayer::{Slayer, SlayerTrait};
+    use slayer::models::slayer::{Slayer, SlayerTrait, Item};
     use slayer::models::duel::{Duel, DuelTrait};
 
     // Internal imports
 
     use slayer::store::{Store, StoreTrait};
+    use slayer::constants::{EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE};
 
     // Local imports
 
@@ -40,11 +47,16 @@ mod play {
     // Errors
 
     mod errors {
-        const CREATE_SLAYER_ALREADY_EXISTS: felt252 = 'Create: Slayer already exists';
-        const SEEK_SLAYER_NOT_FOUND: felt252 = 'Seek: Slayer not found';
-        const SEEK_SLAYER_ALREADY_IN_DUEL: felt252 = 'Seek: Slayer already in duel';
-        const PLAY_SLAYER_NOT_FOUND: felt252 = 'Play: Slayer not found';
-        const PLAY_SLAYER_NOT_IN_DUEL: felt252 = 'Play: Slayer not in duel';
+        const CREATE_SLAYER_ALREADY_EXISTS: felt252 = 'Create: slayer already exists';
+        const SEEK_SLAYER_NOT_FOUND: felt252 = 'Seek: slayer not found';
+        const SEEK_SLAYER_ALREADY_IN_DUEL: felt252 = 'Seek: slayer already in duel';
+        const PLAY_SLAYER_NOT_FOUND: felt252 = 'Play: slayer not found';
+        const PLAY_SLAYER_NOT_IN_DUEL: felt252 = 'Play: slayer not in duel';
+        const BUY_SLAYER_NOT_FOUND: felt252 = 'Buy: slayer not found';
+        const BUY_SLAYER_ALREADY_IN_DUEL: felt252 = 'Buy: slayer already in duel';
+        const BUY_NOT_ENOUGH_GOLD: felt252 = 'Buy: not enough gold';
+        const CONSUME_SLAYER_NOT_FOUND: felt252 = 'Consume: slayer not found';
+        const CONSUME_SLAYER_NOT_IN_DUEL: felt252 = 'Consume: slayer not in duel';
     }
 
     #[storage]
@@ -100,7 +112,7 @@ mod play {
             assert(duel.seed.is_non_zero() && !duel.over, errors::PLAY_SLAYER_NOT_IN_DUEL);
 
             // [Effect] Play duel
-            duel.play(orders);
+            duel.roll(orders);
 
             // [Effect] Update duel
             store.set_duel(duel);
@@ -121,6 +133,55 @@ mod play {
 
                 store.set_slayer(slayer);
             }
+        }
+
+        fn buy(self: @ContractState, world: IWorldDispatcher, item: Item) {
+            // [Setup] Datastore
+            let mut store: Store = StoreTrait::new(world);
+
+            // [Check] Slayer exists
+            let caller: felt252 = get_caller_address().into();
+            let mut slayer: Slayer = store.slayer(caller);
+            assert(slayer.name.is_non_zero(), errors::PLAY_SLAYER_NOT_FOUND);
+
+            // [Check] Slayer not already in duel
+            let duel: Duel = store.current_duel(slayer);
+            assert(duel.seed.is_zero() || duel.over, errors::BUY_SLAYER_ALREADY_IN_DUEL);
+
+            // [Check] Enough gold
+            let cost = match item {
+                Item::ExtraRound => {
+                    assert(slayer.gold >= EXTRA_ROUND_PRICE.into(), errors::BUY_NOT_ENOUGH_GOLD);
+                    EXTRA_ROUND_PRICE
+                },
+                Item::ExtraDice => {
+                    assert(slayer.gold >= EXTRA_DICE_PRICE.into(), errors::BUY_NOT_ENOUGH_GOLD);
+                    EXTRA_DICE_PRICE
+                },
+            };
+
+            // [Effect] Spend gold, add item and update slayer
+            slayer.gold -= cost.into();
+            slayer.add(item);
+            store.set_slayer(slayer);
+        }
+
+        fn consume(self: @ContractState, world: IWorldDispatcher, item: Item) {
+            // [Setup] Datastore
+            let mut store: Store = StoreTrait::new(world);
+
+            // [Check] Slayer exists
+            let caller: felt252 = get_caller_address().into();
+            let mut slayer: Slayer = store.slayer(caller);
+            assert(slayer.name.is_non_zero(), errors::CONSUME_SLAYER_NOT_FOUND);
+
+            // [Check] Slayer in duel
+            let duel: Duel = store.current_duel(slayer);
+            assert(duel.seed.is_non_zero() && !duel.over, errors::CONSUME_SLAYER_NOT_IN_DUEL);
+
+            // [Effect] Sub item and update slayer
+            slayer.sub(item); // Throws if not enough item
+            store.set_slayer(slayer);
         }
     }
 }
