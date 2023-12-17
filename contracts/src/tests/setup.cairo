@@ -15,6 +15,7 @@ mod setup {
     use slayer::models::duel::Duel;
     use slayer::actions::play::{play, IPlayDispatcher};
     use slayer::tests::mocks::vrf::{IVRFDispatcher, IVRFDispatcherTrait, vrf};
+    use slayer::tests::mocks::eth::{IERC20Dispatcher, IERC20DispatcherTrait, eth};
 
     // Constants
 
@@ -33,6 +34,17 @@ mod setup {
         play: IPlayDispatcher,
     }
 
+    fn deploy_eth() -> IERC20Dispatcher {
+        let (address, _) = starknet::deploy_syscall(
+            eth::TEST_CLASS_HASH.try_into().expect('Class hash conversion failed'),
+            0,
+            array![].span(),
+            false
+        )
+            .expect('ETH deploy failed');
+        IERC20Dispatcher { contract_address: address }
+    }
+
     fn deploy_vrf() -> IVRFDispatcher {
         let (address, _) = starknet::deploy_syscall(
             vrf::TEST_CLASS_HASH.try_into().expect('Class hash conversion failed'),
@@ -44,12 +56,13 @@ mod setup {
         IVRFDispatcher { contract_address: address }
     }
 
-    fn spawn_game() -> (IWorldDispatcher, IVRFDispatcher, Actions) {
+    fn spawn_game() -> (IWorldDispatcher, IERC20Dispatcher, IVRFDispatcher, Actions) {
         // [Setup] World
         let mut models = array::ArrayTrait::new();
         models.append(slayer::models::slayer::slayer::TEST_CLASS_HASH);
         models.append(slayer::models::duel::duel::TEST_CLASS_HASH);
         let world = spawn_test_world(models);
+        let eth = deploy_eth();
         let vrf = deploy_vrf();
 
         // [Setup] Systems
@@ -59,6 +72,6 @@ mod setup {
         // [Return]
         set_transaction_hash(TX_HASH);
         set_contract_address(SLAYER());
-        (world, vrf, actions)
+        (world, eth, vrf, actions)
     }
 }

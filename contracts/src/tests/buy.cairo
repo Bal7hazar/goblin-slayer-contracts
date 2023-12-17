@@ -26,7 +26,7 @@ const SLAYER_NAME: felt252 = 'SLAYER';
 #[should_panic(expected: ('Buy: not enough gold', 'ENTRYPOINT_FAILED',))]
 fn test_play_buy() {
     // [Setup]
-    let (world, vrf, actions) = setup::spawn_game();
+    let (world, eth, vrf, actions) = setup::spawn_game();
     let mut store = StoreTrait::new(world);
 
     // [Create]

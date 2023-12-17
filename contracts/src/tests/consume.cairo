@@ -27,7 +27,7 @@ const SLAYER_NAME: felt252 = 'SLAYER';
 #[should_panic(expected: ('Slayer: not enough item', 'ENTRYPOINT_FAILED',))]
 fn test_play_consume() {
     // [Setup]
-    let (world, vrf, actions) = setup::spawn_game();
+    let (world, eth, vrf, actions) = setup::spawn_game();
     let mut store = StoreTrait::new(world);
 
     // [Create]

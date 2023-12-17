@@ -20,6 +20,11 @@ version = "0.3.11"
 source = "git+https://github.com/dojoengine/dojo?tag=v0.3.11#1e651b5d4d3b79b14a7d8aa29a92062fcb9e6659"
 
 [[package]]
+name = "openzeppelin"
+version = "0.8.0"
+source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v0.8.0#c23e8e96de60e6e3159b1ff8591a1187269c0eb7"
+
+[[package]]
 name = "origami"
 version = "0.0.0"
 source = "git+https://github.com/Bal7hazar/origami?rev=397785b#397785b0668458632e5b431abfc09231e46aefe4"
@@ -38,6 +43,7 @@ name = "slayer"
 version = "0.0.0"
 dependencies = [
  "dojo",
+ "openzeppelin",
  "origami",
  "pragma_lib",
 ]

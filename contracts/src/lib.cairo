@@ -21,6 +21,7 @@ mod tests {
     mod consume;
 
     mod mocks {
+        mod eth;
         mod vrf;
     }
 }

@@ -45,6 +45,7 @@ mod play {
     // External imports
 
     use pragma_lib::abi::{IRandomnessDispatcher, IRandomnessDispatcherTrait};
+    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
 
     // Models imports
 
@@ -55,7 +56,8 @@ mod play {
 
     use slayer::store::{Store, StoreTrait};
     use slayer::constants::{
-        EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, VRF_ADDRESS
+        EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, VRF_ADDRESS,
+        ETH_ADDRESS
     };
 
     // Local imports
@@ -116,6 +118,10 @@ mod play {
             // [Check] Slayer not already in duel
             let duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_zero() || duel.over, errors::SEEK_SLAYER_ALREADY_IN_DUEL);
+
+            // [Interaction] Approve fees
+            let eth_dispatcher = IERC20Dispatcher { contract_address: ETH_ADDRESS() };
+            eth_dispatcher.approve(VRF_ADDRESS(), CALLBACK_FEE_LIMIT.into());
 
             // [Interaction] Request randomness
             let vrf = IRandomnessDispatcher { contract_address: VRF_ADDRESS() };
