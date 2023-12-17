@@ -110,10 +110,13 @@ mod play {
                 slayer.duel_id += 1;
 
                 // [Effect] Update gold and xp if slayer won
-                // Draw is not considered as a win 
+                // Draw is considered as a lose 
                 if duel.slayer_score > duel.goblin_score {
                     slayer.gold += 1;
                     slayer.xp += 1;
+                } else {
+                    slayer.gold = 0;
+                    slayer.xp = 0;
                 }
 
                 store.set_slayer(slayer);
