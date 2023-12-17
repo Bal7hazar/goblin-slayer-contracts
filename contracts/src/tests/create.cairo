@@ -25,7 +25,7 @@ const SLAYER_NAME: felt252 = 'SLAYER';
 #[test]
 fn test_play_create() {
     // [Setup]
-    let (world, actions) = setup::spawn_game();
+    let (world, vrf, actions) = setup::spawn_game();
     let mut store = StoreTrait::new(world);
 
     // [Create]

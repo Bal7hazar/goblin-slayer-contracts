@@ -17,6 +17,7 @@ use slayer::models::slayer::{Slayer, SlayerTrait};
 use slayer::models::duel::{Duel, DuelTrait};
 use slayer::actions::play::IPlayDispatcherTrait;
 use slayer::tests::setup::{setup, setup::{Actions, SLAYER, ANYONE}};
+use slayer::tests::mocks::vrf::{IVRFDispatcher, IVRFDispatcherTrait};
 
 // Constants
 
@@ -25,7 +26,7 @@ const SLAYER_NAME: felt252 = 'SLAYER';
 #[test]
 fn test_play_seek() {
     // [Setup]
-    let (world, actions) = setup::spawn_game();
+    let (world, vrf, actions) = setup::spawn_game();
     let mut store = StoreTrait::new(world);
 
     // [Create]

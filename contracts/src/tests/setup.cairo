@@ -14,6 +14,7 @@ mod setup {
     use slayer::models::slayer::Slayer;
     use slayer::models::duel::Duel;
     use slayer::actions::play::{play, IPlayDispatcher};
+    use slayer::tests::mocks::vrf::{IVRFDispatcher, IVRFDispatcherTrait, vrf};
 
     // Constants
 
@@ -32,12 +33,24 @@ mod setup {
         play: IPlayDispatcher,
     }
 
-    fn spawn_game() -> (IWorldDispatcher, Actions) {
+    fn deploy_vrf() -> IVRFDispatcher {
+        let (address, _) = starknet::deploy_syscall(
+            vrf::TEST_CLASS_HASH.try_into().expect('Class hash conversion failed'),
+            0,
+            array![].span(),
+            false
+        )
+            .expect('VRF deploy failed');
+        IVRFDispatcher { contract_address: address }
+    }
+
+    fn spawn_game() -> (IWorldDispatcher, IVRFDispatcher, Actions) {
         // [Setup] World
         let mut models = array::ArrayTrait::new();
         models.append(slayer::models::slayer::slayer::TEST_CLASS_HASH);
         models.append(slayer::models::duel::duel::TEST_CLASS_HASH);
         let world = spawn_test_world(models);
+        let vrf = deploy_vrf();
 
         // [Setup] Systems
         let play_address = deploy_contract(play::TEST_CLASS_HASH, array![].span());
@@ -46,6 +59,6 @@ mod setup {
         // [Return]
         set_transaction_hash(TX_HASH);
         set_contract_address(SLAYER());
-        (world, actions)
+        (world, vrf, actions)
     }
 }

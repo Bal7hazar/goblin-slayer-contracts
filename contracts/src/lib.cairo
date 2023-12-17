@@ -19,4 +19,8 @@ mod tests {
     mod play;
     mod buy;
     mod consume;
+
+    mod mocks {
+        mod vrf;
+    }
 }

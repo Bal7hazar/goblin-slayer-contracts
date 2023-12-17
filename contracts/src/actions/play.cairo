@@ -1,3 +1,7 @@
+// Starknet imports
+
+use starknet::ContractAddress;
+
 // Dojo imports
 
 use dojo::world::IWorldDispatcher;
@@ -11,10 +15,16 @@ use slayer::models::slayer::Item;
 #[starknet::interface]
 trait IPlay<TContractState> {
     fn create(self: @TContractState, world: IWorldDispatcher, name: felt252,);
-    fn seek(self: @TContractState, world: IWorldDispatcher,);
+    fn seek(ref self: TContractState, world: IWorldDispatcher,);
     fn roll(self: @TContractState, world: IWorldDispatcher, orders: u8,);
     fn buy(self: @TContractState, world: IWorldDispatcher, item: Item,);
     fn consume(self: @TContractState, world: IWorldDispatcher, item: Item,);
+    fn receive_random_words(
+        ref self: TContractState,
+        requestor_address: ContractAddress,
+        request_id: u64,
+        random_words: Span<felt252>
+    );
 }
 
 // System implementation
@@ -24,11 +34,17 @@ mod play {
     // Starknet imports
 
     use starknet::ContractAddress;
-    use starknet::{get_tx_info, get_caller_address};
+    use starknet::info::{
+        get_block_timestamp, get_block_number, get_caller_address, get_contract_address
+    };
 
     // Dojo imports
 
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+
+    // External imports
+
+    use pragma_lib::abi::{IRandomnessDispatcher, IRandomnessDispatcherTrait};
 
     // Models imports
 
@@ -38,7 +54,9 @@ mod play {
     // Internal imports
 
     use slayer::store::{Store, StoreTrait};
-    use slayer::constants::{EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE};
+    use slayer::constants::{
+        EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, VRF_ADDRESS
+    };
 
     // Local imports
 
@@ -50,6 +68,10 @@ mod play {
         const CREATE_SLAYER_ALREADY_EXISTS: felt252 = 'Create: slayer already exists';
         const SEEK_SLAYER_NOT_FOUND: felt252 = 'Seek: slayer not found';
         const SEEK_SLAYER_ALREADY_IN_DUEL: felt252 = 'Seek: slayer already in duel';
+        const SEEK_CALLER_IS_NOT_VRF: felt252 = 'Seek: caller is not VRF';
+        const SEEK_REQUEST_NOT_FROUND: felt252 = 'Seek: request not found';
+        const SEEK_PUBLISH_DELAY_PASSED: felt252 = 'Seek: publish delay passed';
+        const SEEK_INVALID_REQUESTOR: felt252 = 'Seek: invalid requestor';
         const PLAY_SLAYER_NOT_FOUND: felt252 = 'Play: slayer not found';
         const PLAY_SLAYER_NOT_IN_DUEL: felt252 = 'Play: slayer not in duel';
         const BUY_SLAYER_NOT_FOUND: felt252 = 'Buy: slayer not found';
@@ -60,7 +82,11 @@ mod play {
     }
 
     #[storage]
-    struct Storage {}
+    struct Storage {
+        requesters: LegacyMap<u64, felt252>,
+        min_block_number: LegacyMap<u64, u64>,
+        worlds: LegacyMap<u64, IWorldDispatcher>,
+    }
 
     #[external(v0)]
     impl Play of IPlay<ContractState> {
@@ -78,7 +104,7 @@ mod play {
             store.set_slayer(slayer);
         }
 
-        fn seek(self: @ContractState, world: IWorldDispatcher,) {
+        fn seek(ref self: ContractState, world: IWorldDispatcher,) {
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
 
@@ -91,11 +117,59 @@ mod play {
             let duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_zero() || duel.over, errors::SEEK_SLAYER_ALREADY_IN_DUEL);
 
+            // [Interaction] Request randomness
+            let vrf = IRandomnessDispatcher { contract_address: VRF_ADDRESS() };
+            let seed: u64 = get_block_timestamp();
+            let callback_address: ContractAddress = get_contract_address();
+            let num_words = 1;
+            let request_id = vrf
+                .request_random(
+                    seed, callback_address, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, num_words
+                );
+
+            // [Effect] Store request data
+            let min_block_number = get_block_number() + PUBLISH_DELAY;
+            self.requesters.write(request_id, caller);
+            self.min_block_number.write(request_id, min_block_number);
+            self.worlds.write(request_id, world);
+        }
+
+        fn receive_random_words(
+            ref self: ContractState,
+            requestor_address: ContractAddress,
+            request_id: u64,
+            random_words: Span<felt252>
+        ) {
+            // [Check] Caller is VRF
+            let caller = get_caller_address();
+            assert(get_caller_address() == VRF_ADDRESS(), errors::SEEK_CALLER_IS_NOT_VRF);
+
+            // [Check] Request exists
+            let slayer_address = self.requesters.read(request_id);
+            assert(slayer_address.is_non_zero(), errors::SEEK_REQUEST_NOT_FROUND);
+
+            // [Check] Request is within publish_delay
+            let current_block_number = get_block_number();
+            let min_block_number = self.min_block_number.read(request_id);
+            assert(min_block_number <= current_block_number, errors::SEEK_PUBLISH_DELAY_PASSED);
+
+            // [Check] Requester is the contract
+            let contract_address = get_contract_address();
+            assert(requestor_address == contract_address, errors::SEEK_INVALID_REQUESTOR);
+
+            // [Setup] Datastore
+            let world = self.worlds.read(request_id);
+            let mut store: Store = StoreTrait::new(world);
+
             // [Effect] Create duel
-            let seed: felt252 = get_tx_info().unbox().transaction_hash;
+            let slayer = store.slayer(slayer_address);
+            let seed = *random_words.at(0);
             let mut duel: Duel = DuelTrait::new(slayer.duel_id, slayer.id, seed);
             duel.start();
             store.set_duel(duel);
+
+            // [Effect] Clear request
+            self.requesters.write(request_id, 0);
         }
 
         fn roll(self: @ContractState, world: IWorldDispatcher, orders: u8,) {
