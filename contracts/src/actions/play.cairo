@@ -18,7 +18,7 @@ trait IPlay<TContractState> {
     fn seek(ref self: TContractState, world: IWorldDispatcher,);
     fn roll(ref self: TContractState, world: IWorldDispatcher, orders: u8,);
     fn buy(ref self: TContractState, world: IWorldDispatcher, item: Item,);
-    fn consume(ref self: TContractState, world: IWorldDispatcher, item: Item,);
+    fn apply(ref self: TContractState, world: IWorldDispatcher, item: Item,);
     fn receive_random_words(
         ref self: TContractState,
         requestor_address: ContractAddress,
@@ -260,7 +260,7 @@ mod play {
             store.set_slayer(slayer);
         }
 
-        fn consume(ref self: ContractState, world: IWorldDispatcher, item: Item) {
+        fn apply(ref self: ContractState, world: IWorldDispatcher, item: Item) {
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
 

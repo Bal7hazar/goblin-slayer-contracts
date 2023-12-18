@@ -38,5 +38,5 @@ fn test_play_consume() {
     // vrf.submit_random();
 
     // [Buy]
-    actions.play.consume(world, Item::ExtraRound);
+    actions.play.apply(world, Item::ExtraRound);
 }

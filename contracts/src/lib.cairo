@@ -19,7 +19,7 @@ mod tests {
     mod seek;
     mod play;
     mod buy;
-    mod consume;
+    mod apply;
 
     mod mocks {
         mod eth;
