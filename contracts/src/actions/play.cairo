@@ -204,23 +204,7 @@ mod play {
             // [Effect] Update slayer if duel is over
             if duel.over {
                 slayer.duel_id += 1;
-
-                // [Effect] Update gold and xp if slayer won
-                // Draw is considered as a lose 
-                if duel.slayer_score > duel.goblin_score {
-                    slayer.gold += 1;
-                    slayer.xp += 1;
-                } else if duel.slayer_score < duel.goblin_score {
-                    slayer.gold = 0;
-                    slayer.xp = 0;
-                } else if duel.slayer_max > duel.goblin_max {
-                    slayer.gold += 1;
-                    slayer.xp += 1;
-                } else {
-                    slayer.gold = 0;
-                    slayer.xp = 0;
-                }
-
+                duel.reward(ref slayer);
                 store.set_slayer(slayer);
             }
         }

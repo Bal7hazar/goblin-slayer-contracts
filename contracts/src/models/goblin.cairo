@@ -10,7 +10,7 @@ use slayer::constants::DEFAULT_DICE_COUNT;
 
 const MULTIPLIER: u256 = 100000;
 
-#[derive(Drop)]
+#[derive(Drop, Copy)]
 enum Rank {
     Goblin, // Rate: 68+% with nothing predefined
     Rider, // Rate: 20% with a pair
@@ -21,7 +21,7 @@ enum Rank {
     Paladin, // Rate: 0.001% with a yahtzee
 }
 
-#[derive(Drop)]
+#[derive(Drop, Copy)]
 struct Goblin {
     rank: Rank,
 }
@@ -30,6 +30,8 @@ trait GoblinTrait {
     fn new(seed: felt252) -> Goblin;
     fn rank(seed: felt252) -> Rank;
     fn setup(self: Goblin, ref dice: Dice, count: u8) -> Array<u8>;
+    fn xp(self: Goblin) -> u128;
+    fn gold(self: Goblin) -> u128;
 }
 
 impl GoblinImpl of GoblinTrait {
@@ -155,6 +157,30 @@ impl GoblinImpl of GoblinTrait {
                 };
                 dices
             },
+        }
+    }
+
+    fn xp(self: Goblin) -> u128 {
+        match self.rank {
+            Rank::Goblin => 1,
+            Rank::Rider => 2,
+            Rank::Hobgoblin => 4,
+            Rank::Shaman => 8,
+            Rank::Champion => 16,
+            Rank::Lord => 32,
+            Rank::Paladin => 64,
+        }
+    }
+
+    fn gold(self: Goblin) -> u128 {
+        match self.rank {
+            Rank::Goblin => 1,
+            Rank::Rider => 2,
+            Rank::Hobgoblin => 4,
+            Rank::Shaman => 8,
+            Rank::Champion => 16,
+            Rank::Lord => 32,
+            Rank::Paladin => 64,
         }
     }
 }

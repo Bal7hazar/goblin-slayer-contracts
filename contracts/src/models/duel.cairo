@@ -14,6 +14,7 @@ use origami::random::dice::{Dice, DiceTrait};
 use slayer::constants::{DEFAULT_ROUND_COUNT, DEFAULT_DICE_COUNT, DICE_FACES_NUMBER};
 use slayer::models::score::{Score, ScoreTrait, Category};
 use slayer::models::goblin::{Goblin, GoblinTrait, Rank};
+use slayer::models::slayer::{Slayer, SlayerTrait};
 
 // Constants
 
@@ -54,6 +55,7 @@ trait DuelTrait {
     fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel;
     fn start(ref self: Duel);
     fn roll(ref self: Duel, orders: u8);
+    fn reward(self: Duel, ref slayer: Slayer);
     fn extend(ref self: Duel);
     fn reduce(ref self: Duel);
 }
@@ -108,6 +110,23 @@ impl DuelImpl of DuelTrait {
             self.over = true;
         }
         self.round += 1;
+    }
+
+    fn reward(self: Duel, ref slayer: Slayer) {
+        let goblin: Goblin = GoblinTrait::new(self.seed);
+        if self.slayer_score > self.goblin_score {
+            slayer.gold += goblin.gold();
+            slayer.xp += goblin.xp();
+        } else if self.slayer_score < self.goblin_score {
+            slayer.gold = 0;
+            slayer.xp = 0;
+        } else if self.slayer_max > self.goblin_max {
+            slayer.gold += goblin.gold();
+            slayer.xp += goblin.xp();
+        } else {
+            slayer.gold = 0;
+            slayer.xp = 0;
+        }
     }
 
     fn extend(ref self: Duel) {
