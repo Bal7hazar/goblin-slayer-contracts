@@ -4,6 +4,7 @@ import { RPCProvider } from "@dojoengine/core";
 import { Account, num } from "starknet";
 import manifest from "../../../contracts/target/dev/manifest.json";
 import * as torii from "@dojoengine/torii-client";
+import { Slayer } from "./generated/Slayer";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -16,7 +17,7 @@ export async function setupNetwork() {
     } = import.meta.env;
 
     // Create a new RPCProvider instance.
-    const provider = new RPCProvider(
+    const provider = new Slayer(
         VITE_PUBLIC_WORLD_ADDRESS,
         manifest,
         VITE_PUBLIC_NODE_URL
@@ -36,15 +37,5 @@ export async function setupNetwork() {
 
         // Define contract components for the world.
         contractComponents: defineContractComponents(world),
-
-        // Execute function.
-        execute: async (
-            signer: Account,
-            contract: string,
-            system: string,
-            call_data: num.BigNumberish[]
-        ) => {
-            return provider.execute(signer, contract, system, call_data);
-        },
     };
 }

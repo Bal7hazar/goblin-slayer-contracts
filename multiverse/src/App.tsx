@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { client } from "./server";
+import { useDojo } from "./DojoContext";
 
 function App() {
     const [image, setImage] = useState("");
@@ -42,8 +43,22 @@ function App() {
     //     audioRef.current?.play();
     // }, [music]);
 
+    const {
+        setup: {
+            network: { provider },
+            account: { account },
+        },
+    } = useDojo();
+
     return (
         <>
+            <button
+                onClick={async () =>
+                    await provider.create({ account, name: "ohayo" })
+                }
+            >
+                Create
+            </button>
             <audio
                 ref={audioRef}
                 preload="metadata"
