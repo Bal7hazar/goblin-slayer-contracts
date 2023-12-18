@@ -39,7 +39,7 @@ fn VRF_ADDRESS() -> starknet::ContractAddress {
         0x693d551265f0be7ccb3c869c64b5920929caaf486497788d43cb37dd17d6be6
     >()
 }
-
 // fn VRF_ADDRESS() -> starknet::ContractAddress {
 //     starknet::contract_address_const::<0x4>()
 // }
+

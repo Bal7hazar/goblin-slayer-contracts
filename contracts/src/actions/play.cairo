@@ -56,8 +56,8 @@ mod play {
 
     use slayer::store::{Store, StoreTrait};
     use slayer::constants::{
-        EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE, CALLBACK_FEE_LIMIT, WEI_PREMIUM_FEE, PUBLISH_DELAY, VRF_ADDRESS,
-        ETH_ADDRESS
+        EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE, CALLBACK_FEE_LIMIT, WEI_PREMIUM_FEE, PUBLISH_DELAY,
+        VRF_ADDRESS, ETH_ADDRESS
     };
 
     // Local imports
