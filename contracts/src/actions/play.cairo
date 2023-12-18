@@ -14,11 +14,11 @@ use slayer::models::slayer::Item;
 
 #[starknet::interface]
 trait IPlay<TContractState> {
-    fn create(self: @TContractState, world: IWorldDispatcher, name: felt252,);
+    fn create(ref self: TContractState, world: IWorldDispatcher, name: felt252,);
     fn seek(ref self: TContractState, world: IWorldDispatcher,);
-    fn roll(self: @TContractState, world: IWorldDispatcher, orders: u8,);
-    fn buy(self: @TContractState, world: IWorldDispatcher, item: Item,);
-    fn consume(self: @TContractState, world: IWorldDispatcher, item: Item,);
+    fn roll(ref self: TContractState, world: IWorldDispatcher, orders: u8,);
+    fn buy(ref self: TContractState, world: IWorldDispatcher, item: Item,);
+    fn consume(ref self: TContractState, world: IWorldDispatcher, item: Item,);
     fn receive_random_words(
         ref self: TContractState,
         requestor_address: ContractAddress,
@@ -35,7 +35,7 @@ mod play {
 
     use starknet::ContractAddress;
     use starknet::info::{
-        get_block_timestamp, get_block_number, get_caller_address, get_contract_address
+        get_block_timestamp, get_block_number, get_caller_address, get_contract_address, get_tx_info
     };
 
     // Dojo imports
@@ -86,13 +86,12 @@ mod play {
     #[storage]
     struct Storage {
         requesters: LegacyMap<u64, felt252>,
-        min_block_number: LegacyMap<u64, u64>,
         worlds: LegacyMap<u64, IWorldDispatcher>,
     }
 
     #[external(v0)]
     impl Play of IPlay<ContractState> {
-        fn create(self: @ContractState, world: IWorldDispatcher, name: felt252) {
+        fn create(ref self: ContractState, world: IWorldDispatcher, name: felt252) {
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
 
@@ -119,26 +118,30 @@ mod play {
             let duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_zero() || duel.over, errors::SEEK_SLAYER_ALREADY_IN_DUEL);
 
-            // [Interaction] Approve fees
-            let eth_dispatcher = IERC20Dispatcher { contract_address: ETH_ADDRESS() };
-            let amount: u256 = (CALLBACK_FEE_LIMIT + WEI_PREMIUM_FEE).into();
-            eth_dispatcher.approve(VRF_ADDRESS(), amount);
+            // TODO: Disable on testnet
+            let seed = get_tx_info().unbox().transaction_hash;
+            let mut duel: Duel = DuelTrait::new(slayer.duel_id, slayer.id, seed);
+            duel.start();
+            store.set_duel(duel);
+        // TODO: Enable on testnet
+        // // [Interaction] Approve fees
+        // let eth_dispatcher = IERC20Dispatcher { contract_address: ETH_ADDRESS() };
+        // let amount: u256 = (CALLBACK_FEE_LIMIT + WEI_PREMIUM_FEE).into();
+        // eth_dispatcher.approve(VRF_ADDRESS(), amount);
 
-            // [Interaction] Request randomness
-            let vrf = IRandomnessDispatcher { contract_address: VRF_ADDRESS() };
-            let seed: u64 = get_block_timestamp();
-            let callback_address: ContractAddress = get_contract_address();
-            let num_words = 1;
-            let request_id = vrf
-                .request_random(
-                    seed, callback_address, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, num_words
-                );
+        // // [Interaction] Request randomness
+        // let vrf = IRandomnessDispatcher { contract_address: VRF_ADDRESS() };
+        // let seed: u64 = get_block_timestamp();
+        // let callback_address: ContractAddress = get_contract_address();
+        // let num_words = 1;
+        // let request_id = vrf
+        //     .request_random(
+        //         seed, callback_address, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, num_words
+        //     );
 
-            // [Effect] Store request data
-            let min_block_number = get_block_number() + PUBLISH_DELAY;
-            self.requesters.write(request_id, caller);
-            self.min_block_number.write(request_id, min_block_number);
-            self.worlds.write(request_id, world);
+        // // [Effect] Store request data
+        // self.requesters.write(request_id, caller);
+        // self.worlds.write(request_id, world);
         }
 
         fn receive_random_words(
@@ -155,11 +158,6 @@ mod play {
             let slayer_address = self.requesters.read(request_id);
             assert(slayer_address.is_non_zero(), errors::SEEK_REQUEST_NOT_FROUND);
 
-            // [Check] Request is within publish_delay
-            let current_block_number = get_block_number();
-            let min_block_number = self.min_block_number.read(request_id);
-            assert(min_block_number <= current_block_number, errors::SEEK_PUBLISH_DELAY_PASSED);
-
             // [Check] Requester is the contract
             let contract_address = get_contract_address();
             assert(requestor_address == contract_address, errors::SEEK_INVALID_REQUESTOR);
@@ -168,8 +166,12 @@ mod play {
             let world = self.worlds.read(request_id);
             let mut store: Store = StoreTrait::new(world);
 
-            // [Effect] Create duel
+            // [Check] Slayer not already in duel
             let slayer = store.slayer(slayer_address);
+            let duel: Duel = store.current_duel(slayer);
+            assert(duel.seed.is_zero() || duel.over, errors::SEEK_SLAYER_ALREADY_IN_DUEL);
+
+            // [Effect] Create duel
             let seed = *random_words.at(0);
             let mut duel: Duel = DuelTrait::new(slayer.duel_id, slayer.id, seed);
             duel.start();
@@ -179,7 +181,7 @@ mod play {
             self.requesters.write(request_id, 0);
         }
 
-        fn roll(self: @ContractState, world: IWorldDispatcher, orders: u8,) {
+        fn roll(ref self: ContractState, world: IWorldDispatcher, orders: u8,) {
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
 
@@ -216,7 +218,7 @@ mod play {
             }
         }
 
-        fn buy(self: @ContractState, world: IWorldDispatcher, item: Item) {
+        fn buy(ref self: ContractState, world: IWorldDispatcher, item: Item) {
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
 
@@ -247,7 +249,7 @@ mod play {
             store.set_slayer(slayer);
         }
 
-        fn consume(self: @ContractState, world: IWorldDispatcher, item: Item) {
+        fn consume(ref self: ContractState, world: IWorldDispatcher, item: Item) {
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
 

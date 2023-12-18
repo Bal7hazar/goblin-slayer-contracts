@@ -34,7 +34,7 @@ fn test_play_roll() {
 
     // [Seek]
     actions.play.seek(world);
-    vrf.submit_random();
+    // vrf.submit_random();
 
     // [Play]
     let orders = integer::BoundedU8::max();

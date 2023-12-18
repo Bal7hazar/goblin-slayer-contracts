@@ -1,7 +1,7 @@
 ./default_auth.sh
 
-sozo execute 0x780f061e46328aee654612fe1e6d392145fbaa64da1f05288dcd1d03e5dc2c8 create --calldata 0x3bffc486b8eec6354560a4a4a9b7abbd84fcb86efeff1882eafbdf8db7e5067,0xb0b --rpc-url https://starknet-goerli.infura.io/v3/c28442cb88584a618a5dc751cd73f387
+sozo execute 0x18c5e3caf68be2534531547150b2f49de597d94948f561714e884653ad42ad1 create --calldata 0x451475a3cc36439077db1f33f10fdc8f7eb40ce5a69b356ae874f571a04893f,0xb0b --rpc-url https://starknet-goerli.infura.io/v3/c28442cb88584a618a5dc751cd73f387
 
-sozo execute 0x780f061e46328aee654612fe1e6d392145fbaa64da1f05288dcd1d03e5dc2c8 seek --calldata 0x3bffc486b8eec6354560a4a4a9b7abbd84fcb86efeff1882eafbdf8db7e5067 --rpc-url https://starknet-goerli.infura.io/v3/c28442cb88584a618a5dc751cd73f387
+sozo execute 0x18c5e3caf68be2534531547150b2f49de597d94948f561714e884653ad42ad1 seek --calldata 0x451475a3cc36439077db1f33f10fdc8f7eb40ce5a69b356ae874f571a04893f --rpc-url https://starknet-goerli.infura.io/v3/c28442cb88584a618a5dc751cd73f387
 
-sozo execute 0x780f061e46328aee654612fe1e6d392145fbaa64da1f05288dcd1d03e5dc2c8 roll --calldata 0x3bffc486b8eec6354560a4a4a9b7abbd84fcb86efeff1882eafbdf8db7e5067,0x1f --rpc-url https://starknet-goerli.infura.io/v3/c28442cb88584a618a5dc751cd73f387
+sozo execute 0x18c5e3caf68be2534531547150b2f49de597d94948f561714e884653ad42ad1 roll --calldata 0x451475a3cc36439077db1f33f10fdc8f7eb40ce5a69b356ae874f571a04893f,0x1f --rpc-url https://starknet-goerli.infura.io/v3/c28442cb88584a618a5dc751cd73f387
