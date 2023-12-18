@@ -3,6 +3,7 @@ mod store;
 
 mod models {
     mod slayer;
+    mod goblin;
     mod duel;
     mod score;
 }

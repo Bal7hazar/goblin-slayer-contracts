@@ -76,6 +76,7 @@ mod play {
         const SEEK_INVALID_REQUESTOR: felt252 = 'Seek: invalid requestor';
         const PLAY_SLAYER_NOT_FOUND: felt252 = 'Play: slayer not found';
         const PLAY_SLAYER_NOT_IN_DUEL: felt252 = 'Play: slayer not in duel';
+        const BUY_ITEM_NOT_VALID: felt252 = 'Buy: item not valid';
         const BUY_SLAYER_NOT_FOUND: felt252 = 'Buy: slayer not found';
         const BUY_SLAYER_ALREADY_IN_DUEL: felt252 = 'Buy: slayer already in duel';
         const BUY_NOT_ENOUGH_GOLD: felt252 = 'Buy: not enough gold';
@@ -209,6 +210,12 @@ mod play {
                 if duel.slayer_score > duel.goblin_score {
                     slayer.gold += 1;
                     slayer.xp += 1;
+                } else if duel.slayer_score < duel.goblin_score {
+                    slayer.gold = 0;
+                    slayer.xp = 0;
+                } else if duel.slayer_max > duel.goblin_max {
+                    slayer.gold += 1;
+                    slayer.xp += 1;
                 } else {
                     slayer.gold = 0;
                     slayer.xp = 0;
@@ -219,6 +226,10 @@ mod play {
         }
 
         fn buy(ref self: ContractState, world: IWorldDispatcher, item: Item) {
+            // [Check] Item is valid
+            // So far, only consider extra round bonus
+            assert(item == Item::ExtraRound, errors::BUY_ITEM_NOT_VALID);
+
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
 
@@ -259,12 +270,19 @@ mod play {
             assert(slayer.name.is_non_zero(), errors::CONSUME_SLAYER_NOT_FOUND);
 
             // [Check] Slayer in duel
-            let duel: Duel = store.current_duel(slayer);
+            let mut duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_non_zero() && !duel.over, errors::CONSUME_SLAYER_NOT_IN_DUEL);
 
             // [Effect] Sub item and update slayer
             slayer.sub(item); // Throws if not enough item
             store.set_slayer(slayer);
+
+            // [Effect] Apply bonus to duel and update duel
+            match item {
+                Item::ExtraRound => duel.extend(),
+                Item::ExtraDice => {},
+            };
+            store.set_duel(duel);
         }
     }
 }

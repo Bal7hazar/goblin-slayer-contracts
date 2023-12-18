@@ -1,5 +1,6 @@
 // Core imports
 
+use debug::PrintTrait;
 use core::array::ArrayTrait;
 use core::traits::TryInto;
 use core::integer::BoundedU8;
@@ -12,6 +13,7 @@ use origami::random::dice::{Dice, DiceTrait};
 
 use slayer::constants::{DEFAULT_ROUND_COUNT, DEFAULT_DICE_COUNT, DICE_FACES_NUMBER};
 use slayer::models::score::{Score, ScoreTrait, Category};
+use slayer::models::goblin::{Goblin, GoblinTrait, Rank};
 
 // Constants
 
@@ -28,27 +30,6 @@ mod errors {
     const DUEL_MAX_DICE_COUNT_REACHED: felt252 = 'Duel: max dice count reached';
 }
 
-#[derive(Drop, PartialEq)]
-enum Turn {
-    None,
-    Goblin,
-    Slayer,
-}
-
-impl U8IntoTurn of Into<u8, Turn> {
-    #[inline(always)]
-    fn into(self: u8) -> Turn {
-        let nonce = self % 2;
-        if self == 0 {
-            Turn::None
-        } else if nonce == 1 {
-            Turn::Goblin
-        } else {
-            Turn::Slayer
-        }
-    }
-}
-
 #[derive(Model, Copy, Drop, Serde)]
 struct Duel {
     #[key]
@@ -56,11 +37,14 @@ struct Duel {
     #[key]
     slayer_id: felt252,
     seed: felt252,
-    nonce: u8,
+    nonce: felt252,
+    round: u8,
     slayer_dices: u64,
-    goblin_dices: u64,
     slayer_score: u32,
+    slayer_max: u8,
+    goblin_dices: u64,
     goblin_score: u32,
+    goblin_max: u8,
     over: bool,
     round_count: u8,
     dice_count: u8,
@@ -70,8 +54,8 @@ trait DuelTrait {
     fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel;
     fn start(ref self: Duel);
     fn roll(ref self: Duel, orders: u8);
-    fn add_round(ref self: Duel);
-    fn add_dice(ref self: Duel);
+    fn extend(ref self: Duel);
+    fn reduce(ref self: Duel);
 }
 
 impl DuelImpl of DuelTrait {
@@ -82,10 +66,13 @@ impl DuelImpl of DuelTrait {
             slayer_id: slayer_id,
             seed: seed,
             nonce: 0,
+            round: 0,
             slayer_dices: 0,
+            slayer_score: 0,
+            slayer_max: 0,
             goblin_dices: 0,
-            slayer_score: Zeroable::zero(),
-            goblin_score: Zeroable::zero(),
+            goblin_score: 0,
+            goblin_max: 0,
             over: false,
             round_count: DEFAULT_ROUND_COUNT,
             dice_count: DEFAULT_DICE_COUNT,
@@ -95,43 +82,40 @@ impl DuelImpl of DuelTrait {
     fn start(ref self: Duel) {
         // [Check] Duel not over
         assert(!self.over, errors::DUEL_IS_OVER);
-        // [Check] Slayer turn
-        let turn: Turn = self.nonce.into();
-        assert(turn == Turn::None, errors::DUEL_INVALID_TURN);
-        self.nonce += 1;
-        // [Effect] Run Goblin turn
-        let (dices, score) = self.iter(self.goblin_dices, BoundedU8::max());
+        // [Check] Setup phase
+        assert(self.round == 0, errors::DUEL_INVALID_TURN);
+        assert(self.nonce == 0, errors::DUEL_INVALID_TURN);
+        // [Effect] Goblin setup
+        let (dices, score) = self.setup();
         self.goblin_dices = dices;
         self.goblin_score = score.value;
+        self.goblin_max = score.max;
+        self.round += 1;
     }
 
     fn roll(ref self: Duel, orders: u8) {
         // [Check] Duel not over
         assert(!self.over, errors::DUEL_IS_OVER);
         // [Check] Slayer turn
-        let turn: Turn = self.nonce.into();
-        assert(turn == Turn::Slayer, errors::DUEL_INVALID_TURN);
+        assert(self.nonce != 0, errors::DUEL_INVALID_TURN);
         // [Effect] Roll slayer ordered dices
         let (dices, score) = self.iter(self.slayer_dices, orders);
         self.slayer_dices = dices;
         self.slayer_score = score.value;
-        // [Effect] Roll goblin dices
-        // FIXME: Reroll only relevant dices
-        let (dices, score) = self.iter(self.goblin_dices, BoundedU8::max());
-        self.goblin_dices = dices;
-        self.goblin_score = score.value;
+        self.slayer_max = score.max;
         // [Effect] Update duel state
-        if self.nonce > 2 * self.round_count {
+        if self.round == self.round_count.into() {
             self.over = true;
         }
+        self.round += 1;
     }
-    fn add_round(ref self: Duel) {
+
+    fn extend(ref self: Duel) {
         self.round_count += 1;
     }
 
-    fn add_dice(ref self: Duel) {
-        assert(self.dice_count < MAX_DICE_COUNT, errors::DUEL_MAX_DICE_COUNT_REACHED);
-        self.dice_count += 1;
+    fn reduce(ref self: Duel) {
+        self.round_count -= 1;
     }
 }
 
@@ -157,8 +141,22 @@ impl PrivateImpl of PrivateTrait {
                 Option::None => { break; },
             }
         };
-        // [Effect] Increment nonce
-        self.nonce += 1;
+
+        // [Effect] Update nonce
+        self.nonce = dice.nonce;
+
+        // [Return] Packed dices and best score
+        let score: Score = ScoreTrait::best(dices.span());
+        let packed_dices = PrivateTrait::pack_dices(dices.span());
+        (packed_dices, score)
+    }
+
+    fn setup(ref self: Duel) -> (u64, Score) {
+        // [Effect] Setup goblin dices
+        let mut dice = DiceTrait::new(DICE_FACES_NUMBER, self.seed);
+        let goblin: Goblin = GoblinTrait::new(self.seed);
+        let mut dices = goblin.setup(ref dice, self.dice_count);
+        self.nonce = dice.nonce;
 
         // [Return] Packed dices and best score
         let score: Score = ScoreTrait::best(dices.span());
@@ -273,7 +271,7 @@ mod tests {
     fn test_duel_start() {
         let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         duel.start();
-        assert_eq!(duel.nonce, 2);
+        assert_eq!(duel.round, 1);
         assert_eq!(duel.slayer_dices, 0);
         assert(duel.goblin_dices != 0, 'Duel: wrong goblin dices');
         assert(duel.goblin_score != Zeroable::zero(), 'Duel: wrong goblin dices');
@@ -286,9 +284,8 @@ mod tests {
         duel.start();
         let goblin_dices = duel.goblin_dices;
         duel.roll(BoundedU8::max());
-        assert_eq!(duel.nonce, 4);
+        assert_eq!(duel.round, 2);
         assert(duel.slayer_dices != 0, 'Duel: wrong slayer dices');
-        assert(duel.goblin_dices != goblin_dices, 'Duel: wrong goblin dices');
         assert_eq!(duel.over, false);
     }
 

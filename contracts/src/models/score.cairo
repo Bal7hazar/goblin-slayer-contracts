@@ -42,6 +42,7 @@ enum Category {
 #[derive(Serde, Copy, Drop, Introspect)]
 struct Score {
     value: u32,
+    max: u8,
     category: Category,
 }
 
@@ -62,64 +63,66 @@ trait ScoreTrait {
     fn full_house(dices: Span<u8>) -> u32;
     fn yahtzee(dices: Span<u8>) -> u32;
     fn chance(dices: Span<u8>) -> u32;
+    fn max(dices: Span<u8>) -> u8;
 }
 
 impl ScoreImpl of ScoreTrait {
     fn best(dices: Span<u8>) -> Score {
+        let max = ScoreTrait::max(dices);
         let chance = ScoreTrait::chance(dices);
         let yahtzee = ScoreTrait::yahtzee(dices);
         if yahtzee >= chance {
-            return Score { value: yahtzee, category: Category::Yahtzee };
+            return Score { value: yahtzee, max: max, category: Category::Yahtzee };
         }
         let large_straight = ScoreTrait::large_straight(dices);
         if large_straight >= chance {
-            return Score { value: large_straight, category: Category::LargeStraight };
+            return Score { value: large_straight, max: max, category: Category::LargeStraight };
         }
         let small_straight = ScoreTrait::small_straight(dices);
         if small_straight >= chance {
-            return Score { value: small_straight, category: Category::SmallStraight };
+            return Score { value: small_straight, max: max, category: Category::SmallStraight };
         }
         let four_of_a_kind = ScoreTrait::four_of_a_kind(dices);
         if four_of_a_kind >= chance {
-            return Score { value: four_of_a_kind, category: Category::FourOfAKind };
+            return Score { value: four_of_a_kind, max: max, category: Category::FourOfAKind };
         }
         let three_of_a_kind = ScoreTrait::three_of_a_kind(dices);
         if three_of_a_kind >= chance {
-            return Score { value: three_of_a_kind, category: Category::ThreeOfAKind };
+            return Score { value: three_of_a_kind, max: max, category: Category::ThreeOfAKind };
         }
         let two_pairs = ScoreTrait::two_pairs(dices);
         if two_pairs >= chance {
-            return Score { value: two_pairs, category: Category::TwoPairs };
+            return Score { value: two_pairs, max: max, category: Category::TwoPairs };
         }
         let pair = ScoreTrait::pair(dices);
         if pair >= chance {
-            return Score { value: pair, category: Category::Pair };
+            return Score { value: pair, max: max, category: Category::Pair };
         }
-        Score { value: chance, category: Category::Chance }
+        Score { value: chance, max: max, category: Category::Chance }
     // FIXME: Following are only relevant in case of full yahtzee game
     // let sixes = ScoreTrait::sixes(dices);
     // if sixes >= chance {
-    //     return Score { value: sixes, category: Category::Sixes };
+    //     return Score { value: sixes, max: max, category: Category::Sixes };
     // }
     // let fives = ScoreTrait::fives(dices);
     // if fives >= chance {
-    //     return Score { value: fives, category: Category::Fives };
+    //     return Score { value: fives, max: max, category: Category::Fives };
     // }
     // let fours = ScoreTrait::fours(dices);
     // if fours >= chance {
-    //     return Score { value: fours, category: Category::Fours };
+    //     return Score { value: fours, max: max, category: Category::Fours };
     // }
     // let threes = ScoreTrait::threes(dices);
     // if threes >= chance {
-    //     return Score { value: threes, category: Category::Threes };
+    //     return Score { value: threes, max: max, category: Category::Threes };
     // }
     // let twos = ScoreTrait::twos(dices);
     // if twos >= chance {
-    //     return Score { value: twos, category: Category::Twos };
+    //     return Score { value: twos, max: max, category: Category::Twos };
     // }
     // let ones = ScoreTrait::ones(dices);
     // if ones >= chance {
-    //     return Score { value: ones, category: Category::Ones };
+    //     return Score { value: ones, max: max, category: Category::Ones };
     // }
     }
 
@@ -225,6 +228,22 @@ impl ScoreImpl of ScoreTrait {
         };
         score
     }
+
+    fn max(mut dices: Span<u8>) -> u8 {
+        let mut max = 0;
+        loop {
+            match dices.pop_front() {
+                Option::Some(dice) => {
+                    let value = *dice;
+                    if value > max {
+                        max = value;
+                    }
+                },
+                Option::None => { break; },
+            }
+        };
+        max.into()
+    }
 }
 
 #[generate_trait]
@@ -311,7 +330,7 @@ impl PrivateImpl of PrivateTrait {
 impl ScoreZeroable of Zeroable<Score> {
     #[inline(always)]
     fn zero() -> Score {
-        Score { value: 0, category: Category::None }
+        Score { value: 0, max: 0, category: Category::None }
     }
 
     #[inline(always)]
@@ -548,5 +567,19 @@ mod tests {
         let dices = array![1, 2, 3, 4, 5];
         let score = ScoreTrait::chance(dices.span());
         assert_eq!(score, 15);
+    }
+
+    #[test]
+    fn test_max() {
+        let dices = array![1, 2, 3, 4, 5];
+        let score = ScoreTrait::max(dices.span());
+        assert_eq!(score, 5);
+    }
+
+    #[test]
+    fn test_max_reverse() {
+        let dices = array![5, 4, 3, 2, 1];
+        let score = ScoreTrait::max(dices.span());
+        assert_eq!(score, 5);
     }
 }

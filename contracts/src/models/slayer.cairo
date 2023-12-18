@@ -18,7 +18,7 @@ mod errors {
     const SLAYER_TOO_MUCH_ITEMS_TO_PACK: felt252 = 'Slayer: too much items to pack';
 }
 
-#[derive(Serde, Copy, Drop)]
+#[derive(Serde, Copy, Drop, PartialEq)]
 enum Item {
     ExtraRound,
     ExtraDice,
