@@ -28,12 +28,32 @@ struct Goblin {
 
 trait GoblinTrait {
     fn new(seed: felt252) -> Goblin;
+    fn rank(seed: felt252) -> Rank;
     fn setup(self: Goblin, ref dice: Dice, count: u8) -> Array<u8>;
 }
 
 impl GoblinImpl of GoblinTrait {
     fn new(seed: felt252) -> Goblin {
-        Goblin { rank: PrivateTrait::_rank(seed) }
+        Goblin { rank: GoblinTrait::rank(seed) }
+    }
+
+    fn rank(seed: felt252) -> Rank {
+        let number = seed.into() % MULTIPLIER;
+        if number < 1 {
+            return Rank::Paladin;
+        } else if number < 10 {
+            return Rank::Lord;
+        } else if number < 100 {
+            return Rank::Champion;
+        } else if number < 1000 {
+            return Rank::Shaman;
+        } else if number < 10000 {
+            return Rank::Hobgoblin;
+        } else if number < 20000 {
+            return Rank::Rider;
+        } else {
+            return Rank::Goblin;
+        }
     }
 
     fn setup(self: Goblin, ref dice: Dice, count: u8) -> Array<u8> {
@@ -135,28 +155,6 @@ impl GoblinImpl of GoblinTrait {
                 };
                 dices
             },
-        }
-    }
-}
-
-#[generate_trait]
-impl PrivateImpl of PrivateTrait {
-    fn _rank(seed: felt252) -> Rank {
-        let number = seed.into() % MULTIPLIER;
-        if number < 1 {
-            return Rank::Paladin;
-        } else if number < 10 {
-            return Rank::Lord;
-        } else if number < 100 {
-            return Rank::Champion;
-        } else if number < 1000 {
-            return Rank::Shaman;
-        } else if number < 10000 {
-            return Rank::Hobgoblin;
-        } else if number < 20000 {
-            return Rank::Rider;
-        } else {
-            return Rank::Goblin;
         }
     }
 }
