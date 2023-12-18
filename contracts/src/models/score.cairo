@@ -19,7 +19,7 @@ mod errors {
     const UNEXPECTED_DICES_COUNT: felt252 = 'Score: unexpected dice count';
 }
 
-#[derive(Serde, Copy, Drop, Introspect)]
+#[derive(Copy, Drop)]
 enum Category {
     None,
     Ones,
@@ -39,11 +39,35 @@ enum Category {
     Chance,
 }
 
+impl CategoryIntoU8 of Into<Category, u8> {
+    #[inline(always)]
+    fn into(self: Category) -> u8 {
+        match self {
+            Category::None => 0,
+            Category::Ones => 1,
+            Category::Twos => 2,
+            Category::Threes => 3,
+            Category::Fours => 4,
+            Category::Fives => 5,
+            Category::Sixes => 6,
+            Category::Pair => 7,
+            Category::TwoPairs => 8,
+            Category::ThreeOfAKind => 9,
+            Category::FourOfAKind => 10,
+            Category::SmallStraight => 11,
+            Category::LargeStraight => 12,
+            Category::FullHouse => 13,
+            Category::Yahtzee => 14,
+            Category::Chance => 15,
+        }
+    }
+}
+
 #[derive(Serde, Copy, Drop, Introspect)]
 struct Score {
     value: u32,
     max: u8,
-    category: Category,
+    category: u8,
 }
 
 trait ScoreTrait {
@@ -67,105 +91,125 @@ trait ScoreTrait {
 }
 
 impl ScoreImpl of ScoreTrait {
+    #[inline(always)]
     fn best(dices: Span<u8>) -> Score {
         let max = ScoreTrait::max(dices);
         let chance = ScoreTrait::chance(dices);
         let yahtzee = ScoreTrait::yahtzee(dices);
         if yahtzee >= chance {
-            return Score { value: yahtzee, max: max, category: Category::Yahtzee };
+            return Score { value: yahtzee, max: max, category: Category::Yahtzee.into() };
         }
         let large_straight = ScoreTrait::large_straight(dices);
         if large_straight >= chance {
-            return Score { value: large_straight, max: max, category: Category::LargeStraight };
+            return Score {
+                value: large_straight, max: max, category: Category::LargeStraight.into()
+            };
         }
         let small_straight = ScoreTrait::small_straight(dices);
         if small_straight >= chance {
-            return Score { value: small_straight, max: max, category: Category::SmallStraight };
+            return Score {
+                value: small_straight, max: max, category: Category::SmallStraight.into()
+            };
         }
         let four_of_a_kind = ScoreTrait::four_of_a_kind(dices);
         if four_of_a_kind >= chance {
-            return Score { value: four_of_a_kind, max: max, category: Category::FourOfAKind };
+            return Score {
+                value: four_of_a_kind, max: max, category: Category::FourOfAKind.into()
+            };
         }
         let three_of_a_kind = ScoreTrait::three_of_a_kind(dices);
         if three_of_a_kind >= chance {
-            return Score { value: three_of_a_kind, max: max, category: Category::ThreeOfAKind };
+            return Score {
+                value: three_of_a_kind, max: max, category: Category::ThreeOfAKind.into()
+            };
         }
         let two_pairs = ScoreTrait::two_pairs(dices);
         if two_pairs >= chance {
-            return Score { value: two_pairs, max: max, category: Category::TwoPairs };
+            return Score { value: two_pairs, max: max, category: Category::TwoPairs.into() };
         }
         let pair = ScoreTrait::pair(dices);
         if pair >= chance {
-            return Score { value: pair, max: max, category: Category::Pair };
+            return Score { value: pair, max: max, category: Category::Pair.into() };
         }
-        Score { value: chance, max: max, category: Category::Chance }
+        Score { value: chance, max: max, category: Category::Chance.into() }
     // FIXME: Following are only relevant in case of full yahtzee game
     // let sixes = ScoreTrait::sixes(dices);
     // if sixes >= chance {
-    //     return Score { value: sixes, max: max, category: Category::Sixes };
+    //     return Score { value: sixes, max: max, category: Category::Sixes.into() };
     // }
     // let fives = ScoreTrait::fives(dices);
     // if fives >= chance {
-    //     return Score { value: fives, max: max, category: Category::Fives };
+    //     return Score { value: fives, max: max, category: Category::Fives.into() };
     // }
     // let fours = ScoreTrait::fours(dices);
     // if fours >= chance {
-    //     return Score { value: fours, max: max, category: Category::Fours };
+    //     return Score { value: fours, max: max, category: Category::Fours.into() };
     // }
     // let threes = ScoreTrait::threes(dices);
     // if threes >= chance {
-    //     return Score { value: threes, max: max, category: Category::Threes };
+    //     return Score { value: threes, max: max, category: Category::Threes.into() };
     // }
     // let twos = ScoreTrait::twos(dices);
     // if twos >= chance {
-    //     return Score { value: twos, max: max, category: Category::Twos };
+    //     return Score { value: twos, max: max, category: Category::Twos.into() };
     // }
     // let ones = ScoreTrait::ones(dices);
     // if ones >= chance {
-    //     return Score { value: ones, max: max, category: Category::Ones };
+    //     return Score { value: ones, max: max, category: Category::Ones.into() };
     // }
     }
 
+    #[inline(always)]
     fn ones(dices: Span<u8>) -> u32 {
         PrivateTrait::singles(dices, 1)
     }
 
+    #[inline(always)]
     fn twos(dices: Span<u8>) -> u32 {
         PrivateTrait::singles(dices, 2)
     }
 
+    #[inline(always)]
     fn threes(dices: Span<u8>) -> u32 {
         PrivateTrait::singles(dices, 3)
     }
 
+    #[inline(always)]
     fn fours(dices: Span<u8>) -> u32 {
         PrivateTrait::singles(dices, 4)
     }
 
+    #[inline(always)]
     fn fives(dices: Span<u8>) -> u32 {
         PrivateTrait::singles(dices, 5)
     }
 
+    #[inline(always)]
     fn sixes(dices: Span<u8>) -> u32 {
         PrivateTrait::singles(dices, 6)
     }
 
+    #[inline(always)]
     fn pair(dices: Span<u8>) -> u32 {
         PrivateTrait::some_of_a_kind(dices, 2, 1)
     }
 
+    #[inline(always)]
     fn two_pairs(mut dices: Span<u8>) -> u32 {
         PrivateTrait::some_of_a_kind(dices, 2, 2)
     }
 
+    #[inline(always)]
     fn three_of_a_kind(mut dices: Span<u8>) -> u32 {
         PrivateTrait::some_of_a_kind(dices, 3, 1)
     }
 
+    #[inline(always)]
     fn four_of_a_kind(mut dices: Span<u8>) -> u32 {
         PrivateTrait::some_of_a_kind(dices, 4, 1)
     }
 
+    #[inline(always)]
     fn small_straight(mut dices: Span<u8>) -> u32 {
         if PrivateTrait::straight(dices, 4) {
             SMALL_STRAIGHT
@@ -174,6 +218,7 @@ impl ScoreImpl of ScoreTrait {
         }
     }
 
+    #[inline(always)]
     fn large_straight(mut dices: Span<u8>) -> u32 {
         if PrivateTrait::straight(dices, 5) {
             LARGE_STRAIGHT
@@ -206,6 +251,7 @@ impl ScoreImpl of ScoreTrait {
         0
     }
 
+    #[inline(always)]
     fn yahtzee(mut dices: Span<u8>) -> u32 {
         let number = dices.len().try_into().expect(errors::UNEXPECTED_DICES_COUNT);
         let score = PrivateTrait::some_of_a_kind(dices, number, 1);
@@ -330,7 +376,7 @@ impl PrivateImpl of PrivateTrait {
 impl ScoreZeroable of Zeroable<Score> {
     #[inline(always)]
     fn zero() -> Score {
-        Score { value: 0, max: 0, category: Category::None }
+        Score { value: 0, max: 0, category: Category::None.into() }
     }
 
     #[inline(always)]
@@ -353,6 +399,35 @@ impl ScorePartialEq of PartialEq<Score> {
     #[inline(always)]
     fn ne(lhs: @Score, rhs: @Score) -> bool {
         return lhs.value != rhs.value;
+    }
+}
+
+impl ScorePartialOrd of PartialOrd<Score> {
+    #[inline(always)]
+    fn lt(lhs: Score, rhs: Score) -> bool {
+        return (lhs.value < rhs.value) || (lhs.value == rhs.value && lhs.max < rhs.max);
+    }
+
+    #[inline(always)]
+    fn le(lhs: Score, rhs: Score) -> bool {
+        return (lhs.value < rhs.value) || (lhs.value == rhs.value && lhs.max <= rhs.max);
+    }
+
+    #[inline(always)]
+    fn gt(lhs: Score, rhs: Score) -> bool {
+        return (lhs.value > rhs.value) || (lhs.value == rhs.value && lhs.max > rhs.max);
+    }
+
+    #[inline(always)]
+    fn ge(lhs: Score, rhs: Score) -> bool {
+        return (lhs.value > rhs.value) || (lhs.value == rhs.value && lhs.max >= rhs.max);
+    }
+}
+
+impl ScoreDebug of core::fmt::Debug<Score> {
+    #[inline(always)]
+    fn fmt(self: @Score, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
+        write!(f, "")
     }
 }
 

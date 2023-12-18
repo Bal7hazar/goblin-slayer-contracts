@@ -239,7 +239,7 @@ mod play {
             };
 
             // [Effect] Spend gold, add item and update slayer
-            slayer.gold -= cost.into();
+            slayer.spend(cost.into());
             slayer.add(item);
             store.set_slayer(slayer);
         }

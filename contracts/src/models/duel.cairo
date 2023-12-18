@@ -41,11 +41,9 @@ struct Duel {
     nonce: felt252,
     round: u8,
     slayer_dices: u64,
-    slayer_score: u32,
-    slayer_max: u8,
+    slayer_score: Score,
     goblin_dices: u64,
-    goblin_score: u32,
-    goblin_max: u8,
+    goblin_score: Score,
     over: bool,
     round_count: u8,
     dice_count: u8,
@@ -61,6 +59,7 @@ trait DuelTrait {
 }
 
 impl DuelImpl of DuelTrait {
+    #[inline(always)]
     fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel {
         assert(seed != 0, errors::DUEL_INVALID_SEED);
         Duel {
@@ -70,17 +69,16 @@ impl DuelImpl of DuelTrait {
             nonce: 0,
             round: 0,
             slayer_dices: 0,
-            slayer_score: 0,
-            slayer_max: 0,
+            slayer_score: Zeroable::zero(),
             goblin_dices: 0,
-            goblin_score: 0,
-            goblin_max: 0,
+            goblin_score: Zeroable::zero(),
             over: false,
             round_count: DEFAULT_ROUND_COUNT,
             dice_count: DEFAULT_DICE_COUNT,
         }
     }
 
+    #[inline(always)]
     fn start(ref self: Duel) {
         // [Check] Duel not over
         assert(!self.over, errors::DUEL_IS_OVER);
@@ -90,11 +88,11 @@ impl DuelImpl of DuelTrait {
         // [Effect] Goblin setup
         let (dices, score) = self.setup();
         self.goblin_dices = dices;
-        self.goblin_score = score.value;
-        self.goblin_max = score.max;
+        self.goblin_score = score;
         self.round += 1;
     }
 
+    #[inline(always)]
     fn roll(ref self: Duel, orders: u8) {
         // [Check] Duel not over
         assert(!self.over, errors::DUEL_IS_OVER);
@@ -103,8 +101,7 @@ impl DuelImpl of DuelTrait {
         // [Effect] Roll slayer ordered dices
         let (dices, score) = self.iter(self.slayer_dices, orders);
         self.slayer_dices = dices;
-        self.slayer_score = score.value;
-        self.slayer_max = score.max;
+        self.slayer_score = score;
         // [Effect] Update duel state
         if self.round == self.round_count.into() {
             self.over = true;
@@ -112,27 +109,23 @@ impl DuelImpl of DuelTrait {
         self.round += 1;
     }
 
+    #[inline(always)]
     fn reward(self: Duel, ref slayer: Slayer) {
         let goblin: Goblin = GoblinTrait::new(self.seed);
         if self.slayer_score > self.goblin_score {
-            slayer.gold += goblin.gold();
-            slayer.xp += goblin.xp();
-        } else if self.slayer_score < self.goblin_score {
-            slayer.gold = 0;
-            slayer.xp = 0;
-        } else if self.slayer_max > self.goblin_max {
-            slayer.gold += goblin.gold();
-            slayer.xp += goblin.xp();
+            slayer.train(goblin.xp());
+            slayer.earn(goblin.gold());
         } else {
-            slayer.gold = 0;
-            slayer.xp = 0;
+            slayer.reset();
         }
     }
 
+    #[inline(always)]
     fn extend(ref self: Duel) {
         self.round_count += 1;
     }
 
+    #[inline(always)]
     fn reduce(ref self: Duel) {
         self.round_count -= 1;
     }
@@ -170,6 +163,7 @@ impl PrivateImpl of PrivateTrait {
         (packed_dices, score)
     }
 
+    #[inline(always)]
     fn setup(ref self: Duel) -> (u64, Score) {
         // [Effect] Setup goblin dices
         let mut dice = DiceTrait::new(DICE_FACES_NUMBER, self.seed);

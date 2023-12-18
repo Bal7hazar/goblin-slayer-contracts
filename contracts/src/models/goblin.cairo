@@ -35,10 +35,12 @@ trait GoblinTrait {
 }
 
 impl GoblinImpl of GoblinTrait {
+    #[inline(always)]
     fn new(seed: felt252) -> Goblin {
         Goblin { rank: GoblinTrait::rank(seed) }
     }
 
+    #[inline(always)]
     fn rank(seed: felt252) -> Rank {
         let number = seed.into() % MULTIPLIER;
         if number < 1 {
@@ -160,6 +162,7 @@ impl GoblinImpl of GoblinTrait {
         }
     }
 
+    #[inline(always)]
     fn xp(self: Goblin) -> u128 {
         match self.rank {
             Rank::Goblin => 1,
@@ -172,6 +175,7 @@ impl GoblinImpl of GoblinTrait {
         }
     }
 
+    #[inline(always)]
     fn gold(self: Goblin) -> u128 {
         match self.rank {
             Rank::Goblin => 1,

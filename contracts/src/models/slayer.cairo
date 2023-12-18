@@ -14,6 +14,7 @@ const ITEM_COUNT: u8 = 2;
 
 mod errors {
     const SLAYER_NAME_MUST_BE_NON_ZERO: felt252 = 'Slayer: name must be non zero';
+    const SLAYER_NOT_ENOUGH_GOLD: felt252 = 'Slayer: not enough gold';
     const SLAYER_NOT_ENOUGH_ITEM: felt252 = 'Slayer: not enough item';
     const SLAYER_TOO_MUCH_ITEMS_TO_PACK: felt252 = 'Slayer: too much items to pack';
 }
@@ -34,11 +35,139 @@ impl ItemIntoU32 of Into<Item, u32> {
     }
 }
 
+#[derive(Copy, Drop)]
+enum Tag {
+    Unknown, // 0xp+
+    Porcelain, // 64xp+
+    Obsidian, // 128xp+
+    Steel, // 256xp+
+    Sapphire, // 512xp+
+    Emerald, // 1024xp+
+    Ruby, // 2048xp+
+    Bronze, // 4096xp+
+    Silver, // 8192xp+
+    Gold, // 16384xp+
+    Platinium, // 32768xp+
+}
+
+impl U128IntoTag of Into<u128, Tag> {
+    #[inline(always)]
+    fn into(self: u128) -> Tag {
+        if self >= 32768 {
+            Tag::Platinium
+        } else if self >= 16384 {
+            Tag::Gold
+        } else if self >= 8192 {
+            Tag::Silver
+        } else if self >= 4096 {
+            Tag::Bronze
+        } else if self >= 2048 {
+            Tag::Ruby
+        } else if self >= 1024 {
+            Tag::Emerald
+        } else if self >= 512 {
+            Tag::Sapphire
+        } else if self >= 256 {
+            Tag::Steel
+        } else if self >= 128 {
+            Tag::Obsidian
+        } else if self >= 64 {
+            Tag::Porcelain
+        } else {
+            Tag::Unknown
+        }
+    }
+}
+
+impl TagIntoU8 of Into<Tag, u8> {
+    #[inline(always)]
+    fn into(self: Tag) -> u8 {
+        match self {
+            Tag::Unknown => 0,
+            Tag::Porcelain => 1,
+            Tag::Obsidian => 2,
+            Tag::Steel => 3,
+            Tag::Sapphire => 4,
+            Tag::Emerald => 5,
+            Tag::Ruby => 6,
+            Tag::Bronze => 7,
+            Tag::Silver => 8,
+            Tag::Gold => 9,
+            Tag::Platinium => 10,
+        }
+    }
+}
+
+#[derive(Copy, Drop)]
+enum Title {
+    Frugal, // 0gold+
+    Steady, // 64gold+
+    Thriving, // 128gold+
+    Flourishing, // 256gold+
+    Prosperous, // 512gold+
+    Affluent, // 1024gold+
+    Wealthy, // 2048gold+
+    Opulent, // 4096gold+
+    Luxurious, // 8192gold+
+    Regal, // 16384gold+
+    Sovereign, // 32768gold+
+}
+
+impl U128IntoTitle of Into<u128, Title> {
+    #[inline(always)]
+    fn into(self: u128) -> Title {
+        if self >= 32768 {
+            Title::Sovereign
+        } else if self >= 16384 {
+            Title::Regal
+        } else if self >= 8192 {
+            Title::Luxurious
+        } else if self >= 4096 {
+            Title::Opulent
+        } else if self >= 2048 {
+            Title::Wealthy
+        } else if self >= 1024 {
+            Title::Affluent
+        } else if self >= 512 {
+            Title::Prosperous
+        } else if self >= 256 {
+            Title::Flourishing
+        } else if self >= 128 {
+            Title::Thriving
+        } else if self >= 64 {
+            Title::Steady
+        } else {
+            Title::Frugal
+        }
+    }
+}
+
+impl TitleIntoU8 of Into<Title, u8> {
+    #[inline(always)]
+    fn into(self: Title) -> u8 {
+        match self {
+            Title::Frugal => 0,
+            Title::Steady => 1,
+            Title::Thriving => 2,
+            Title::Flourishing => 3,
+            Title::Prosperous => 4,
+            Title::Affluent => 5,
+            Title::Wealthy => 6,
+            Title::Opulent => 7,
+            Title::Luxurious => 8,
+            Title::Regal => 9,
+            Title::Sovereign => 10,
+        }
+    }
+}
+
 #[derive(Model, Copy, Drop, Serde)]
 struct Slayer {
     #[key]
     id: felt252,
     name: felt252,
+    tag: u8,
+    title: u8,
     xp: u128,
     gold: u128,
     duel_id: u32,
@@ -47,6 +176,10 @@ struct Slayer {
 
 trait SlayerTrait {
     fn new(id: felt252, name: felt252) -> Slayer;
+    fn reset(ref self: Slayer);
+    fn train(ref self: Slayer, xp: u128);
+    fn earn(ref self: Slayer, gold: u128);
+    fn spend(ref self: Slayer, gold: u128);
     fn sub(ref self: Slayer, item: Item);
     fn add(ref self: Slayer, item: Item);
 }
@@ -56,7 +189,47 @@ impl SlayerImpl of SlayerTrait {
     fn new(id: felt252, name: felt252) -> Slayer {
         // [Check] Name must be non zero
         assert(name != '', errors::SLAYER_NAME_MUST_BE_NON_ZERO);
-        Slayer { id: id, name: name, xp: 0, gold: 0, duel_id: 0, items: 0 }
+        Slayer { id: id, name: name, tag: 0, title: 0, xp: 0, gold: 0, duel_id: 0, items: 0 }
+    }
+
+    #[inline(always)]
+    fn reset(ref self: Slayer) {
+        // [Effect] Reset slayer
+        self.xp = 0;
+        self.gold = 0;
+        self.title = 0;
+        self.tag = 0;
+        self.duel_id = 0;
+        self.items = 0;
+    }
+
+    #[inline(always)]
+    fn train(ref self: Slayer, xp: u128) {
+        // [Effect] Update xp
+        self.xp += xp;
+        // [Effect] Update tag
+        let tag: Tag = self.xp.into();
+        self.tag = tag.into();
+    }
+
+    #[inline(always)]
+    fn earn(ref self: Slayer, gold: u128) {
+        // [Effect] Update gold
+        self.gold += gold;
+        // [Effect] Update title
+        let title: Title = self.gold.into();
+        self.title = title.into();
+    }
+
+    #[inline(always)]
+    fn spend(ref self: Slayer, gold: u128) {
+        // [Check] Gold must be positive
+        assert(gold <= self.gold, errors::SLAYER_NOT_ENOUGH_GOLD);
+        // [Effect] Update gold
+        self.gold -= gold;
+        // [Effect] Update title
+        let title: Title = self.gold.into();
+        self.title = title.into();
     }
 
     #[inline(always)]
@@ -155,6 +328,8 @@ mod tests {
         let slayer = SlayerTrait::new(ID, NAME);
         assert_eq!(slayer.id, ID);
         assert_eq!(slayer.name, NAME);
+        assert_eq!(slayer.tag, 0);
+        assert_eq!(slayer.title, 0);
         assert_eq!(slayer.xp, 0);
         assert_eq!(slayer.gold, 0);
         assert_eq!(slayer.duel_id, 0);
