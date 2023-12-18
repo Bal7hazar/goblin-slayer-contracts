@@ -56,7 +56,7 @@ mod play {
 
     use slayer::store::{Store, StoreTrait};
     use slayer::constants::{
-        EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, VRF_ADDRESS,
+        EXTRA_DICE_PRICE, EXTRA_ROUND_PRICE, CALLBACK_FEE_LIMIT, WEI_PREMIUM_FEE, PUBLISH_DELAY, VRF_ADDRESS,
         ETH_ADDRESS
     };
 
@@ -121,7 +121,8 @@ mod play {
 
             // [Interaction] Approve fees
             let eth_dispatcher = IERC20Dispatcher { contract_address: ETH_ADDRESS() };
-            eth_dispatcher.approve(VRF_ADDRESS(), CALLBACK_FEE_LIMIT.into());
+            let amount: u256 = (CALLBACK_FEE_LIMIT + WEI_PREMIUM_FEE).into();
+            eth_dispatcher.approve(VRF_ADDRESS(), amount);
 
             // [Interaction] Request randomness
             let vrf = IRandomnessDispatcher { contract_address: VRF_ADDRESS() };
