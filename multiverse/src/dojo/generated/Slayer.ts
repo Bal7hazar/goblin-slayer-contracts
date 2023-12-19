@@ -68,12 +68,9 @@ export class PlayContract implements IPlayContractFunctions {
 
     async seek(props: Signer): Promise<any> {
         try {
-            return await this.slayer.execute(
-                props.account,
-                this.name,
-                "seek",
-                []
-            );
+            return await this.slayer.execute(props.account, this.name, "seek", [
+                this.slayer.getWorldAddress(),
+            ]);
         } catch (error) {
             console.error("Error in seeking entity:", error);
             throw error;
@@ -83,6 +80,7 @@ export class PlayContract implements IPlayContractFunctions {
     async roll(props: RollProps): Promise<any> {
         try {
             return await this.slayer.execute(props.account, this.name, "roll", [
+                this.slayer.getWorldAddress(),
                 props.orders,
             ]);
         } catch (error) {
@@ -94,6 +92,7 @@ export class PlayContract implements IPlayContractFunctions {
     async buy(props: BuyProps): Promise<any> {
         try {
             return await this.slayer.execute(props.account, this.name, "buy", [
+                this.slayer.getWorldAddress(),
                 props.item,
             ]);
         } catch (error) {
@@ -108,7 +107,7 @@ export class PlayContract implements IPlayContractFunctions {
                 props.account,
                 this.name,
                 "apply",
-                [props.item]
+                [this.slayer.getWorldAddress(), props.item]
             );
         } catch (error) {
             console.error("Error in applying entity:", error);
