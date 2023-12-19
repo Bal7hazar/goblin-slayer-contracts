@@ -23,8 +23,7 @@ struct Store {
 trait StoreTrait {
     fn new(world: IWorldDispatcher) -> Store;
     fn slayer(ref self: Store, id: felt252) -> Slayer;
-    fn duel(ref self: Store, id: u32, slayer: Slayer) -> Duel;
-    fn current_duel(ref self: Store, slayer: Slayer) -> Duel;
+    fn duel(ref self: Store, slayer: Slayer) -> Duel;
     fn set_slayer(ref self: Store, slayer: Slayer);
     fn set_duel(ref self: Store, duel: Duel);
 }
@@ -39,12 +38,8 @@ impl StoreImpl of StoreTrait {
         get!(self.world, id, (Slayer))
     }
 
-    fn duel(ref self: Store, id: u32, slayer: Slayer) -> Duel {
-        get!(self.world, (id, slayer.id), (Duel))
-    }
-
-    fn current_duel(ref self: Store, slayer: Slayer) -> Duel {
-        self.duel(slayer.duel_id, slayer)
+    fn duel(ref self: Store, slayer: Slayer) -> Duel {
+        get!(self.world, slayer.id, (Duel))
     }
 
     fn set_slayer(ref self: Store, slayer: Slayer) {

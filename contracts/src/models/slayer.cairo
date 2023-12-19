@@ -170,7 +170,6 @@ struct Slayer {
     title: u8,
     xp: u128,
     gold: u128,
-    duel_id: u32,
     items: felt252,
 }
 
@@ -189,7 +188,7 @@ impl SlayerImpl of SlayerTrait {
     fn new(id: felt252, name: felt252) -> Slayer {
         // [Check] Name must be non zero
         assert(name != '', errors::SLAYER_NAME_MUST_BE_NON_ZERO);
-        Slayer { id: id, name: name, tag: 0, title: 0, xp: 0, gold: 0, duel_id: 0, items: 0 }
+        Slayer { id: id, name: name, tag: 0, title: 0, xp: 0, gold: 0, items: 0 }
     }
 
     #[inline(always)]
@@ -199,7 +198,6 @@ impl SlayerImpl of SlayerTrait {
         self.gold = 0;
         self.title = 0;
         self.tag = 0;
-        self.duel_id = 0;
         self.items = 0;
     }
 
@@ -332,7 +330,6 @@ mod tests {
         assert_eq!(slayer.title, 0);
         assert_eq!(slayer.xp, 0);
         assert_eq!(slayer.gold, 0);
-        assert_eq!(slayer.duel_id, 0);
         assert_eq!(slayer.items, 0);
     }
 
