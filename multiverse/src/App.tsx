@@ -52,13 +52,6 @@ function App() {
 
     return (
         <>
-            <button
-                onClick={async () =>
-                    await provider.play.create({ account, name: "ohayo" })
-                }
-            >
-                Create
-            </button>
             <audio
                 ref={audioRef}
                 preload="metadata"
@@ -78,10 +71,19 @@ function App() {
                         alt=""
                     />
 
-                    <div className="w-full bg-black h-48 absolute bottom-0 left-0 flex justify-center">
+                    <div className="w-full bg-white h-48 absolute bottom-0 left-0 flex justify-center">
                         <img className="w-48 h-48 " src={portrait} alt="" />
+                        <button
+                            onClick={async () =>
+                                await provider.play.create({
+                                    account,
+                                    name: "ohayo",
+                                })
+                            }
+                        >
+                            Create
+                        </button>
                     </div>
-                    <div className="absolute top-0 bg-white z-10 right-0 h-screen"></div>
                 </div>
             )}
         </>

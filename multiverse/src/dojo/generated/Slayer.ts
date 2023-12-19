@@ -58,7 +58,7 @@ export class PlayContract implements IPlayContractFunctions {
                 props.account,
                 this.name,
                 "create",
-                [props.name]
+                [this.slayer.getWorldAddress(), props.name]
             );
         } catch (error) {
             console.error("Error in creating entity:", error);

@@ -1,4 +1,3 @@
-import { overridableComponent } from "@dojoengine/recs";
 import { SetupNetworkResult } from "./setupNetwork";
 
 export type ClientComponents = ReturnType<typeof createClientComponents>;
@@ -8,7 +7,5 @@ export function createClientComponents({
 }: SetupNetworkResult) {
     return {
         ...contractComponents,
-        Position: overridableComponent(contractComponents.Position),
-        Moves: overridableComponent(contractComponents.Moves),
     };
 }
