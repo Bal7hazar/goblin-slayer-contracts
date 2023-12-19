@@ -9,20 +9,18 @@ export interface CreateProps extends Signer {
     name: string;
 }
 
-export interface SeekProps extends Signer {
-    name: string;
-}
+export interface SeekProps extends Signer { }
 
 export interface RollProps extends Signer {
-    orders: string;
+    orders: number;
 }
 
 export interface BuyProps extends Signer {
-    item: string;
+    item: number;
 }
 
 export interface ApplyProps extends Signer {
-    item: string;
+    item: number;
 }
 
 export class Slayer extends RPCProvider {

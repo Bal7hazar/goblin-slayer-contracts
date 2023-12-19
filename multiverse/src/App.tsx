@@ -73,16 +73,57 @@ function App() {
 
                     <div className="w-full bg-white h-48 absolute bottom-0 left-0 flex justify-center">
                         <img className="w-48 h-48 " src={portrait} alt="" />
-                        <button
-                            onClick={async () =>
-                                await provider.play.create({
-                                    account,
-                                    name: "ohayo",
-                                })
-                            }
-                        >
-                            Create
-                        </button>
+                        <div className="flex flex-col justify-center items-center">
+                            <button
+                                onClick={async () =>
+                                    await provider.play.create({
+                                        account,
+                                        name: "ohayo",
+                                    })
+                                }
+                            >
+                                Create
+                            </button>
+                            <button
+                                onClick={async () =>
+                                    await provider.play.seek({
+                                        account,
+                                    })
+                                }
+                            >
+                                Seek
+                            </button>
+                            <button
+                                onClick={async () =>
+                                    await provider.play.roll({
+                                        account,
+                                        orders: 0x1F,
+                                    })
+                                }
+                            >
+                                Roll
+                            </button>
+                            <button
+                                onClick={async () =>
+                                    await provider.play.buy({
+                                        account,
+                                        item: 0,
+                                    })
+                                }
+                            >
+                                Buy
+                            </button>
+                            <button
+                                onClick={async () =>
+                                    await provider.play.roll({
+                                        account,
+                                        item: 0,
+                                    })
+                                }
+                            >
+                                Apply
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
