@@ -54,7 +54,7 @@ function App() {
         <>
             <button
                 onClick={async () =>
-                    await provider.create({ account, name: "ohayo" })
+                    await provider.play.create({ account, name: "ohayo" })
                 }
             >
                 Create

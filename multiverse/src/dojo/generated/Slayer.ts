@@ -10,19 +10,33 @@ export interface CreateProps extends Signer {
 }
 
 export class Slayer extends RPCProvider {
-    private contracts: { [key: string]: string };
+    public play: PlayContract;
 
     constructor(worldAddress: string, manifest?: any, url?: string) {
         super(worldAddress, manifest, url);
 
-        this.contracts = { slayer: "slayer" };
+        this.play = new PlayContract(this);
+    }
+}
+
+interface IPlayContractFunctions {
+    create: (props: CreateProps) => Promise<any>;
+}
+
+export class PlayContract implements IPlayContractFunctions {
+    private slayer: Slayer;
+    private name: string;
+
+    constructor(provider: Slayer) {
+        this.slayer = provider;
+        this.name = "play";
     }
 
-    public async create(props: CreateProps): Promise<any> {
+    async create(props: CreateProps): Promise<any> {
         try {
-            return await this.execute(
+            return await this.slayer.execute(
                 props.account,
-                this.contracts.slayer,
+                this.name,
                 "create",
                 [props.name]
             );
