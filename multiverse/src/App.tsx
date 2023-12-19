@@ -115,7 +115,7 @@ function App() {
                             </button>
                             <button
                                 onClick={async () =>
-                                    await provider.play.roll({
+                                    await provider.play.apply({
                                         account,
                                         item: 0,
                                     })
