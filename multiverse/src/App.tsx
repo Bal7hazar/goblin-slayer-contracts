@@ -26,6 +26,12 @@ function App() {
     const [image, setImage] = useState("");
     const [portrait, setPortrait] = useState("");
     const [orders, setOrders] = useState(0x0);
+    const [tag, setTag] = useState("Silver");
+    const [rank, setRank] = useState("Shaman");
+    const [title, setTitle] = useState("Slayer");
+    const [foe, setFoe] = useState("Goblin");
+    const [foeScore, setFoeScore] = useState(37);
+    const [slayerScore, setSlayerScore] = useState(25);
     const [music, setMusic] = useState(
         "https://replicate.delivery/pbxt/eCSi52ISai1YVyN6jqrNjfNuAMhBEHzGaPPFpYOKUg3UbDDSA/out.wav"
     );
@@ -152,13 +158,13 @@ function App() {
                             <div className="flex justify-between gap-1">
                                 <div className="flex flex-col items-start grow px-2">
                                     <div className="flex justify-left items-center gap-4">
-                                        <h2 className="text-2xl text-center uppercase">Goblin</h2>
+                                        <h2 className="text-2xl text-center uppercase">{foe}</h2>
                                         <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                                            <h3 className="text-sm text-center">Shaman</h3>
+                                            <h3 className="text-sm text-center">{rank}</h3>
                                         </div>
                                         <AnimatedNumbers
                                             className="text-center uppercase"
-                                            animateToNumber={25}
+                                            animateToNumber={foeScore}
                                             fontStyle={{
                                                 fontSize: '1.5rem',
                                             }}
@@ -178,15 +184,15 @@ function App() {
                                     <div className="flex justify-right items-center gap-4">
                                         <AnimatedNumbers
                                             className="text-center uppercase"
-                                            animateToNumber={37}
+                                            animateToNumber={slayerScore}
                                             fontStyle={{
                                                 fontSize: '1.5rem',
                                             }}
                                         />
                                         <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                                            <h3 className="text-sm text-center">Silver</h3>
+                                            <h3 className="text-sm text-center">{tag}</h3>
                                         </div>
-                                        <h2 className="text-2xl text-center uppercase">Slayer</h2>
+                                        <h2 className="text-2xl text-center uppercase">{title}</h2>
                                     </div>
                                     <Dices dices={BigInt(0x00000000102030405)} disabled={false} updateOrders={updateOrders} />
                                 </div>
