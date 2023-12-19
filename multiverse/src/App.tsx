@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useComponentValue } from "@dojoengine/react";
 import { Entity } from "@dojoengine/recs";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
+import AnimatedNumbers from "react-animated-numbers";
 import "./App.css";
 import { client } from "./server";
 import { useDojo } from "./DojoContext";
@@ -120,7 +121,7 @@ function App() {
                 <source type="audio/mpeg" src={music} />
             </audio>
             {!image ? (
-                <h1 className="text-4xl text-center py-10 font-press-start uppercase">Loading...</h1>
+                <h1 className="text-4xl text-center py-10 font-press-start uppercase m-auto">Loading...</h1>
             ) : (
                 <div className="h-screen p-2">
                     <h1 className="text-4xl text-center py-10 font-press-start uppercase">Slayer</h1>
@@ -132,7 +133,13 @@ function App() {
                                     <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
                                         <h3 className="text-sm text-center">Shaman</h3>
                                     </div>
-                                    <p className="text-2xl text-center uppercase">25</p>
+                                    <AnimatedNumbers
+                                        className="text-center uppercase"
+                                        animateToNumber={25}
+                                        fontStyle={{
+                                            fontSize: '1.5rem',
+                                        }}
+                                    />
                                 </div>
                                 <Dices dices={BigInt(0x0000000605040302)} disabled={true} />
                             </div>
@@ -146,7 +153,13 @@ function App() {
                             </div>
                             <div className="flex flex-col justify-end items-end grow px-2">
                                 <div className="flex justify-right items-center gap-4">
-                                    <p className="text-2xl text-center uppercase">37</p>
+                                    <AnimatedNumbers
+                                        className="text-center uppercase"
+                                        animateToNumber={37}
+                                        fontStyle={{
+                                            fontSize: '1.5rem',
+                                        }}
+                                    />
                                     <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
                                         <h3 className="text-sm text-center">Silver</h3>
                                     </div>
