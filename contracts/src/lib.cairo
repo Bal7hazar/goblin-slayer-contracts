@@ -17,7 +17,7 @@ mod tests {
     mod setup;
     mod create;
     mod seek;
-    mod roll;
+    mod play;
     mod buy;
     mod apply;
 

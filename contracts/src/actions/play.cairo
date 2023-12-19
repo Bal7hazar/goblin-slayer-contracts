@@ -116,12 +116,12 @@ mod play {
             assert(slayer.name.is_non_zero(), errors::SEEK_SLAYER_NOT_FOUND);
 
             // [Check] Slayer not already in duel
-            let duel: Duel = store.duel(slayer);
+            let duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_zero() || duel.over, errors::SEEK_SLAYER_ALREADY_IN_DUEL);
 
             // TODO: Disable on testnet
             let seed = get_tx_info().unbox().transaction_hash;
-            let mut duel: Duel = DuelTrait::new(slayer.id, seed);
+            let mut duel: Duel = DuelTrait::new(slayer.duel_id, slayer.id, seed);
             duel.start();
             store.set_duel(duel);
         // TODO: Enable on testnet
@@ -169,12 +169,12 @@ mod play {
 
             // [Check] Slayer not already in duel
             let slayer = store.slayer(slayer_address);
-            let duel: Duel = store.duel(slayer);
+            let duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_zero() || duel.over, errors::SEEK_SLAYER_ALREADY_IN_DUEL);
 
             // [Effect] Create duel
             let seed = *random_words.at(0);
-            let mut duel: Duel = DuelTrait::new(slayer.id, seed);
+            let mut duel: Duel = DuelTrait::new(slayer.duel_id, slayer.id, seed);
             duel.start();
             store.set_duel(duel);
 
@@ -192,7 +192,7 @@ mod play {
             assert(slayer.name.is_non_zero(), errors::PLAY_SLAYER_NOT_FOUND);
 
             // [Check] Slayer in duel
-            let mut duel: Duel = store.duel(slayer);
+            let mut duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_non_zero() && !duel.over, errors::PLAY_SLAYER_NOT_IN_DUEL);
 
             // [Effect] Play duel
@@ -203,6 +203,7 @@ mod play {
 
             // [Effect] Update slayer if duel is over
             if duel.over {
+                slayer.duel_id += 1;
                 duel.reward(ref slayer);
                 store.set_slayer(slayer);
             }
@@ -222,7 +223,7 @@ mod play {
             assert(slayer.name.is_non_zero(), errors::PLAY_SLAYER_NOT_FOUND);
 
             // [Check] Slayer not already in duel
-            let duel: Duel = store.duel(slayer);
+            let duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_zero() || duel.over, errors::BUY_SLAYER_ALREADY_IN_DUEL);
 
             // [Check] Enough gold
@@ -253,7 +254,7 @@ mod play {
             assert(slayer.name.is_non_zero(), errors::CONSUME_SLAYER_NOT_FOUND);
 
             // [Check] Slayer in duel
-            let mut duel: Duel = store.duel(slayer);
+            let mut duel: Duel = store.current_duel(slayer);
             assert(duel.seed.is_non_zero() && !duel.over, errors::CONSUME_SLAYER_NOT_IN_DUEL);
 
             // [Effect] Sub item and update slayer

@@ -34,6 +34,8 @@ mod errors {
 #[derive(Model, Copy, Drop, Serde)]
 struct Duel {
     #[key]
+    id: u32,
+    #[key]
     slayer_id: felt252,
     seed: felt252,
     nonce: felt252,
@@ -48,7 +50,7 @@ struct Duel {
 }
 
 trait DuelTrait {
-    fn new(slayer_id: felt252, seed: felt252) -> Duel;
+    fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel;
     fn start(ref self: Duel);
     fn roll(ref self: Duel, orders: u8);
     fn reward(self: Duel, ref slayer: Slayer);
@@ -58,9 +60,10 @@ trait DuelTrait {
 
 impl DuelImpl of DuelTrait {
     #[inline(always)]
-    fn new(slayer_id: felt252, seed: felt252) -> Duel {
+    fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel {
         assert(seed != 0, errors::DUEL_INVALID_SEED);
         Duel {
+            id: id,
             slayer_id: slayer_id,
             seed: seed,
             nonce: 0,
@@ -232,6 +235,7 @@ mod tests {
 
     // Constants
 
+    const DUEL_ID: u32 = 1;
     const SLAYER_ID: felt252 = 'SLAYER_ID';
     const SEED: felt252 = 'SEED';
 
@@ -265,7 +269,7 @@ mod tests {
 
     #[test]
     fn test_duel_new() {
-        let duel = DuelTrait::new(SLAYER_ID, SEED);
+        let duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         assert(duel.slayer_id == SLAYER_ID, 'Duel: wrong slayer id');
         assert_eq!(duel.seed, SEED);
         assert_eq!(duel.nonce, 0);
@@ -278,7 +282,7 @@ mod tests {
 
     #[test]
     fn test_duel_start() {
-        let mut duel = DuelTrait::new(SLAYER_ID, SEED);
+        let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         duel.start();
         assert_eq!(duel.round, 1);
         assert_eq!(duel.slayer_dices, 0);
@@ -289,7 +293,7 @@ mod tests {
 
     #[test]
     fn test_duel_play() {
-        let mut duel = DuelTrait::new(SLAYER_ID, SEED);
+        let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         duel.start();
         let goblin_dices = duel.goblin_dices;
         duel.roll(BoundedU8::max());
@@ -300,7 +304,7 @@ mod tests {
 
     #[test]
     fn test_duel_play_to_end() {
-        let mut duel = DuelTrait::new(SLAYER_ID, SEED);
+        let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         duel.start();
         let mut index = DEFAULT_ROUND_COUNT;
         loop {
@@ -315,7 +319,7 @@ mod tests {
     #[test]
     #[should_panic(expected: ('Duel: is over',))]
     fn test_duel_play_revert_is_over() {
-        let mut duel = DuelTrait::new(SLAYER_ID, SEED);
+        let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         duel.start();
         let mut index = DEFAULT_ROUND_COUNT;
         loop {
@@ -331,7 +335,7 @@ mod tests {
     #[test]
     #[should_panic(expected: ('Duel: invalid turn',))]
     fn test_duel_play_revert_invalid_turn() {
-        let mut duel = DuelTrait::new(SLAYER_ID, SEED);
+        let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
         duel.roll(BoundedU8::max());
     }
 }
