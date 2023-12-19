@@ -8,6 +8,17 @@ import { client } from "./server";
 import { useDojo } from "./DojoContext";
 import Actions from './components/Actions';
 import Dices from './components/Dices';
+import large from './assets/large-straight.png';
+import small from './assets/small-straight.png';
+import full from './assets/full-house.png';
+import pair from './assets/pair.png';
+import double from './assets/double-pair.png';
+import toak from './assets/toak.png';
+import foak from './assets/foak.png';
+import yahtzee from './assets/yahtzee.png';
+import chance from './assets/chance.png';
+
+
 
 function App() {
     // States
@@ -125,57 +136,81 @@ function App() {
             ) : (
                 <div className="h-screen p-2">
                     <h1 className="text-4xl text-center py-10 font-press-start uppercase">Slayer</h1>
-                    <div className="max-w-xl relative flex flex-col gap-2 p-2 rounded m-auto bg-slate-100 text-slate-900">
-                        <div className="flex justify-between gap-1">
-                            <div className="flex flex-col items-start grow px-2">
-                                <div className="flex justify-left items-center gap-4">
-                                    <h2 className="text-2xl text-center uppercase">Goblin</h2>
-                                    <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                                        <h3 className="text-sm text-center">Shaman</h3>
-                                    </div>
-                                    <AnimatedNumbers
-                                        className="text-center uppercase"
-                                        animateToNumber={25}
-                                        fontStyle={{
-                                            fontSize: '1.5rem',
-                                        }}
-                                    />
-                                </div>
-                                <Dices dices={BigInt(0x0000000605040302)} disabled={true} />
-                            </div>
-                            <div className="rounded-3xl w-32 h-32 overflow-clip">
-                                <img className="" src={image} alt="" />
-                            </div>
+                    <div className="flex flex-col justify-center items-center m-auto">
+                        <div className="flex justify-start">
+                            <img className="opacity-20" src={chance} alt="chance" />
+                            <img className="opacity-20" src={pair} alt="pair" />
+                            <img className="opacity-20" src={double} alt="double" />
+                            <img className="opacity-20" src={toak} alt="three of a kind" />
+                            <img className="" src={foak} alt="four of a kind" />
+                            <img className="opacity-20" src={full} alt="full-house" />
+                            <img className="opacity-20" src={small} alt="small" />
+                            <img className="opacity-20" src={large} alt="large" />
+                            <img className="opacity-20" src={yahtzee} alt="yahtzee" />
                         </div>
-                        <div className="flex justify-between gap-1">
-                            <div className="rounded-3xl w-32 h-32 overflow-clip">
-                                <img src={portrait} alt="" />
-                            </div>
-                            <div className="flex flex-col justify-end items-end grow px-2">
-                                <div className="flex justify-right items-center gap-4">
-                                    <AnimatedNumbers
-                                        className="text-center uppercase"
-                                        animateToNumber={37}
-                                        fontStyle={{
-                                            fontSize: '1.5rem',
-                                        }}
-                                    />
-                                    <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                                        <h3 className="text-sm text-center">Silver</h3>
+                        <div className="max-w-xl relative flex flex-col gap-2 p-2 rounded bg-slate-100 text-slate-900">
+                            <div className="flex justify-between gap-1">
+                                <div className="flex flex-col items-start grow px-2">
+                                    <div className="flex justify-left items-center gap-4">
+                                        <h2 className="text-2xl text-center uppercase">Goblin</h2>
+                                        <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
+                                            <h3 className="text-sm text-center">Shaman</h3>
+                                        </div>
+                                        <AnimatedNumbers
+                                            className="text-center uppercase"
+                                            animateToNumber={25}
+                                            fontStyle={{
+                                                fontSize: '1.5rem',
+                                            }}
+                                        />
                                     </div>
-                                    <h2 className="text-2xl text-center uppercase">Slayer</h2>
+                                    <Dices dices={BigInt(0x0000000605040302)} disabled={true} />
                                 </div>
-                                <Dices dices={BigInt(0x00000000102030405)} disabled={false} updateOrders={updateOrders} />
+                                <div className="rounded-3xl w-24 h-24 overflow-clip">
+                                    <img className="" src={image} alt="" />
+                                </div>
                             </div>
+                            <div className="flex justify-between gap-1">
+                                <div className="rounded-3xl w-24 h-24 overflow-clip">
+                                    <img src={portrait} alt="" />
+                                </div>
+                                <div className="flex flex-col justify-end items-end grow px-2">
+                                    <div className="flex justify-right items-center gap-4">
+                                        <AnimatedNumbers
+                                            className="text-center uppercase"
+                                            animateToNumber={37}
+                                            fontStyle={{
+                                                fontSize: '1.5rem',
+                                            }}
+                                        />
+                                        <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
+                                            <h3 className="text-sm text-center">Silver</h3>
+                                        </div>
+                                        <h2 className="text-2xl text-center uppercase">Slayer</h2>
+                                    </div>
+                                    <Dices dices={BigInt(0x00000000102030405)} disabled={false} updateOrders={updateOrders} />
+                                </div>
+                            </div>
+                            <Actions
+                                slayer={slayer}
+                                handleCreate={handleCreate}
+                                handleRoll={handleRoll}
+                                handleApply={handleApply}
+                                handleSeek={handleSeek}
+                                handleBuy={handleBuy}
+                            />
                         </div>
-                        <Actions
-                            slayer={slayer}
-                            handleCreate={handleCreate}
-                            handleRoll={handleRoll}
-                            handleApply={handleApply}
-                            handleSeek={handleSeek}
-                            handleBuy={handleBuy}
-                        />
+                        <div className="flex justify-start">
+                            <img className="opacity-20" src={chance} alt="chance" />
+                            <img className="opacity-20" src={pair} alt="pair" />
+                            <img className="opacity-20" src={double} alt="double" />
+                            <img className="opacity-20" src={toak} alt="three of a kind" />
+                            <img className="opacity-20" src={foak} alt="four of a kind" />
+                            <img className="opacity-20" src={full} alt="full-house" />
+                            <img className="opacity-20" src={small} alt="small" />
+                            <img className="" src={large} alt="large" />
+                            <img className="opacity-20" src={yahtzee} alt="yahtzee" />
+                        </div>
                     </div>
 
                 </div>

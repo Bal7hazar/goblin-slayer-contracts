@@ -20,7 +20,7 @@ const Dices: React.FC<DicesProps> = ({ dices, disabled, updateOrders }) => {
     }
 
     return (
-        <div className="flex flex-wrap justify-center gap-3 py-2">
+        <div className="flex justify-center gap-3 py-2">
             {values.map((value, i) => (
                 <Dice key={i} index={i} onRoll={updateOrders} size={30} defaultValue={value as TValue} cheatValue={value as TValue} disabled={disabled} />
             ))}
