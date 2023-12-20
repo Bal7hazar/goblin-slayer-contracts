@@ -17,3 +17,11 @@ pnpm run dev:server
 ```zsh
 pnpm run dev
 ```
+
+## Deployment
+
+Client - vercel
+
+Server - railway.app
+
+Chain - slot

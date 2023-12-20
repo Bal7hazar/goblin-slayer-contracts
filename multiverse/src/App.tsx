@@ -18,6 +18,7 @@ import GameScene from "./components/GameScene";
 import gold from "./assets/gold-64.png";
 import xp from "./assets/xp-64.png";
 import avatar from "./assets/avatar.png";
+import fight from "./assets/duel-256.png";
 
 function App() {
     // States
@@ -213,7 +214,7 @@ function App() {
                         </h2>
                     </div>
                 ) : (
-                    <div className="h-screen md:px-2 lg:px-20">
+                    <div className="h-screen px-2 md:px-20">
                         <div className="flex justify-start">
                             <div className="flex flex-col justify-center items-center ml-1 bg-slate-700 h-40 w-32 rounded-b-3xl">
                                 <p className="uppercase text-4xl">
@@ -240,7 +241,7 @@ function App() {
                             <div className="grow text-4xl text-center py-10 font-press-start uppercase">
                                 <h1 className="hidden md:block">Slayer</h1>
                             </div>
-                            <div className="flex flex-col justify-start items-start gap-2 my-2">
+                            <div className="flex flex-col justify-start items-end gap-2 my-2">
                                 <div className="flex justify-between items-center h-10 w-32 md:w-64 bg-white bg-opacity-20 rounded-3xl pr-3">
                                     <img
                                         className="border border-black rounded-full w-10 h-10 object-cover"
@@ -264,6 +265,9 @@ function App() {
                                             {slayer?.gold.toString()}
                                         </p>
                                     </div>
+                                </div>
+                                <div className="rounded-full overflow-clip w-20 cursor-pointer hover:scale-110 transition-transform duration-300">
+                                    <img className="w-full h-full object-cover" src={fight} alt="" />
                                 </div>
                             </div>
                         </div>
