@@ -12,7 +12,8 @@
     },
     "scripts": {
         "prettier-check": "bun x prettier --check .",
-        "prettier": "bun x prettier --write ."
+        "prettier": "bun x prettier --write .",
+        "dev:server": "bun --cwd server dev"
     },
     "dependencies": {}
 }

@@ -1,7 +1,5 @@
 import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
-import { RPCProvider } from "@dojoengine/core";
-import { Account, num } from "starknet";
 import manifest from "../../../contracts/target/dev/manifest.json";
 import * as torii from "@dojoengine/torii-client";
 import { Slayer } from "./generated/Slayer";

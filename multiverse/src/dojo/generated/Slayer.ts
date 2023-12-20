@@ -1,4 +1,4 @@
-import { RPCProvider } from "@dojoengine/core";
+import { DojoProvider } from "@dojoengine/core";
 import { Account } from "starknet";
 
 interface Signer {
@@ -9,7 +9,7 @@ export interface CreateProps extends Signer {
     name: string;
 }
 
-export interface SeekProps extends Signer { }
+export interface SeekProps extends Signer {}
 
 export interface RollProps extends Signer {
     orders: number;
@@ -23,7 +23,7 @@ export interface ApplyProps extends Signer {
     item: number;
 }
 
-export class Slayer extends RPCProvider {
+export class Slayer extends DojoProvider {
     public play: PlayContract;
 
     constructor(worldAddress: string, manifest?: any, url?: string) {
