@@ -2,6 +2,7 @@ export type TProps = React.CSSProperties & {
     rollingTime?: number;
     index: number;
     onRoll?: (index: number, rolling: boolean) => void;
+    stopRoll?: boolean;
     defaultValue?: TValue;
     size?: number;
     faces?: string[];

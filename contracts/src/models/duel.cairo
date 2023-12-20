@@ -40,10 +40,15 @@ struct Duel {
     seed: felt252,
     nonce: felt252,
     round: u8,
+    rank: u8,
     slayer_dices: u64,
-    slayer_score: Score,
+    slayer_score_value: u32,
+    slayer_score_max: u8,
+    slayer_score_category: u8,
     goblin_dices: u64,
-    goblin_score: Score,
+    goblin_score_value: u32,
+    goblin_score_max: u8,
+    goblin_score_category: u8,
     over: bool,
     round_count: u8,
     dice_count: u8,
@@ -51,6 +56,8 @@ struct Duel {
 
 trait DuelTrait {
     fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel;
+    fn slayer_score(self: Duel) -> Score;
+    fn goblin_score(self: Duel) -> Score;
     fn start(ref self: Duel);
     fn roll(ref self: Duel, orders: u8);
     fn reward(self: Duel, ref slayer: Slayer);
@@ -62,19 +69,43 @@ impl DuelImpl of DuelTrait {
     #[inline(always)]
     fn new(id: u32, slayer_id: felt252, seed: felt252) -> Duel {
         assert(seed != 0, errors::DUEL_INVALID_SEED);
+        let goblin: Goblin = GoblinTrait::new(seed);
         Duel {
             id: id,
             slayer_id: slayer_id,
             seed: seed,
             nonce: 0,
             round: 0,
+            rank: goblin.rank.into(),
             slayer_dices: 0,
-            slayer_score: Zeroable::zero(),
+            slayer_score_value: 0,
+            slayer_score_max: 0,
+            slayer_score_category: 0,
             goblin_dices: 0,
-            goblin_score: Zeroable::zero(),
+            goblin_score_value: 0,
+            goblin_score_max: 0,
+            goblin_score_category: 0,
             over: false,
             round_count: DEFAULT_ROUND_COUNT,
             dice_count: DEFAULT_DICE_COUNT,
+        }
+    }
+
+    #[inline(always)]
+    fn slayer_score(self: Duel) -> Score {
+        Score {
+            value: self.slayer_score_value,
+            max: self.slayer_score_max,
+            category: self.slayer_score_category.into(),
+        }
+    }
+
+    #[inline(always)]
+    fn goblin_score(self: Duel) -> Score {
+        Score {
+            value: self.goblin_score_value,
+            max: self.goblin_score_max,
+            category: self.goblin_score_category.into(),
         }
     }
 
@@ -88,7 +119,9 @@ impl DuelImpl of DuelTrait {
         // [Effect] Goblin setup
         let (dices, score) = self.setup();
         self.goblin_dices = dices;
-        self.goblin_score = score;
+        self.goblin_score_value = score.value;
+        self.goblin_score_max = score.max;
+        self.goblin_score_category = score.category;
         self.round += 1;
     }
 
@@ -101,7 +134,9 @@ impl DuelImpl of DuelTrait {
         // [Effect] Roll slayer ordered dices
         let (dices, score) = self.iter(self.slayer_dices, orders);
         self.slayer_dices = dices;
-        self.slayer_score = score;
+        self.slayer_score_value = score.value;
+        self.slayer_score_max = score.max;
+        self.slayer_score_category = score.category;
         // [Effect] Update duel state
         if self.round == self.round_count.into() {
             self.over = true;
@@ -112,7 +147,7 @@ impl DuelImpl of DuelTrait {
     #[inline(always)]
     fn reward(self: Duel, ref slayer: Slayer) {
         let goblin: Goblin = GoblinTrait::new(self.seed);
-        if self.slayer_score > self.goblin_score {
+        if self.slayer_score() > self.goblin_score() {
             slayer.train(goblin.xp());
             slayer.earn(goblin.gold());
         } else {
@@ -141,10 +176,10 @@ impl PrivateImpl of PrivateTrait {
         let mut dice = DiceTrait::new(DICE_FACES_NUMBER, self.seed);
         dice.nonce = self.nonce.into();
         loop {
-            let dice_value = dices.pop_front().unwrap();
             match orders.pop_front() {
                 Option::Some(order) => {
-                    if order {
+                    let dice_value = dices.pop_front().unwrap();
+                    if order || dice_value == 0 {
                         dices.append(dice.roll());
                     } else {
                         dices.append(dice_value);
@@ -273,10 +308,16 @@ mod tests {
         assert(duel.slayer_id == SLAYER_ID, 'Duel: wrong slayer id');
         assert_eq!(duel.seed, SEED);
         assert_eq!(duel.nonce, 0);
+        assert_eq!(duel.round, 0);
+        assert_eq!(duel.rank, 0);
         assert_eq!(duel.slayer_dices, 0);
         assert_eq!(duel.goblin_dices, 0);
-        assert_eq!(duel.slayer_score, Zeroable::zero());
-        assert_eq!(duel.goblin_score, Zeroable::zero());
+        assert_eq!(duel.slayer_score_value, 0);
+        assert_eq!(duel.slayer_score_max, 0);
+        assert_eq!(duel.slayer_score_category, 0);
+        assert_eq!(duel.goblin_score_value, 0);
+        assert_eq!(duel.goblin_score_max, 0);
+        assert_eq!(duel.goblin_score_category, 0);
         assert_eq!(duel.over, false);
     }
 
@@ -287,7 +328,7 @@ mod tests {
         assert_eq!(duel.round, 1);
         assert_eq!(duel.slayer_dices, 0);
         assert(duel.goblin_dices != 0, 'Duel: wrong goblin dices');
-        assert(duel.goblin_score != Zeroable::zero(), 'Duel: wrong goblin dices');
+        assert(duel.goblin_score_max != 0, 'Duel: wrong goblin max');
         assert_eq!(duel.over, false);
     }
 
@@ -298,7 +339,27 @@ mod tests {
         let goblin_dices = duel.goblin_dices;
         duel.roll(BoundedU8::max());
         assert_eq!(duel.round, 2);
+        let first_dices = duel.slayer_dices;
         assert(duel.slayer_dices != 0, 'Duel: wrong slayer dices');
+        assert(duel.slayer_dices >= 0x0100000000, 'Duel: wrong dice count');
+        duel.roll(BoundedU8::max());
+        assert_eq!(duel.round, 3);
+        assert(duel.slayer_dices != first_dices, 'Duel: wrong slayer dices');
+        assert_eq!(duel.over, false);
+    }
+
+    #[test]
+    fn test_duel_play_pass() {
+        let mut duel = DuelTrait::new(DUEL_ID, SLAYER_ID, SEED);
+        duel.start();
+        let goblin_dices = duel.goblin_dices;
+        duel.roll(BoundedU8::max());
+        assert_eq!(duel.round, 2);
+        let first_dices = duel.slayer_dices;
+        assert(duel.slayer_dices != 0, 'Duel: wrong slayer dices');
+        duel.roll(0);
+        assert_eq!(duel.round, 3);
+        assert(duel.slayer_dices == first_dices, 'Duel: wrong slayer dices');
         assert_eq!(duel.over, false);
     }
 

@@ -21,6 +21,42 @@ enum Rank {
     Paladin, // Rate: 0.001% with a yahtzee
 }
 
+impl RankIntoU8 of Into<Rank, u8> {
+    #[inline(always)]
+    fn into(self: Rank) -> u8 {
+        match self {
+            Rank::Goblin => 0,
+            Rank::Rider => 1,
+            Rank::Hobgoblin => 2,
+            Rank::Shaman => 3,
+            Rank::Champion => 4,
+            Rank::Lord => 5,
+            Rank::Paladin => 6,
+        }
+    }
+}
+
+impl U8IntoRank of Into<u8, Rank> {
+    #[inline(always)]
+    fn into(self: u8) -> Rank {
+        if self == 1 {
+            return Rank::Rider;
+        } else if self == 2 {
+            return Rank::Hobgoblin;
+        } else if self == 3 {
+            return Rank::Shaman;
+        } else if self == 4 {
+            return Rank::Champion;
+        } else if self == 5 {
+            return Rank::Lord;
+        } else if self == 6 {
+            return Rank::Paladin;
+        } else {
+            return Rank::Goblin;
+        }
+    }
+}
+
 #[derive(Drop, Copy)]
 struct Goblin {
     rank: Rank,

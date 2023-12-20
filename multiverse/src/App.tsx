@@ -3,20 +3,13 @@ import { useComponentValue } from "@dojoengine/react";
 import { Entity } from "@dojoengine/recs";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 import AnimatedNumbers from "react-animated-numbers";
+import { shortString } from 'starknet';
 import "./App.css";
 import { client } from "./server";
 import { useDojo } from "./DojoContext";
 import Actions from "./components/Actions";
 import Dices from "./components/Dices";
-import large from "./assets/large-straight.png";
-import small from "./assets/small-straight.png";
-import full from "./assets/full-house.png";
-import pair from "./assets/pair.png";
-import double from "./assets/double-pair.png";
-import toak from "./assets/toak.png";
-import foak from "./assets/foak.png";
-import yahtzee from "./assets/yahtzee.png";
-import chance from "./assets/chance.png";
+import Score from "./components/Score";
 import { useTerraformer } from "./hooks/useTerraformer";
 
 function App() {
@@ -24,13 +17,19 @@ function App() {
 
     const { image, background, portrait } = useTerraformer();
 
-    const [orders, setOrders] = useState(0x0);
-    const [tag, setTag] = useState("Silver");
-    const [rank, setRank] = useState("Shaman");
+    const [orders, setOrders] = useState(0x1F);
+    const [tag, setTag] = useState("Starter");
+    const [rank, setRank] = useState("Normal");
     const [title, setTitle] = useState("Slayer");
-    const [foe, setFoe] = useState("Goblin");
-    const [foeScore, setFoeScore] = useState(37);
-    const [slayerScore, setSlayerScore] = useState(25);
+    const [goblin, _setGoblin] = useState("Goblin");
+    const [goblinDices, setGoblinDices] = useState(0);
+    const [goblinScore, setGoblinScore] = useState(0);
+    const [goblinCategory, setGoblinCategory] = useState(0);
+    const [slayerName, setSlayerName] = useState("Slayer");
+    const [slayerDices, setSlayerDices] = useState(0);
+    const [slayerScore, setSlayerScore] = useState(0);
+    const [slayerCategory, setSlayerCategory] = useState(0);
+    const [stopRoll, setStopRoll] = useState(false);
 
     const {
         setup: {
@@ -42,6 +41,30 @@ function App() {
 
     const slayerId = getEntityIdFromKeys([BigInt(account.address)]) as Entity;
     const slayer = useComponentValue(Slayer, slayerId);
+
+    const duelId = getEntityIdFromKeys([BigInt(slayer ? slayer.duel_id : 0), BigInt(account.address)]) as Entity;
+    const duel = useComponentValue(Duel, duelId);
+
+    // Effects
+
+    useEffect(() => {
+        if (slayer) {
+            setTag(getTag(slayer.tag));
+            setTitle(getTitle(slayer.title));
+            setSlayerName(shortString.decodeShortString(slayer.name));
+        }
+        if (duel) {
+            console.log(duel);
+            setRank(getRank(duel.rank));
+            setGoblinDices(duel.goblin_dices);
+            setGoblinScore(duel.goblin_score_value);
+            setGoblinCategory(duel.goblin_score_category);
+            setSlayerDices(duel.slayer_dices);
+            setSlayerScore(duel.slayer_score_value);
+            setSlayerCategory(duel.slayer_score_category);
+        }
+        setStopRoll(!stopRoll)
+    }, [slayer, duel]);
 
     // Handlers
 
@@ -83,19 +106,96 @@ function App() {
     // Helpers
 
     const updateOrders = (index: number, rolling: boolean) => {
-        console.log(index, rolling);
-        setOrders((orders) =>
-            rolling ? orders | (1 << index) : orders & ~(1 << index)
-        );
+        const new_orders = rolling ? orders | (1 << index) : orders & ~(1 << index);
+        setOrders(new_orders);
     };
+
+    const getTag = (tag: number) => {
+        switch (tag) {
+            case 0:
+                return "Starter";
+            case 1:
+                return "Porcelain";
+            case 2:
+                return "Obsidian";
+            case 3:
+                return "Steel";
+            case 4:
+                return "Sapphire";
+            case 5:
+                return "Emerald";
+            case 6:
+                return "Ruby";
+            case 7:
+                return "Bronze";
+            case 8:
+                return "Silver";
+            case 9:
+                return "Gold";
+            case 10:
+                return "Platinium";
+            default:
+                return "Unknown";
+        }
+    }
+
+    const getTitle = (title: number) => {
+        switch (title) {
+            case 0:
+                return "Frugal";
+            case 1:
+                return "Steady";
+            case 2:
+                return "Thriving";
+            case 3:
+                return "Flourishing";
+            case 4:
+                return "Prosperous";
+            case 5:
+                return "Affluent";
+            case 6:
+                return "Wealthy";
+            case 7:
+                return "Opulent";
+            case 8:
+                return "Luxurious";
+            case 9:
+                return "Regal";
+            case 10:
+                return "Sovereign";
+            default:
+                return "Frugal";
+        }
+    }
+
+    const getRank = (rank: number) => {
+        switch (rank) {
+            case 0:
+                return "Normal";
+            case 1:
+                return "Rider";
+            case 2:
+                return "Hobgoblin";
+            case 3:
+                return "Shaman";
+            case 4:
+                return "Champion";
+            case 5:
+                return "Lord";
+            case 6:
+                return "Paladin";
+            default:
+                return "Goblin";
+        }
+    }
 
     return (
         <div className="relative">
-            <img
+            {/* <img
                 src={background}
                 className="absolute top-0 w-full h-full z-0 object-cover"
                 alt=""
-            />
+            /> */}
             <div className="z-10 ">
                 {!image ? (
                     <h1 className="text-4xl text-center py-10 font-press-start uppercase m-auto">
@@ -107,76 +207,32 @@ function App() {
                             Slayer
                         </h1>
                         <div className="flex flex-col justify-center items-center m-auto">
-                            <div className="flex justify-start">
-                                <img
-                                    className="opacity-20"
-                                    src={chance}
-                                    alt="chance"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={pair}
-                                    alt="pair"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={double}
-                                    alt="double"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={toak}
-                                    alt="three of a kind"
-                                />
-                                <img
-                                    className=""
-                                    src={foak}
-                                    alt="four of a kind"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={full}
-                                    alt="full-house"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={small}
-                                    alt="small"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={large}
-                                    alt="large"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={yahtzee}
-                                    alt="yahtzee"
-                                />
-                            </div>
+                            <Score category={goblinCategory} />
                             <div className="max-w-xl relative flex flex-col gap-2 p-2 rounded bg-slate-100 text-slate-900">
                                 <div className="flex justify-between gap-1">
-                                    <div className="flex flex-col items-start grow px-2">
+                                    <div className="flex flex-col justify-start items-start grow px-2">
                                         <div className="flex justify-left items-center gap-4">
                                             <h2 className="text-2xl text-center uppercase">
-                                                {foe}
+                                                {goblin}
                                             </h2>
                                             <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
                                                 <h3 className="text-sm text-center">
                                                     {rank}
                                                 </h3>
                                             </div>
-                                            <AnimatedNumbers
+                                            {/* <AnimatedNumbers
                                                 className="text-center uppercase"
-                                                animateToNumber={foeScore}
+                                                animateToNumber={goblinScore}
                                                 fontStyle={{
                                                     fontSize: "1.5rem",
                                                 }}
-                                            />
+                                            /> */}
+                                            <p className="text-center uppercase text-xl">{goblinScore}</p>
                                         </div>
                                         <Dices
-                                            dices={BigInt(0x0000000605040302)}
+                                            dices={BigInt(goblinDices)}
                                             disabled={true}
+                                            stopRoll={stopRoll}
                                         />
                                     </div>
                                     <div className="rounded-3xl w-24 h-24 overflow-clip">
@@ -188,28 +244,23 @@ function App() {
                                         <img src={portrait} alt="" />
                                     </div>
                                     <div className="flex flex-col justify-end items-end grow px-2">
+                                        <Dices
+                                            dices={BigInt(slayerDices)}
+                                            disabled={false}
+                                            updateOrders={updateOrders}
+                                            stopRoll={stopRoll}
+                                        />
                                         <div className="flex justify-right items-center gap-4">
-                                            <AnimatedNumbers
-                                                className="text-center uppercase"
-                                                animateToNumber={slayerScore}
-                                                fontStyle={{
-                                                    fontSize: "1.5rem",
-                                                }}
-                                            />
+                                            <p className="text-center uppercase text-xl">{slayerScore}</p>
                                             <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
                                                 <h3 className="text-sm text-center">
                                                     {tag}
                                                 </h3>
                                             </div>
                                             <h2 className="text-2xl text-center uppercase">
-                                                {title}
+                                                {slayerName}
                                             </h2>
                                         </div>
-                                        <Dices
-                                            dices={BigInt(0x00000000102030405)}
-                                            disabled={false}
-                                            updateOrders={updateOrders}
-                                        />
                                     </div>
                                 </div>
                                 <Actions
@@ -221,49 +272,7 @@ function App() {
                                     handleBuy={handleBuy}
                                 />
                             </div>
-                            <div className="flex justify-start">
-                                <img
-                                    className="opacity-20"
-                                    src={chance}
-                                    alt="chance"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={pair}
-                                    alt="pair"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={double}
-                                    alt="double"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={toak}
-                                    alt="three of a kind"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={foak}
-                                    alt="four of a kind"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={full}
-                                    alt="full-house"
-                                />
-                                <img
-                                    className="opacity-20"
-                                    src={small}
-                                    alt="small"
-                                />
-                                <img className="" src={large} alt="large" />
-                                <img
-                                    className="opacity-20"
-                                    src={yahtzee}
-                                    alt="yahtzee"
-                                />
-                            </div>
+                            <Score category={slayerCategory} />
                         </div>
                     </div>
                 )}

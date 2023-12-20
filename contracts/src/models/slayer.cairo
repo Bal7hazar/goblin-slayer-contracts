@@ -199,7 +199,6 @@ impl SlayerImpl of SlayerTrait {
         self.gold = 0;
         self.title = 0;
         self.tag = 0;
-        self.duel_id = 0;
         self.items = 0;
     }
 

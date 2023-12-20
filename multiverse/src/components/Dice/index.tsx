@@ -34,7 +34,7 @@ const getFaceArray = (size: number, faces: string[], faceBg?: string): TSingleFa
 // };
 
 const Dice = forwardRef((props: TProps, ref: any) => {
-    const { rollingTime = 1000, onRoll, defaultValue = 6, size = 250, faceBg, faces = [], disabled, cheatValue, placement, sound, triggers = ['click'], ...rest } = props;
+    const { rollingTime = 1000, onRoll, stopRoll, defaultValue = 6, size = 250, faceBg, faces = [], disabled, cheatValue, placement, sound, triggers = ['click'], ...rest } = props;
     const [value, setValue] = useState<TValue>(defaultValue);
     const [rolling, setRolling] = useState(false);
     const [faceArray, setFaceArray] = useState<TSingleFace[]>([]);
@@ -115,6 +115,11 @@ const Dice = forwardRef((props: TProps, ref: any) => {
             filter: disabled ? 'grayscale(100%)' : 'unset'
         });
     }, [placementStyles, size, disabled]);
+
+    useEffect(() => {
+        setRolling(false);
+        setValue(cheatValue ? cheatValue : defaultValue);
+    }, [stopRoll]);
 
     if (!faceArray?.length) return null;
 

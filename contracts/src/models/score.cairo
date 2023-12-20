@@ -94,44 +94,48 @@ impl ScoreImpl of ScoreTrait {
     #[inline(always)]
     fn best(dices: Span<u8>) -> Score {
         let max = ScoreTrait::max(dices);
-        let chance = ScoreTrait::chance(dices);
+        // let chance = ScoreTrait::chance(dices);
         let yahtzee = ScoreTrait::yahtzee(dices);
-        if yahtzee >= chance {
+        if yahtzee > 0 {
             return Score { value: yahtzee, max: max, category: Category::Yahtzee.into() };
         }
         let large_straight = ScoreTrait::large_straight(dices);
-        if large_straight >= chance {
+        if large_straight > 0 {
             return Score {
                 value: large_straight, max: max, category: Category::LargeStraight.into()
             };
         }
         let small_straight = ScoreTrait::small_straight(dices);
-        if small_straight >= chance {
+        if small_straight > 0 {
             return Score {
                 value: small_straight, max: max, category: Category::SmallStraight.into()
             };
         }
+        let full_house = ScoreTrait::full_house(dices);
+        if full_house > 0 {
+            return Score { value: full_house, max: max, category: Category::FullHouse.into() };
+        }
         let four_of_a_kind = ScoreTrait::four_of_a_kind(dices);
-        if four_of_a_kind >= chance {
+        if four_of_a_kind > 0 {
             return Score {
                 value: four_of_a_kind, max: max, category: Category::FourOfAKind.into()
             };
         }
         let three_of_a_kind = ScoreTrait::three_of_a_kind(dices);
-        if three_of_a_kind >= chance {
+        if three_of_a_kind > 0 {
             return Score {
                 value: three_of_a_kind, max: max, category: Category::ThreeOfAKind.into()
             };
         }
         let two_pairs = ScoreTrait::two_pairs(dices);
-        if two_pairs >= chance {
+        if two_pairs > 0 {
             return Score { value: two_pairs, max: max, category: Category::TwoPairs.into() };
         }
         let pair = ScoreTrait::pair(dices);
-        if pair >= chance {
+        if pair > 0 {
             return Score { value: pair, max: max, category: Category::Pair.into() };
         }
-        Score { value: chance, max: max, category: Category::Chance.into() }
+        Score { value: 0, max: max, category: Category::None.into() }
     // FIXME: Following are only relevant in case of full yahtzee game
     // let sixes = ScoreTrait::sixes(dices);
     // if sixes >= chance {
@@ -439,7 +443,9 @@ mod tests {
 
     // Local imports
 
-    use super::{ScoreTrait, DICE_FACES_NUMBER, FULL_HOUSE, SMALL_STRAIGHT, LARGE_STRAIGHT, YAHTZEE};
+    use super::{
+        Score, ScoreTrait, DICE_FACES_NUMBER, FULL_HOUSE, SMALL_STRAIGHT, LARGE_STRAIGHT, YAHTZEE
+    };
 
     #[test]
     fn test_ones() {
@@ -611,7 +617,7 @@ mod tests {
 
     #[test]
     fn test_full_house() {
-        let dices = array![2, 1, 1, 1, 2];
+        let dices = array![1, 1, 2, 1, 2];
         let score = ScoreTrait::full_house(dices.span());
         assert_eq!(score, FULL_HOUSE);
     }
@@ -656,5 +662,12 @@ mod tests {
         let dices = array![5, 4, 3, 2, 1];
         let score = ScoreTrait::max(dices.span());
         assert_eq!(score, 5);
+    }
+
+    #[test]
+    fn test_best() {
+        let dices = array![1, 1, 1, 4, 2];
+        let score: Score = ScoreTrait::best(dices.span());
+        assert_eq!(score.value, 3);
     }
 }
