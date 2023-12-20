@@ -11,6 +11,7 @@ import Actions from "./components/Actions";
 import Dices from "./components/Dices";
 import Score from "./components/Score";
 import { useTerraformer } from "./hooks/useTerraformer";
+import GameScene from "./components/GameScene";
 
 // Images
 
@@ -60,7 +61,6 @@ function App() {
             setSlayerName(shortString.decodeShortString(slayer.name));
         }
         if (duel) {
-            console.log(duel);
             setRank(getRank(duel.rank));
             setGoblinDices(duel.goblin_dices);
             setGoblinScore(duel.goblin_score_value);
@@ -195,8 +195,6 @@ function App() {
         }
     }
 
-    console.log(slayer);
-
     return (
         <div className="relative">
             <div className="z-10 ">
@@ -210,7 +208,7 @@ function App() {
                         </h2>
                     </div>
                 ) : (
-                    <div className="h-screen px-2">
+                    <div className="h-screen md:px-2 lg:px-20">
                         <div className="flex justify-start">
                             <div className="flex flex-col justify-center items-center ml-1 bg-slate-700 h-40 w-32 rounded-b-3xl">
                                 <p className="uppercase text-4xl">{slayerName}</p>
@@ -318,6 +316,7 @@ function App() {
                             </div>
                             <Score category={slayerCategory} />
                         </div>
+                        <GameScene />
                     </div>
                 )}
             </div>

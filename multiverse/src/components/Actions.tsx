@@ -22,8 +22,6 @@ const Actions: React.FC<ActionsProps> = ({
 }) => {
     let actionsContent;
 
-    console.log(duel);
-
     if (!slayer) {
         return (
             <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
