@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import mapData from '../assets/layers.json';
 import TILESET_IMAGE from '../assets/tileset.png';
 
@@ -59,7 +59,7 @@ const GameScene = () => {
 
     return (
         <div className="flex justify-center items-start w-full">
-            <div className="lg:scale-150 origin-top">
+            <div className="relative md:scale-150 origin-top">
                 <div
                     className="relative"
                     style={{
