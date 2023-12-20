@@ -9,7 +9,7 @@ export const useTerraformer = () => {
     useEffect(() => {
         const backgrounds = async () => {
             const background = await client.world.image.query({
-                name: "hell landscape",
+                name: "sky view of a clearing in a forest, empty space for battle in arena, no character, japanese anime style",
             });
 
             setBackground(background[0]);
@@ -21,7 +21,7 @@ export const useTerraformer = () => {
     useEffect(() => {
         const input = async () => {
             const background = await client.world.image.query({
-                name: "single realistic balrog",
+                name: "powerful hobgoblin in fighting stance with dark green skin, no clothes, no armor, centered, ready to fight, looking on the right, japanese anime style, white background",
             });
             setImage(background[0]);
         };
@@ -32,7 +32,7 @@ export const useTerraformer = () => {
     useEffect(() => {
         const input = async () => {
             const portrait = await client.world.image.query({
-                name: "the eldritch knight as a realistic fantasy knight, closeup portrait art by donato giancola and greg rutkowski, digital art, trending on artstation, symmetry! !",
+                name: "powerful armored adventurer in fighting stance, centered, slayer, red and grey color theme, ready to fight, looking on the left, japanese anime style, white background",
             });
 
             setPortrait(portrait[0]);

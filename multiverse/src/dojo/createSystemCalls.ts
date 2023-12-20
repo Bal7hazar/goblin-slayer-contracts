@@ -8,7 +8,6 @@ export function createSystemCalls(
     { provider, contractComponents }: SetupNetworkResult,
     { Slayer, Duel }: ClientComponents
 ) {
-    console.log('createSystemCalls');
     return {
         create: async (props: CreateProps) => {
             await provider.create({ account: props.account, name: props.name });
@@ -20,7 +19,6 @@ export function seekSystemCalls(
     { provider, contractComponents }: SetupNetworkResult,
     { Slayer, Duel }: ClientComponents
 ) {
-    console.log('seekSystemCalls');
     return {
         seek: async (props: SeekProps) => {
             await provider.seek({ account: props.account });
@@ -32,7 +30,6 @@ export function rollSystemCalls(
     { provider, contractComponents }: SetupNetworkResult,
     { Slayer, Duel }: ClientComponents
 ) {
-    console.log('rollSystemCalls');
     return {
         roll: async (props: RollProps) => {
             await provider.roll({ account: props.account, orders: props.orders });
@@ -44,7 +41,6 @@ export function buySystemCalls(
     { provider, contractComponents }: SetupNetworkResult,
     { Slayer, Duel }: ClientComponents
 ) {
-    console.log('buySystemCalls');
     return {
         buy: async (props: BuyProps) => {
             await provider.buy({ account: props.account, item: props.item });
@@ -56,7 +52,6 @@ export function applySystemCalls(
     { provider, contractComponents }: SetupNetworkResult,
     { Slayer, Duel }: ClientComponents
 ) {
-    console.log('applySystemCalls');
     return {
         apply: async (props: ApplyProps) => {
             await provider.apply({ account: props.account, item: props.item });
