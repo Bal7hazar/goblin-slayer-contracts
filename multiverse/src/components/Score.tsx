@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import large from "../assets/large-straight.png";
 import small from "../assets/small-straight.png";
 import full from "../assets/full-house.png";
@@ -13,7 +13,6 @@ interface ScoreProps {
 }
 
 const Score: React.FC<ScoreProps> = ({ category }) => {
-
     const images = [pair, double, toak, foak, full, small, large, yahtzee];
 
     // Helpers
@@ -55,14 +54,18 @@ const Score: React.FC<ScoreProps> = ({ category }) => {
             default:
                 return "none";
         }
-    }
+    };
 
     return (
         <div className="flex justify-start">
             {images.map((image, index) => (
                 <img
                     key={index}
-                    className={(image.includes(getCategory(category))) ? "opacity-90" : "opacity-20"}
+                    className={
+                        image.includes(getCategory(category))
+                            ? "opacity-90"
+                            : "opacity-20"
+                    }
                     src={image}
                     alt=""
                 />

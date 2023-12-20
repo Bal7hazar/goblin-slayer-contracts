@@ -3,7 +3,7 @@ import { useComponentValue } from "@dojoengine/react";
 import { Entity } from "@dojoengine/recs";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 // import AnimatedNumbers from "react-animated-numbers";
-import { shortString } from 'starknet';
+import { shortString } from "starknet";
 import "./App.css";
 // import { client } from "./server";
 import { useDojo } from "./DojoContext";
@@ -25,7 +25,7 @@ function App() {
 
     const { image, background, portrait } = useTerraformer();
 
-    const [orders, setOrders] = useState(0x1F);
+    const [orders, setOrders] = useState(0x1f);
     const [tag, setTag] = useState("Starter");
     const [rank, setRank] = useState("Normal");
     const [title, setTitle] = useState("Slayer");
@@ -50,7 +50,10 @@ function App() {
     const slayerId = getEntityIdFromKeys([BigInt(account.address)]) as Entity;
     const slayer = useComponentValue(Slayer, slayerId);
 
-    const duelId = getEntityIdFromKeys([BigInt(slayer ? slayer.duel_id : 0), BigInt(account.address)]) as Entity;
+    const duelId = getEntityIdFromKeys([
+        BigInt(slayer ? slayer.duel_id : 0),
+        BigInt(account.address),
+    ]) as Entity;
     const duel = useComponentValue(Duel, duelId);
 
     // Effects
@@ -70,7 +73,7 @@ function App() {
             setSlayerScore(duel.slayer_score_value);
             setSlayerCategory(duel.slayer_score_category);
         }
-        setStopRoll(!stopRoll)
+        setStopRoll(!stopRoll);
     }, [slayer, duel]);
 
     // Handlers
@@ -113,7 +116,9 @@ function App() {
     // Helpers
 
     const updateOrders = (index: number, rolling: boolean) => {
-        const new_orders = rolling ? orders | (1 << index) : orders & ~(1 << index);
+        const new_orders = rolling
+            ? orders | (1 << index)
+            : orders & ~(1 << index);
         setOrders(new_orders);
     };
 
@@ -144,7 +149,7 @@ function App() {
             default:
                 return "Unknown";
         }
-    }
+    };
 
     const getTitle = (title: number) => {
         switch (title) {
@@ -173,7 +178,7 @@ function App() {
             default:
                 return "Frugal";
         }
-    }
+    };
 
     const getRank = (rank: number) => {
         switch (rank) {
@@ -194,7 +199,7 @@ function App() {
             default:
                 return "Goblin";
         }
-    }
+    };
 
     return (
         <div className="relative">
@@ -212,9 +217,15 @@ function App() {
                     <div className="h-screen px-2 md:px-20">
                         <div className="flex justify-start">
                             <div className="flex flex-col justify-center items-center ml-1 bg-slate-700 h-40 w-32 rounded-b-3xl">
-                                <p className="uppercase text-4xl">{slayerName}</p>
+                                <p className="uppercase text-4xl">
+                                    {slayerName}
+                                </p>
                                 <div className="rounded-full overflow-clip m-2 border-4 border-black bg-white">
-                                    <img className="w-full h-full object-cover" src={avatar} alt="" />
+                                    <img
+                                        className="w-full h-full object-cover"
+                                        src={avatar}
+                                        alt=""
+                                    />
                                 </div>
                             </div>
                             <div className="flex flex-col justify-start items-start">
@@ -232,15 +243,27 @@ function App() {
                             </div>
                             <div className="flex flex-col justify-start items-end gap-2 my-2">
                                 <div className="flex justify-between items-center h-10 w-32 md:w-64 bg-white bg-opacity-20 rounded-3xl pr-3">
-                                    <img className="border border-black rounded-full w-10 h-10 object-cover" src={xp} alt="" />
+                                    <img
+                                        className="border border-black rounded-full w-10 h-10 object-cover"
+                                        src={xp}
+                                        alt=""
+                                    />
                                     <div className="flex justify-center items-center">
-                                        <p className="text-3xl">{slayer.xp.toString()}</p>
+                                        <p className="text-3xl">
+                                            {slayer?.xp.toString()}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-center h-10 w-32 md:w-64 bg-white bg-opacity-20 rounded-3xl pr-3">
-                                    <img className="border border-black rounded-full w-10 h-10 object-cover" src={gold} alt="" />
+                                    <img
+                                        className="border border-black rounded-full w-10 h-10 object-cover"
+                                        src={gold}
+                                        alt=""
+                                    />
                                     <div className="flex justify-center items-center">
-                                        <p className="text-3xl">{slayer.gold.toString()}</p>
+                                        <p className="text-3xl">
+                                            {slayer?.gold.toString()}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="rounded-full overflow-clip w-20 cursor-pointer hover:scale-110 transition-transform duration-300">
@@ -269,7 +292,9 @@ function App() {
                                                         {rank}
                                                     </h3>
                                                 </div>
-                                                <p className="text-center uppercase text-xl">{goblinScore}</p>
+                                                <p className="text-center uppercase text-xl">
+                                                    {goblinScore}
+                                                </p>
                                             </div>
                                             <Dices
                                                 dices={BigInt(goblinDices)}
@@ -278,13 +303,21 @@ function App() {
                                             />
                                         </div>
                                         <div className="rounded-xl border-2 bg-white border-black max-w-20 h-20 overflow-clip">
-                                            <img className="w-full h-full object-cover" src={image} alt="" />
+                                            <img
+                                                className="w-full h-full object-cover"
+                                                src={image}
+                                                alt=""
+                                            />
                                         </div>
                                     </div>
                                     <div className="grow" />
                                     <div className="flex justify-between gap-1 p-2">
                                         <div className="rounded-xl border-2 bg-white border-black max-w-20 h-20 overflow-clip">
-                                            <img className="w-full h-full object-cover" src={portrait} alt="" />
+                                            <img
+                                                className="w-full h-full object-cover"
+                                                src={portrait}
+                                                alt=""
+                                            />
                                         </div>
                                         <div className="flex flex-col justify-end items-end grow px-2">
                                             <Dices
@@ -294,7 +327,9 @@ function App() {
                                                 stopRoll={stopRoll}
                                             />
                                             <div className="flex justify-right items-center gap-4">
-                                                <p className="text-center uppercase text-xl">{slayerScore}</p>
+                                                <p className="text-center uppercase text-xl">
+                                                    {slayerScore}
+                                                </p>
                                                 <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
                                                     <h3 className="text-sm text-center">
                                                         {tag}

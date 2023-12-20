@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import mapData from '../assets/layers.json';
-import TILESET_IMAGE from '../assets/tileset.png';
+import { useState, useEffect } from "react";
+import mapData from "../assets/layers.json";
+import TILESET_IMAGE from "../assets/tileset.png";
 
 const TILE_SIZE = 16; // La taille de la tuile en pixels
 const TILESET_WIDTH_IN_TILES = 27; // Nombre de tuiles en largeur dans votre tileset
-const GROUND_LAYERS = ['Ground-1', 'Ground-2', 'Ground-3', 'Ground-4']; // Noms des couches de sol
+const GROUND_LAYERS = ["Ground-1", "Ground-2", "Ground-3", "Ground-4"]; // Noms des couches de sol
 const SCALE_FACTOR = 1.5; // Facteur d'échelle pour la carte
 
 const GameScene = () => {
@@ -12,13 +12,19 @@ const GameScene = () => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentGroundIndex(index => (index + 1) % GROUND_LAYERS.length);
+            setCurrentGroundIndex(
+                (index) => (index + 1) % GROUND_LAYERS.length
+            );
         }, 300);
 
         return () => clearInterval(interval);
     }, []);
 
-    const getTileStyle = (tileId: number, tileIndex: number, layerWidth: number) => {
+    const getTileStyle = (
+        tileId: number,
+        tileIndex: number,
+        layerWidth: number
+    ) => {
         // Calculez la position de la tuile dans le tileset
         const tileRow = Math.floor(tileId / TILESET_WIDTH_IN_TILES);
         const tileCol = tileId % TILESET_WIDTH_IN_TILES;
@@ -41,7 +47,7 @@ const GameScene = () => {
 
     // Rendre les tuiles pour la couche de sol et les objets
     const renderTiles = (layerName: string, isObjectLayer = false) => {
-        const layer = mapData.layers.find(layer => layer.name === layerName);
+        const layer = mapData.layers.find((layer) => layer.name === layerName);
         if (!layer) return null;
 
         return layer.data.map((tileId, tileIndex) => {
@@ -49,7 +55,9 @@ const GameScene = () => {
             const tileStyle = getTileStyle(tileId - 1, tileIndex, layer.width);
             return (
                 <div
-                    key={`${isObjectLayer ? 'object' : 'ground'}-tile-${tileIndex}`}
+                    key={`${
+                        isObjectLayer ? "object" : "ground"
+                    }-tile-${tileIndex}`}
                     style={tileStyle}
                     className="absolute"
                 />
@@ -66,11 +74,11 @@ const GameScene = () => {
                         width: `${mapData.width * TILE_SIZE}px`,
                         height: `${mapData.height * TILE_SIZE}px`,
                         transform: `scale(${SCALE_FACTOR})`,
-                        transformOrigin: 'top center'
+                        transformOrigin: "top center",
                     }}
                 >
                     {renderTiles(GROUND_LAYERS[currentGroundIndex])}
-                    {renderTiles('Objects', true)}
+                    {renderTiles("Objects", true)}
                 </div>
             </div>
         </div>

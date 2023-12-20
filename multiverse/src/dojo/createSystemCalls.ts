@@ -1,6 +1,12 @@
 import { SetupNetworkResult } from "./setupNetwork";
 import { ClientComponents } from "./createClientComponents";
-import { CreateProps, SeekProps, RollProps, BuyProps, ApplyProps } from "./generated/Slayer";
+import {
+    CreateProps,
+    SeekProps,
+    RollProps,
+    BuyProps,
+    ApplyProps,
+} from "./generated/Slayer";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -32,7 +38,10 @@ export function rollSystemCalls(
 ) {
     return {
         roll: async (props: RollProps) => {
-            await provider.roll({ account: props.account, orders: props.orders });
+            await provider.roll({
+                account: props.account,
+                orders: props.orders,
+            });
         },
     };
 }
