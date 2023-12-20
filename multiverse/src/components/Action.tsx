@@ -8,7 +8,7 @@ interface ActionProps {
 const Action: React.FC<ActionProps> = ({ onClick, children }) => {
     return (
         <button
-            className="border-black border-solid border rounded p-1 m-1 w-20 bg-slate-100"
+            className="border-black border-solid border rounded p-1 px-4 bg-slate-100 text-black"
             onClick={onClick}
         >
             {children}

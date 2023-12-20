@@ -19,6 +19,8 @@ import gold from "./assets/gold-64.png";
 import xp from "./assets/xp-64.png";
 import avatar from "./assets/avatar.png";
 import fight from "./assets/duel-256.png";
+import { getRank, getTag, getTitle } from "./hooks/utils";
+import { WalletScreen } from "./components/WalletScreen";
 
 function App() {
     // States
@@ -29,7 +31,7 @@ function App() {
     const [tag, setTag] = useState("Starter");
     const [rank, setRank] = useState("Normal");
     const [title, setTitle] = useState("Slayer");
-    const [goblin, _setGoblin] = useState("Goblin");
+    const [goblin, setGoblin] = useState("Goblin");
     const [goblinDices, setGoblinDices] = useState(0);
     const [goblinScore, setGoblinScore] = useState(0);
     const [goblinCategory, setGoblinCategory] = useState(0);
@@ -43,9 +45,11 @@ function App() {
         setup: {
             components: { Duel, Slayer },
             network: { provider },
-            account: { account },
+            account: { create, list, select, account, isDeploying, clear },
         },
     } = useDojo();
+
+    console.log(account);
 
     const slayerId = getEntityIdFromKeys([BigInt(account.address)]) as Entity;
     const slayer = useComponentValue(Slayer, slayerId);
@@ -124,88 +128,9 @@ function App() {
         setOrders(new_orders);
     };
 
-    const getTag = (tag: number) => {
-        switch (tag) {
-            case 0:
-                return "Starter";
-            case 1:
-                return "Porcelain";
-            case 2:
-                return "Obsidian";
-            case 3:
-                return "Steel";
-            case 4:
-                return "Sapphire";
-            case 5:
-                return "Emerald";
-            case 6:
-                return "Ruby";
-            case 7:
-                return "Bronze";
-            case 8:
-                return "Silver";
-            case 9:
-                return "Gold";
-            case 10:
-                return "Platinium";
-            default:
-                return "Unknown";
-        }
-    };
-
-    const getTitle = (title: number) => {
-        switch (title) {
-            case 0:
-                return "Frugal";
-            case 1:
-                return "Steady";
-            case 2:
-                return "Thriving";
-            case 3:
-                return "Flourishing";
-            case 4:
-                return "Prosperous";
-            case 5:
-                return "Affluent";
-            case 6:
-                return "Wealthy";
-            case 7:
-                return "Opulent";
-            case 8:
-                return "Luxurious";
-            case 9:
-                return "Regal";
-            case 10:
-                return "Sovereign";
-            default:
-                return "Frugal";
-        }
-    };
-
-    const getRank = (rank: number) => {
-        switch (rank) {
-            case 0:
-                return "Normal";
-            case 1:
-                return "Rider";
-            case 2:
-                return "Hobgoblin";
-            case 3:
-                return "Shaman";
-            case 4:
-                return "Champion";
-            case 5:
-                return "Lord";
-            case 6:
-                return "Paladin";
-            default:
-                return "Goblin";
-        }
-    };
-
     return (
         <div className="relative">
-            <div className="z-10 ">
+            <div className="z-0">
                 {!background ? (
                     <div className="h-screen px-2">
                         <h1 className="text-4xl text-center py-10 font-press-start uppercase">
@@ -216,7 +141,8 @@ function App() {
                         </h2>
                     </div>
                 ) : (
-                    <div className="h-screen px-2 md:px-20">
+                    <div className="h-screen px-2 md:px-20 z-0">
+                        <WalletScreen />
                         <div className="flex justify-start">
                             <div className="flex flex-col justify-center items-center ml-1 bg-slate-700 h-40 w-32 rounded-b-3xl">
                                 <p className="uppercase text-4xl">
@@ -278,7 +204,7 @@ function App() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col justify-center items-center m-auto">
+                        <div className="flex flex-col justify-center items-center m-auto z-0">
                             <Score category={goblinCategory} />
                             <div className="relative max-w-xl flex flex-col gap-2 rounded bg-slate-100 text-slate-900 overflow-clip w-80 h-96">
                                 <img
