@@ -62,7 +62,9 @@ function App() {
         if (slayer) {
             setTag(getTag(slayer.tag));
             setTitle(getTitle(slayer.title));
-            setSlayerName(shortString.decodeShortString(slayer.name));
+            setSlayerName(
+                shortString.decodeShortString(slayer.name.toString())
+            );
         }
         if (duel) {
             setRank(getRank(duel.rank));
@@ -267,7 +269,11 @@ function App() {
                                     </div>
                                 </div>
                                 <div className="rounded-full overflow-clip w-20 cursor-pointer hover:scale-110 transition-transform duration-300">
-                                    <img className="w-full h-full object-cover" src={fight} alt="" />
+                                    <img
+                                        className="w-full h-full object-cover"
+                                        src={fight}
+                                        alt=""
+                                    />
                                 </div>
                             </div>
                         </div>
