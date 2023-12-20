@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import Dice from "./Dice";
-import { TValue } from './Dice/_types';
+import { TValue } from "./Dice/_types";
 
 interface DicesProps {
     dices: bigint;
@@ -9,7 +9,12 @@ interface DicesProps {
     updateOrders?: (index: number, rolling: boolean) => void;
 }
 
-const Dices: React.FC<DicesProps> = ({ dices, disabled, stopRoll, updateOrders }) => {
+const Dices: React.FC<DicesProps> = ({
+    dices,
+    disabled,
+    stopRoll,
+    updateOrders,
+}) => {
     const values: number[] = [];
     let remainingDices = dices;
 

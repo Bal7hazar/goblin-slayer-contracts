@@ -124,7 +124,7 @@ export const DojoContextProvider = ({ children, value }: DojoProviderProps) => {
                     get,
                     select,
                     clear,
-                    account: masterAccount,  //account ? account : masterAccount,
+                    account: masterAccount, //account ? account : masterAccount,
                     isDeploying,
                     accountDisplay: account
                         ? displayAddress(account.address)

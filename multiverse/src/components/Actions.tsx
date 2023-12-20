@@ -1,5 +1,5 @@
-import React from 'react';
-import Action from './Action';
+import React from "react";
+import Action from "./Action";
 
 interface ActionsProps {
     slayer: any;
@@ -18,7 +18,7 @@ const Actions: React.FC<ActionsProps> = ({
     handleRoll,
     handleApply,
     handleSeek,
-    handleBuy
+    handleBuy,
 }) => {
     let actionsContent;
 
@@ -53,7 +53,9 @@ const Actions: React.FC<ActionsProps> = ({
         return (
             <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
                 <div className="flex flex-col justify-center w-1/2 p-1">
-                    <p>Round {duel.round} / {duel.round_count}</p>
+                    <p>
+                        Round {duel.round} / {duel.round_count}
+                    </p>
                 </div>
                 <div className="flex w-1/2">
                     <Action onClick={handleRoll}>Start</Action>
@@ -66,7 +68,9 @@ const Actions: React.FC<ActionsProps> = ({
     return (
         <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
             <div className="flex flex-col justify-center w-1/2 p-1">
-                <p>Round {duel.round} / {duel.round_count}</p>
+                <p>
+                    Round {duel.round} / {duel.round_count}
+                </p>
             </div>
             <div className="flex w-1/2">
                 <Action onClick={handleRoll}>Roll</Action>
@@ -74,6 +78,6 @@ const Actions: React.FC<ActionsProps> = ({
             </div>
         </div>
     );
-}
+};
 
 export default Actions;

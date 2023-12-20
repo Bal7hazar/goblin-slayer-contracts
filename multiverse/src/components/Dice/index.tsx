@@ -1,28 +1,44 @@
 // Source: https://github.com/avaneeshtripathi/react-dice-roll/blob/master/src/index.tsx
 
-import * as React from 'react';
-import './styles.scss';
-import { TProps, TSingleFace, TValue } from './_types';
-import { defaultFaceGrid, faceClasses, faceTransformMap, times, valueClassMap } from './_utils';
+import * as React from "react";
+import "./styles.scss";
+import { TProps, TSingleFace, TValue } from "./_types";
+import {
+    defaultFaceGrid,
+    faceClasses,
+    faceTransformMap,
+    times,
+    valueClassMap,
+} from "./_utils";
 
 const { useState, useEffect, forwardRef, useImperativeHandle } = React;
 
-const getFaceArray = (size: number, faces: string[], faceBg?: string): TSingleFace[] => {
+const getFaceArray = (
+    size: number,
+    faces: string[],
+    faceBg?: string
+): TSingleFace[] => {
     return faceClasses.map((className: string, index: number) => ({
         className,
         children: !faces[index] ? (
-            <div className={`defaultFace ${valueClassMap[(index + 1) as TValue]}`}>
+            <div
+                className={`defaultFace ${
+                    valueClassMap[(index + 1) as TValue]
+                }`}
+            >
                 {times(25, (idx) => (
                     <div key={idx}>
-                        {defaultFaceGrid[(index + 1) as TValue].includes(idx) && <span />}
+                        {defaultFaceGrid[(index + 1) as TValue].includes(
+                            idx
+                        ) && <span />}
                     </div>
                 ))}
             </div>
         ) : null,
         style: {
             ...faceTransformMap[(index + 1) as TValue](size / 2),
-            width: size + 'px',
-            height: size + 'px',
+            width: size + "px",
+            height: size + "px",
             ...(faceBg && { backgroundColor: faceBg }),
             ...(faces[index] && { backgroundImage: `url(${faces[index]})` }),
         },
@@ -34,11 +50,27 @@ const getFaceArray = (size: number, faces: string[], faceBg?: string): TSingleFa
 // };
 
 const Dice = forwardRef((props: TProps, ref: any) => {
-    const { rollingTime = 1000, onRoll, stopRoll, defaultValue = 6, size = 250, faceBg, faces = [], disabled, cheatValue, placement, sound, triggers = ['click'], ...rest } = props;
+    const {
+        rollingTime = 1000,
+        onRoll,
+        stopRoll,
+        defaultValue = 6,
+        size = 250,
+        faceBg,
+        faces = [],
+        disabled,
+        cheatValue,
+        placement,
+        sound,
+        triggers = ["click"],
+        ...rest
+    } = props;
     const [value, setValue] = useState<TValue>(defaultValue);
     const [rolling, setRolling] = useState(false);
     const [faceArray, setFaceArray] = useState<TSingleFace[]>([]);
-    const [placementStyles, setPlacementStyles] = useState<React.CSSProperties>({});
+    const [placementStyles, setPlacementStyles] = useState<React.CSSProperties>(
+        {}
+    );
     const [buttonStyles, setButtonStyles] = useState<React.CSSProperties>({});
 
     const handleDiceRoll = (value?: TValue) => {
@@ -48,7 +80,7 @@ const Dice = forwardRef((props: TProps, ref: any) => {
             diceAudio.play();
         }
         if (rolling) {
-            let rollValue = Math.floor((Math.random() * 6) + 1) as TValue;
+            let rollValue = Math.floor(Math.random() * 6 + 1) as TValue;
 
             if (value) rollValue = value;
             if (cheatValue) rollValue = cheatValue;
@@ -77,7 +109,7 @@ const Dice = forwardRef((props: TProps, ref: any) => {
     };
 
     const clickHandler = () => {
-        if (!triggers?.length || !triggers.includes('click')) {
+        if (!triggers?.length || !triggers.includes("click")) {
             return;
         }
 
@@ -85,13 +117,13 @@ const Dice = forwardRef((props: TProps, ref: any) => {
     };
 
     useEffect(() => {
-        if (typeof window === 'undefined' || !triggers?.length) {
+        if (typeof window === "undefined" || !triggers?.length) {
             return;
         }
-        window.addEventListener('keypress', keyPressHandler);
+        window.addEventListener("keypress", keyPressHandler);
         // Remove event listeners on cleanup
         return () => {
-            window.removeEventListener('keypress', keyPressHandler);
+            window.removeEventListener("keypress", keyPressHandler);
         };
     }, [triggers]);
 
@@ -100,9 +132,14 @@ const Dice = forwardRef((props: TProps, ref: any) => {
     }, [size, faces.length, faceBg]);
 
     useEffect(() => {
-        const positionStyles = placement?.split('-')?.reduce((acc: any, curr: any) => {
-            return { ...acc, [curr]: ['left', 'right'].includes(curr) ? 0 : `-${size}px` };
-        }, {}) as React.CSSProperties;
+        const positionStyles = placement
+            ?.split("-")
+            ?.reduce((acc: any, curr: any) => {
+                return {
+                    ...acc,
+                    [curr]: ["left", "right"].includes(curr) ? 0 : `-${size}px`,
+                };
+            }, {}) as React.CSSProperties;
         setPlacementStyles(positionStyles);
     }, [placement, size]);
 
@@ -110,9 +147,9 @@ const Dice = forwardRef((props: TProps, ref: any) => {
         setButtonStyles({
             ...rest,
             ...placementStyles,
-            width: size + 'px',
-            height: size + 'px',
-            filter: disabled ? 'grayscale(100%)' : 'unset'
+            width: size + "px",
+            height: size + "px",
+            filter: disabled ? "grayscale(100%)" : "unset",
         });
     }, [placementStyles, size, disabled]);
 
@@ -124,7 +161,14 @@ const Dice = forwardRef((props: TProps, ref: any) => {
     if (!faceArray?.length) return null;
 
     return (
-        <button disabled={disabled} onClick={clickHandler} style={buttonStyles} className={`_space3d ${valueClassMap[value]} ${rolling && 'rolling'}`}>
+        <button
+            disabled={disabled}
+            onClick={clickHandler}
+            style={buttonStyles}
+            className={`_space3d ${valueClassMap[value]} ${
+                rolling && "rolling"
+            }`}
+        >
             <div className="_3dbox">
                 <div {...faceArray[0]} />
                 <div {...faceArray[1]} />
@@ -134,7 +178,7 @@ const Dice = forwardRef((props: TProps, ref: any) => {
                 <div {...faceArray[5]} />
             </div>
         </button>
-    )
+    );
 });
 
 export default Dice;
