@@ -9,12 +9,14 @@ export const WalletScreen = () => {
     } = useDojo();
 
     return (
-        <div className="p-8">
-            <h1 className="text-2xl">Select Slayer</h1>
-
-            <div className="flex">
+        <div className="px-8 md:px-20 py-2 bg-slate-800 flex justify-between items-center gap-2">
+            <div className="grow hidden md:block" />
+            <div className="">
+                Select Slayer
+            </div>
+            <div className="flex gap-2">
                 <Action onClick={create}>
-                    {isDeploying ? "spawning slayer" : "create slayer"}
+                    {isDeploying ? "Spawning..." : "Deploy"}
                 </Action>
                 <select
                     className="border-black border-solid border rounded p-1 px-4 bg-slate-100 text-black"

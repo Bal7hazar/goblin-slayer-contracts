@@ -26,7 +26,7 @@ const Actions: React.FC<ActionsProps> = ({
                 <div className="flex flex-col justify-center w-1/2 p-1">
                     <p>Create a new slayer to start!</p>
                 </div>
-                <div className="flex w-1/2">
+                <div className="flex w-1/2 justify-around">
                     <Action onClick={handleCreate}>Create</Action>
                 </div>
             </div>
@@ -39,7 +39,7 @@ const Actions: React.FC<ActionsProps> = ({
                 <div className="flex flex-col justify-center w-1/2 p-1">
                     <p>What will Slayer do?</p>
                 </div>
-                <div className="flex w-1/2">
+                <div className="flex w-1/2 justify-around">
                     <Action onClick={handleSeek}>Seek</Action>
                     <Action onClick={handleBuy}>Buy</Action>
                 </div>
@@ -55,7 +55,7 @@ const Actions: React.FC<ActionsProps> = ({
                         Round {duel.round} / {duel.round_count}
                     </p>
                 </div>
-                <div className="flex w-1/2">
+                <div className="flex w-1/2 justify-around">
                     <Action onClick={handleRoll}>Start</Action>
                     <Action onClick={handleApply}>Item</Action>
                 </div>
@@ -70,7 +70,7 @@ const Actions: React.FC<ActionsProps> = ({
                     Round {duel.round} / {duel.round_count}
                 </p>
             </div>
-            <div className="flex w-1/2">
+            <div className="flex w-1/2 justify-around gap-1">
                 <Action onClick={handleRoll}>Roll</Action>
                 <Action onClick={handleApply}>Item</Action>
             </div>

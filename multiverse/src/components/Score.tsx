@@ -57,7 +57,7 @@ const Score: React.FC<ScoreProps> = ({ category }) => {
     };
 
     return (
-        <div className="flex justify-start">
+        <div className="flex justify-start h-8">
             {images.map((image, index) => (
                 <img
                     key={index}

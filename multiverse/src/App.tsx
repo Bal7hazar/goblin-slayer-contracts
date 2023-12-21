@@ -7,18 +7,17 @@ import { shortString } from "starknet";
 import "./App.css";
 // import { client } from "./server";
 import { useDojo } from "./DojoContext";
-import Actions from "./components/Actions";
-import Dices from "./components/Dices";
-import Score from "./components/Score";
+import DuelModal from "./components/DuelModal";
 import { useTerraformer } from "./hooks/useTerraformer";
+import GameHeader from "./components/GameHeader";
 import GameScene from "./components/GameScene";
+import Loader from "./components/Loader";
 
 // Images
 
-import gold from "./assets/gold-64.png";
-import xp from "./assets/xp-64.png";
-import avatar from "./assets/avatar.png";
-import fight from "./assets/duel-256.png";
+import mainRules from "./assets/main-rules.png";
+import duelRules from "./assets/duel-rules.png";
+
 import { getRank, getTag, getTitle } from "./hooks/utils";
 import { WalletScreen } from "./components/WalletScreen";
 
@@ -35,21 +34,21 @@ function App() {
     const [goblinDices, setGoblinDices] = useState(0);
     const [goblinScore, setGoblinScore] = useState(0);
     const [goblinCategory, setGoblinCategory] = useState(0);
-    const [slayerName, setSlayerName] = useState("Slayer");
+    const [slayerName, setSlayerName] = useState("Anonymous");
     const [slayerDices, setSlayerDices] = useState(0);
     const [slayerScore, setSlayerScore] = useState(0);
     const [slayerCategory, setSlayerCategory] = useState(0);
     const [stopRoll, setStopRoll] = useState(false);
+    const [duelModal, setDuelModal] = useState(true);
 
     const {
         setup: {
             components: { Duel, Slayer },
             network: { provider },
-            account: { create, list, select, account, isDeploying, clear },
+            // account: { create, list, select, account, isDeploying, clear },
+            masterAccount: account,
         },
     } = useDojo();
-
-    console.log(account);
 
     const slayerId = getEntityIdFromKeys([BigInt(account.address)]) as Entity;
     const slayer = useComponentValue(Slayer, slayerId);
@@ -83,6 +82,10 @@ function App() {
     }, [slayer, duel]);
 
     // Handlers
+
+    const handleDuelModal = async () => {
+        setDuelModal(!duelModal);
+    };
 
     const handleCreate = async () => {
         await provider.play.create({
@@ -132,161 +135,67 @@ function App() {
         <div className="relative">
             <div className="z-0">
                 {!background ? (
-                    <div className="h-screen px-2">
-                        <h1 className="text-4xl text-center py-10 font-press-start uppercase">
-                            Slayer
-                        </h1>
-                        <h2 className="text-2xl text-center py-10 font-press-start uppercase m-auto">
-                            Loading...
-                        </h2>
-                    </div>
+                    <Loader />
                 ) : (
-                    <div className="h-screen px-2 md:px-20 z-0">
+                    <div className="h-screen z-0 flex flex-col">
                         <WalletScreen />
-                        <div className="flex justify-start">
-                            <div className="flex flex-col justify-center items-center ml-1 bg-slate-700 h-40 w-32 rounded-b-3xl">
-                                <p className="uppercase text-4xl">
-                                    {slayerName}
-                                </p>
-                                <div className="rounded-full overflow-clip m-2 border-4 border-black bg-white">
+                        <div className="flex flex-col px-2 md:px-20 grow">
+                            <GameHeader
+                                slayerName={slayerName}
+                                title={title}
+                                tag={tag}
+                                slayer={slayer}
+                                handleDuelModal={handleDuelModal}
+                            />
+                            <div className="relative mt-10 h-1/2 flex-col justify-center items-center grow">
+                                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-1/4 hidden md:block">
                                     <img
-                                        className="w-full h-full object-cover"
-                                        src={avatar}
+                                        className="object-cover"
+                                        src={mainRules}
                                         alt=""
                                     />
                                 </div>
-                            </div>
-                            <div className="flex flex-col justify-start items-start">
-                                <div className="flex flex-col justify-center items-center h-20 w-32 bg-slate-600 rounded-br-3xl">
-                                    <p>{title} Slayer</p>
-                                    <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                                        <p className="text-sm text-center">
-                                            {tag}
-                                        </p>
+                                <div className="absolute top-1/2 right-0 -translate-y-1/2 w-1/4 hidden md:block">
+                                    <img
+                                        className="object-cover"
+                                        src={duelRules}
+                                        alt=""
+                                    />
+                                </div>
+                                <GameScene />
+                                {duelModal && (
+                                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full bg-gray-900/80">
+                                        <DuelModal
+                                            background={background}
+                                            goblin={goblin}
+                                            goblinCategory={goblinCategory}
+                                            rank={rank}
+                                            goblinScore={goblinScore}
+                                            goblinDices={goblinDices}
+                                            image={image}
+                                            portrait={portrait}
+                                            slayerName={slayerName}
+                                            tag={tag}
+                                            slayerScore={slayerScore}
+                                            slayerDices={slayerDices}
+                                            slayerCategory={slayerCategory}
+                                            slayer={slayer}
+                                            duel={duel}
+                                            stopRoll={stopRoll}
+                                            handleCreate={handleCreate}
+                                            handleRoll={handleRoll}
+                                            handleSeek={handleSeek}
+                                            handleApply={handleApply}
+                                            handleBuy={handleBuy}
+                                            updateOrders={updateOrders}
+                                        />
                                     </div>
-                                </div>
-                            </div>
-                            <div className="grow text-4xl text-center py-10 font-press-start uppercase">
-                                <h1 className="hidden md:block">Slayer</h1>
-                            </div>
-                            <div className="flex flex-col justify-start items-end gap-2 my-2">
-                                <div className="flex justify-between items-center h-10 w-32 md:w-64 bg-white bg-opacity-20 rounded-3xl pr-3">
-                                    <img
-                                        className="border border-black rounded-full w-10 h-10 object-cover"
-                                        src={xp}
-                                        alt=""
-                                    />
-                                    <div className="flex justify-center items-center">
-                                        <p className="text-3xl">
-                                            {slayer?.xp.toString()}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center h-10 w-32 md:w-64 bg-white bg-opacity-20 rounded-3xl pr-3">
-                                    <img
-                                        className="border border-black rounded-full w-10 h-10 object-cover"
-                                        src={gold}
-                                        alt=""
-                                    />
-                                    <div className="flex justify-center items-center">
-                                        <p className="text-3xl">
-                                            {slayer?.gold.toString()}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="rounded-full overflow-clip w-20 cursor-pointer hover:scale-110 transition-transform duration-300">
-                                    <img
-                                        className="w-full h-full object-cover"
-                                        src={fight}
-                                        alt=""
-                                    />
-                                </div>
+                                )}
                             </div>
                         </div>
+                        <footer className="h-24">
 
-                        <div className="flex flex-col justify-center items-center m-auto z-0">
-                            <Score category={goblinCategory} />
-                            <div className="relative max-w-xl flex flex-col gap-2 rounded bg-slate-100 text-slate-900 overflow-clip w-80 h-96">
-                                <img
-                                    src={background}
-                                    className="absolute top-0 w-full h-full object-cover opacity-50 z-0"
-                                    alt=""
-                                />
-                                <div className="z-10 max-w-xl flex flex-col gap-2 h-full">
-                                    <div className="flex justify-between gap-1 p-2">
-                                        <div className="flex flex-col justify-start items-start grow px-2">
-                                            <div className="flex justify-left items-center gap-4">
-                                                <h2 className="text-2xl text-center uppercase">
-                                                    {goblin}
-                                                </h2>
-                                                <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                                                    <h3 className="text-sm text-center">
-                                                        {rank}
-                                                    </h3>
-                                                </div>
-                                                <p className="text-center uppercase text-xl">
-                                                    {goblinScore}
-                                                </p>
-                                            </div>
-                                            <Dices
-                                                dices={BigInt(goblinDices)}
-                                                disabled={true}
-                                                stopRoll={stopRoll}
-                                            />
-                                        </div>
-                                        <div className="rounded-xl border-2 bg-white border-black max-w-20 h-20 overflow-clip">
-                                            <img
-                                                className="w-full h-full object-cover"
-                                                src={image}
-                                                alt=""
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="grow" />
-                                    <div className="flex justify-between gap-1 p-2">
-                                        <div className="rounded-xl border-2 bg-white border-black max-w-20 h-20 overflow-clip">
-                                            <img
-                                                className="w-full h-full object-cover"
-                                                src={portrait}
-                                                alt=""
-                                            />
-                                        </div>
-                                        <div className="flex flex-col justify-end items-end grow px-2">
-                                            <Dices
-                                                dices={BigInt(slayerDices)}
-                                                disabled={false}
-                                                updateOrders={updateOrders}
-                                                stopRoll={stopRoll}
-                                            />
-                                            <div className="flex justify-right items-center gap-4">
-                                                <p className="text-center uppercase text-xl">
-                                                    {slayerScore}
-                                                </p>
-                                                <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                                                    <h3 className="text-sm text-center">
-                                                        {tag}
-                                                    </h3>
-                                                </div>
-                                                <h2 className="text-2xl text-center uppercase">
-                                                    {slayerName}
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <Actions
-                                        slayer={slayer}
-                                        duel={duel}
-                                        handleCreate={handleCreate}
-                                        handleRoll={handleRoll}
-                                        handleApply={handleApply}
-                                        handleSeek={handleSeek}
-                                        handleBuy={handleBuy}
-                                    />
-                                </div>
-                            </div>
-                            <Score category={slayerCategory} />
-                        </div>
-                        <GameScene />
+                        </footer>
                     </div>
                 )}
             </div>
