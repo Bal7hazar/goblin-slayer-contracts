@@ -52,8 +52,9 @@ const GameScene = () => {
             const tileStyle = getTileStyle(tileId - 1, tileIndex, layer.width);
             return (
                 <div
-                    key={`${isObjectLayer ? "object" : "ground"
-                        }-tile-${tileIndex}`}
+                    key={`${
+                        isObjectLayer ? "object" : "ground"
+                    }-tile-${tileIndex}`}
                     style={tileStyle}
                     className="absolute"
                 />

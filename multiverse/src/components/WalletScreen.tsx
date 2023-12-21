@@ -11,9 +11,7 @@ export const WalletScreen = () => {
     return (
         <div className="px-8 md:px-20 py-2 bg-slate-800 flex justify-between items-center gap-2">
             <div className="grow hidden md:block" />
-            <div className="">
-                Select Slayer
-            </div>
+            <div className="">Select Slayer</div>
             <div className="flex gap-2">
                 <Action onClick={create}>
                     {isDeploying ? "Spawning..." : "Deploy"}

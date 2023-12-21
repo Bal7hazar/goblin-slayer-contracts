@@ -29,7 +29,30 @@ interface DuelModalProps {
 }
 
 const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
-    const { background, goblin, goblinCategory, rank, goblinScore, goblinDices, image, portrait, slayerName, tag, slayerScore, slayerDices, slayerCategory, slayer, duel, stopRoll, handleCreate, handleRoll, handleApply, handleSeek, handleBuy, updateOrders } = props;
+    const {
+        background,
+        goblin,
+        goblinCategory,
+        rank,
+        goblinScore,
+        goblinDices,
+        image,
+        portrait,
+        slayerName,
+        tag,
+        slayerScore,
+        slayerDices,
+        slayerCategory,
+        slayer,
+        duel,
+        stopRoll,
+        handleCreate,
+        handleRoll,
+        handleApply,
+        handleSeek,
+        handleBuy,
+        updateOrders,
+    } = props;
 
     return (
         <div className="flex flex-col justify-center items-center m-auto z-0">

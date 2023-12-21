@@ -19,9 +19,7 @@ const GameHeader = forwardRef((props: TProps, ref: any) => {
     return (
         <div className="flex justify-start">
             <div className="flex flex-col justify-center items-center py-1 ml-1 bg-slate-700 h-44 w-32 rounded-b-3xl">
-                <p className="uppercase text-4xl">
-                    {slayerName}
-                </p>
+                <p className="uppercase text-4xl">{slayerName}</p>
                 <div className="rounded-full overflow-clip m-2 border-4 border-black bg-white">
                     <img
                         className="w-full h-full object-cover"
@@ -58,9 +56,7 @@ const GameHeader = forwardRef((props: TProps, ref: any) => {
                 <div className="flex flex-col justify-center items-center h-20 w-32 bg-slate-600 rounded-br-3xl">
                     <p>{title} Slayer</p>
                     <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
-                        <p className="text-sm text-center">
-                            {tag}
-                        </p>
+                        <p className="text-sm text-center">{tag}</p>
                     </div>
                 </div>
             </div>
@@ -75,9 +71,7 @@ const GameHeader = forwardRef((props: TProps, ref: any) => {
                         alt=""
                     />
                     <div className="flex justify-center items-center">
-                        <p className="text-3xl">
-                            {slayer?.xp.toString()}
-                        </p>
+                        <p className="text-3xl">{slayer?.xp.toString()}</p>
                     </div>
                 </div>
                 <div className="flex justify-between items-center h-10 w-32 md:w-64 bg-white bg-opacity-20 rounded-3xl pr-3">
@@ -87,9 +81,7 @@ const GameHeader = forwardRef((props: TProps, ref: any) => {
                         alt=""
                     />
                     <div className="flex justify-center items-center">
-                        <p className="text-3xl">
-                            {slayer?.gold.toString()}
-                        </p>
+                        <p className="text-3xl">{slayer?.gold.toString()}</p>
                     </div>
                 </div>
             </div>

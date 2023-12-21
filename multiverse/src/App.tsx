@@ -193,9 +193,7 @@ function App() {
                                 )}
                             </div>
                         </div>
-                        <footer className="h-24">
-
-                        </footer>
+                        <footer className="h-24"></footer>
                     </div>
                 )}
             </div>
