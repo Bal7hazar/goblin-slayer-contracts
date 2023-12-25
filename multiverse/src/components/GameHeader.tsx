@@ -12,14 +12,16 @@ interface TProps {
     tag: string;
     slayer: any;
     handleDuelModal: () => void;
+    handleShopModal: () => void;
 }
 
 const GameHeader = forwardRef((props: TProps, ref: any) => {
-    const { slayerName, title, tag, slayer, handleDuelModal } = props;
+    const { slayerName, title, tag, slayer, handleDuelModal, handleShopModal } = props;
     return (
-        <div className="flex justify-start">
+        <div className="flex justify-start"
+            onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col justify-center items-center py-1 ml-1 bg-slate-700 h-44 w-32 rounded-b-3xl">
-                <p className="uppercase text-4xl">{slayerName}</p>
+                <p className="uppercase text-3xl">{slayerName}</p>
                 <div className="rounded-full overflow-clip m-2 border-4 border-black bg-white">
                     <img
                         className="w-full h-full object-cover"
@@ -48,6 +50,7 @@ const GameHeader = forwardRef((props: TProps, ref: any) => {
                             className="w-full h-full object-cover"
                             src={shop}
                             alt=""
+                            onClick={handleShopModal}
                         />
                     </div>
                 </div>
