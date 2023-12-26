@@ -1,0 +1,13 @@
+query getFinishedGames {
+    slayerModels(first: 10000) {
+        edges {
+            node {
+                name
+                tag
+                title
+                xp
+                gold
+            }
+        }
+    }
+}

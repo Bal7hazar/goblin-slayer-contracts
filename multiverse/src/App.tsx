@@ -9,16 +9,18 @@ import "./App.css";
 import { useDojo } from "./DojoContext";
 import DuelModal from "./components/DuelModal";
 import ShopModal from "./components/ShopModal";
+import Leaderboard from "./components/Leaderboard";
 // import { useTerraformer } from "./hooks/useTerraformer";
 import GameHeader from "./components/GameHeader";
 import GameScene from "./components/GameScene";
-import Loader from "./components/Loader";
-import Audio from "./components/Audio";
 
 // Images
 
 import mainRules from "./assets/main-rules.png";
 import duelRules from "./assets/duel-rules.png";
+import keyRules from "./assets/key-rules.png";
+import actionRules from "./assets/action-rules.png";
+import iconRules from "./assets/icon-rules.png";
 
 import { getRank, getTag, getTitle } from "./hooks/utils";
 import { WalletScreen } from "./components/WalletScreen";
@@ -45,6 +47,7 @@ function App() {
     const [stopRoll, setStopRoll] = useState(false);
     const [duelModal, setDuelModal] = useState(true);
     const [shopModal, setShopModal] = useState(false);
+    const [leaderboard, setLeaderboard] = useState(false);
     const [enableMove, setEnableMove] = useState(false);
 
     const {
@@ -92,23 +95,35 @@ function App() {
     const handleCloseModals = async () => {
         setDuelModal(false);
         setShopModal(false);
+        setLeaderboard(false);
         setEnableMove(true);
     };
 
     const handleDuelModal = async () => {
         // Close all openin modals
         setShopModal(false);
-        setEnableMove(false);
+        setLeaderboard(false);
         // Toggle the modal
+        setEnableMove(duelModal);
         setDuelModal(!duelModal);
     };
 
     const handleShopModal = async () => {
         // Close all openin modals
         setDuelModal(false);
-        setEnableMove(false);
+        setLeaderboard(false);
         // Toggle the modal
+        setEnableMove(shopModal);
         setShopModal(!shopModal);
+    };
+
+    const handleLeaderboard = async () => {
+        // Close all openin modals
+        setDuelModal(false);
+        setShopModal(false);
+        // Toggle the modal
+        setEnableMove(leaderboard);
+        setLeaderboard(!leaderboard);
     };
 
     const handleCreate = async () => {
@@ -171,29 +186,33 @@ function App() {
                             slayer={slayer}
                             handleDuelModal={handleDuelModal}
                             handleShopModal={handleShopModal}
+                            handleLeaderboard={handleLeaderboard}
                         />
-                        <div className="relative mt-10 h-1/2 flex-col justify-center items-center grow z-10">
-                            <div className="absolute top-1/2 left-0 -translate-y-1/2 w-1/4 hidden md:block">
-                                <img
-                                    className="object-cover"
-                                    src={mainRules}
-                                    alt=""
+                        <div className="mt-10 h-1/2 flex-col justify-center items-center grow z-10">
+                            <div className="absolute top-1/2 left-12 -translate-y-1/3 w-1/4 hidden md:block">
+                                <img src={mainRules} alt="main-rules" />
+                            </div>
+                            <div className="absolute top-1/2 right-12 -translate-y-1/3 w-1/4 hidden md:block">
+                                <img src={duelRules} alt="duel-rules" />
+                            </div>
+                            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 translate-y-1/4 w-1/6 hidden md:block">
+                                <img src={keyRules} alt="keyboard-rules" />
+                            </div>
+                            <div className="absolute top-24 left-1/4 -translate-x-1/3 w-1/6 hidden md:block">
+                                <img src={actionRules} alt="actions-rules" />
+                            </div>
+                            <div className="absolute top-24 right-1/4 translate-x-1/3 w-1/6 hidden md:block">
+                                <img src={iconRules} alt="icon-rules" />
+                            </div>
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-center items-center">
+                                <GameScene
+                                    enabled={enableMove}
+                                    tag={slayer ? slayer.tag : 0}
+                                    handleShopModal={handleShopModal}
                                 />
                             </div>
-                            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-1/4 hidden md:block">
-                                <img
-                                    className="object-cover"
-                                    src={duelRules}
-                                    alt=""
-                                />
-                            </div>
-                            <GameScene
-                                enabled={enableMove}
-                                tag={slayer ? slayer.tag : 0}
-                                handleShopModal={handleShopModal}
-                            />
                             {duelModal && (
-                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full bg-gray-900/80">
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gray-900/80 flex justify-center items-center">
                                     <DuelModal
                                         background={background}
                                         goblin={goblin}
@@ -217,7 +236,7 @@ function App() {
                                 </div>
                             )}
                             {shopModal && (
-                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full bg-gray-900/80">
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gray-900/80 flex justify-center items-center">
                                     <ShopModal
                                         handleBuy={handleBuy}
                                         disabled={
@@ -228,9 +247,13 @@ function App() {
                                     />
                                 </div>
                             )}
+                            {leaderboard && (
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gray-900/80 flex justify-center items-center">
+                                    <Leaderboard />
+                                </div>
+                            )}
                         </div>
                     </div>
-                    <footer className="h-24"></footer>
                 </div>
             </div>
         </div>

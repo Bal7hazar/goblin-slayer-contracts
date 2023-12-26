@@ -12,6 +12,7 @@
         "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/avatar.png"
     },
     "dependencies": {
+        "@apollo/client": "^3.8.8",
         "@dojoengine/core": "^0.2.5",
         "@dojoengine/create-burner": "^0.2.0",
         "@dojoengine/react": "^0.2.4",
@@ -24,6 +25,7 @@
         "@latticexyz/utils": "^1.43.0",
         "@pixi/sound": "^5.2.2",
         "@trpc/client": "^10.44.1",
+        "graphql": "^16.8.1",
         "mobx": "^6.9.0",
         "proxy-deep": "^3.1.1",
         "react": "^18.2.0",

@@ -14,11 +14,19 @@ interface TProps {
     slayer: any;
     handleDuelModal: () => void;
     handleShopModal: () => void;
+    handleLeaderboard: () => void;
 }
 
 const GameHeader = forwardRef((props: TProps, ref: any) => {
-    const { slayerName, title, tag, slayer, handleDuelModal, handleShopModal } =
-        props;
+    const {
+        slayerName,
+        title,
+        tag,
+        slayer,
+        handleDuelModal,
+        handleShopModal,
+        handleLeaderboard,
+    } = props;
     return (
         <div
             className="flex justify-start"
@@ -47,6 +55,7 @@ const GameHeader = forwardRef((props: TProps, ref: any) => {
                             className="w-full h-full object-cover"
                             src={trophee}
                             alt=""
+                            onClick={handleLeaderboard}
                         />
                     </div>
                     <div className="rounded-full overflow-clip h-8 cursor-pointer hover:scale-110 transition-transform duration-300">
