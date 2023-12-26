@@ -7,11 +7,12 @@ const ROUND_NAME = "Bonus";
 const ROUND_PRICE = 10;
 
 interface ShopModalProps {
+    disabled: boolean;
     handleBuy: () => void;
 }
 
 const DuelModal: React.FC<ShopModalProps> = (props: ShopModalProps) => {
-    const { handleBuy } = props;
+    const { disabled, handleBuy } = props;
 
     return (
         <div className="flex flex-col justify-center items-center m-auto z-0">
@@ -30,7 +31,7 @@ const DuelModal: React.FC<ShopModalProps> = (props: ShopModalProps) => {
                         <p>What does slayer want?</p>
                     </div>
                     <div className="flex w-1/2 justify-around">
-                        <Action onClick={handleBuy}>
+                        <Action onClick={handleBuy} disabled={disabled}>
                             <div className="flex items-center gap-1">
                                 {ROUND_NAME} ( {ROUND_PRICE}
                                 <img src={gold} className="h-2" alt="gold" />)
