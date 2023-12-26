@@ -2,6 +2,7 @@
 
 const DEFAULT_DICE_COUNT: u8 = 5;
 const DEFAULT_ROUND_COUNT: u8 = 3;
+const DEFAULT_GOLD: u128 = 100;
 
 // Dice constants
 

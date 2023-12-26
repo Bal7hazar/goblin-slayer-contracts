@@ -6,6 +6,7 @@ use dict::{Felt252Dict, Felt252DictTrait};
 
 // Constants
 
+const DEFAULT_GOLD: u128 = 64;
 const TWO_POW_8: u256 = 0x100;
 const MASK_8: u256 = 0xff;
 const ITEM_COUNT: u8 = 2;
@@ -37,44 +38,44 @@ impl ItemIntoU32 of Into<Item, u32> {
 
 #[derive(Copy, Drop)]
 enum Tag {
-    Unknown, // 0xp+
-    Porcelain, // 64xp+
-    Obsidian, // 128xp+
-    Steel, // 256xp+
-    Sapphire, // 512xp+
-    Emerald, // 1024xp+
-    Ruby, // 2048xp+
-    Bronze, // 4096xp+
-    Silver, // 8192xp+
-    Gold, // 16384xp+
-    Platinium, // 32768xp+
+    Starter, // 0xp+
+    Porcelain, // 4xp+
+    Obsidian, // 8xp+
+    Steel, // 16xp+
+    Sapphire, // 32xp+
+    Emerald, // 64xp+
+    Ruby, // 128xp+
+    Bronze, // 256xp+
+    Silver, // 512xp+
+    Gold, // 1024xp+
+    Platinium, // 2048xp+
 }
 
 impl U128IntoTag of Into<u128, Tag> {
     #[inline(always)]
     fn into(self: u128) -> Tag {
-        if self >= 32768 {
+        if self >= 2048 {
             Tag::Platinium
-        } else if self >= 16384 {
-            Tag::Gold
-        } else if self >= 8192 {
-            Tag::Silver
-        } else if self >= 4096 {
-            Tag::Bronze
-        } else if self >= 2048 {
-            Tag::Ruby
         } else if self >= 1024 {
-            Tag::Emerald
+            Tag::Gold
         } else if self >= 512 {
-            Tag::Sapphire
+            Tag::Silver
         } else if self >= 256 {
-            Tag::Steel
+            Tag::Bronze
         } else if self >= 128 {
-            Tag::Obsidian
+            Tag::Ruby
         } else if self >= 64 {
+            Tag::Emerald
+        } else if self >= 32 {
+            Tag::Sapphire
+        } else if self >= 16 {
+            Tag::Steel
+        } else if self >= 8 {
+            Tag::Obsidian
+        } else if self >= 4 {
             Tag::Porcelain
         } else {
-            Tag::Unknown
+            Tag::Starter
         }
     }
 }
@@ -83,7 +84,7 @@ impl TagIntoU8 of Into<Tag, u8> {
     #[inline(always)]
     fn into(self: Tag) -> u8 {
         match self {
-            Tag::Unknown => 0,
+            Tag::Starter => 0,
             Tag::Porcelain => 1,
             Tag::Obsidian => 2,
             Tag::Steel => 3,
@@ -189,14 +190,16 @@ impl SlayerImpl of SlayerTrait {
     fn new(id: felt252, name: felt252) -> Slayer {
         // [Check] Name must be non zero
         assert(name != '', errors::SLAYER_NAME_MUST_BE_NON_ZERO);
-        Slayer { id: id, name: name, tag: 0, title: 0, xp: 0, gold: 0, duel_id: 0, items: 0 }
+        Slayer {
+            id: id, name: name, tag: 0, title: 0, xp: 0, gold: DEFAULT_GOLD, duel_id: 0, items: 0
+        }
     }
 
     #[inline(always)]
     fn reset(ref self: Slayer) {
         // [Effect] Reset slayer
         self.xp = 0;
-        self.gold = 0;
+        self.gold = DEFAULT_GOLD;
         self.title = 0;
         self.tag = 0;
         self.items = 0;
@@ -315,7 +318,7 @@ mod tests {
 
     // Local imports
 
-    use super::{Slayer, SlayerTrait, Item};
+    use super::{Slayer, SlayerTrait, Item, DEFAULT_GOLD};
 
     // Constants
 
@@ -330,7 +333,7 @@ mod tests {
         assert_eq!(slayer.tag, 0);
         assert_eq!(slayer.title, 0);
         assert_eq!(slayer.xp, 0);
-        assert_eq!(slayer.gold, 0);
+        assert_eq!(slayer.gold, DEFAULT_GOLD);
         assert_eq!(slayer.duel_id, 0);
         assert_eq!(slayer.items, 0);
     }

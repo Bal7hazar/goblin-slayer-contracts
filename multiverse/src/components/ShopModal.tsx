@@ -3,7 +3,7 @@ import Action from "./Action";
 import background from "/src/assets/shop.svg";
 import gold from "/src/assets/gold-64.png";
 
-const ROUND_NAME = "Round+";
+const ROUND_NAME = "Bonus";
 const ROUND_PRICE = 10;
 
 interface ShopModalProps {
@@ -11,9 +11,7 @@ interface ShopModalProps {
 }
 
 const DuelModal: React.FC<ShopModalProps> = (props: ShopModalProps) => {
-    const {
-        handleBuy,
-    } = props;
+    const { handleBuy } = props;
 
     return (
         <div className="flex flex-col justify-center items-center m-auto z-0">
@@ -35,12 +33,7 @@ const DuelModal: React.FC<ShopModalProps> = (props: ShopModalProps) => {
                         <Action onClick={handleBuy}>
                             <div className="flex items-center gap-1">
                                 {ROUND_NAME} ( {ROUND_PRICE}
-                                <img
-                                    src={gold}
-                                    className="h-2"
-                                    alt="gold"
-                                />
-                                )
+                                <img src={gold} className="h-2" alt="gold" />)
                             </div>
                         </Action>
                     </div>

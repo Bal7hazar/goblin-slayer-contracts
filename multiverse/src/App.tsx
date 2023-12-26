@@ -9,10 +9,11 @@ import "./App.css";
 import { useDojo } from "./DojoContext";
 import DuelModal from "./components/DuelModal";
 import ShopModal from "./components/ShopModal";
-import { useTerraformer } from "./hooks/useTerraformer";
+// import { useTerraformer } from "./hooks/useTerraformer";
 import GameHeader from "./components/GameHeader";
 import GameScene from "./components/GameScene";
 import Loader from "./components/Loader";
+import Audio from "./components/Audio";
 
 // Images
 
@@ -21,12 +22,13 @@ import duelRules from "./assets/duel-rules.png";
 
 import { getRank, getTag, getTitle } from "./hooks/utils";
 import { WalletScreen } from "./components/WalletScreen";
-import { set } from "mobx";
+
+import background from "./assets/duel-background.png";
 
 function App() {
     // States
 
-    const { image, background, portrait } = useTerraformer();
+    // const { image, background, portrait } = useTerraformer();
 
     const [orders, setOrders] = useState(0x1f);
     const [tag, setTag] = useState("Starter");
@@ -43,6 +45,7 @@ function App() {
     const [stopRoll, setStopRoll] = useState(false);
     const [duelModal, setDuelModal] = useState(true);
     const [shopModal, setShopModal] = useState(false);
+    const [enableMove, setEnableMove] = useState(false);
 
     const {
         setup: {
@@ -87,24 +90,24 @@ function App() {
     // Handlers
 
     const handleCloseModals = async () => {
-        console.log("handleCloseModals")
         setDuelModal(false);
         setShopModal(false);
-    }
+        setEnableMove(true);
+    };
 
     const handleDuelModal = async () => {
         // Close all openin modals
         setShopModal(false);
+        setEnableMove(false);
         // Toggle the modal
-        console.log("duelModal", duelModal);
         setDuelModal(!duelModal);
     };
 
     const handleShopModal = async () => {
         // Close all openin modals
         setDuelModal(false);
+        setEnableMove(false);
         // Toggle the modal
-        console.log("shopModal", shopModal);
         setShopModal(!shopModal);
     };
 
@@ -155,77 +158,73 @@ function App() {
     return (
         <div className="relative">
             <div className="z-0">
-                {!background ? (
-                    <Loader />
-                ) : (
-                    <div className="h-screen z-0 flex flex-col">
-                        <WalletScreen />
-                        <div className="relative flex flex-col px-2 md:px-20 grow z-0"
-                            onClick={handleCloseModals}>
-                            <GameHeader
-                                slayerName={slayerName}
-                                title={title}
-                                tag={tag}
-                                slayer={slayer}
-                                handleDuelModal={handleDuelModal}
+                <div className="h-screen z-0 flex flex-col">
+                    <WalletScreen />
+                    <div
+                        className="relative flex flex-col px-2 md:px-20 grow z-0"
+                        onClick={handleCloseModals}
+                    >
+                        <GameHeader
+                            slayerName={slayerName}
+                            title={title}
+                            tag={tag}
+                            slayer={slayer}
+                            handleDuelModal={handleDuelModal}
+                            handleShopModal={handleShopModal}
+                        />
+                        <div className="relative mt-10 h-1/2 flex-col justify-center items-center grow z-10">
+                            <div className="absolute top-1/2 left-0 -translate-y-1/2 w-1/4 hidden md:block">
+                                <img
+                                    className="object-cover"
+                                    src={mainRules}
+                                    alt=""
+                                />
+                            </div>
+                            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-1/4 hidden md:block">
+                                <img
+                                    className="object-cover"
+                                    src={duelRules}
+                                    alt=""
+                                />
+                            </div>
+                            <GameScene
+                                enabled={enableMove}
+                                tag={slayer ? slayer.tag : 0}
                                 handleShopModal={handleShopModal}
                             />
-                            <div className="relative mt-10 h-1/2 flex-col justify-center items-center grow z-10">
-                                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-1/4 hidden md:block">
-                                    <img
-                                        className="object-cover"
-                                        src={mainRules}
-                                        alt=""
+                            {duelModal && (
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full bg-gray-900/80">
+                                    <DuelModal
+                                        background={background}
+                                        goblin={goblin}
+                                        goblinCategory={goblinCategory}
+                                        rank={rank}
+                                        goblinDices={goblinDices}
+                                        slayerName={slayerName}
+                                        tag={tag}
+                                        slayerDices={slayerDices}
+                                        slayerCategory={slayerCategory}
+                                        slayer={slayer}
+                                        duel={duel}
+                                        stopRoll={stopRoll}
+                                        handleCreate={handleCreate}
+                                        handleRoll={handleRoll}
+                                        handleSeek={handleSeek}
+                                        handleApply={handleApply}
+                                        handleBuy={handleBuy}
+                                        updateOrders={updateOrders}
                                     />
                                 </div>
-                                <div className="absolute top-1/2 right-0 -translate-y-1/2 w-1/4 hidden md:block">
-                                    <img
-                                        className="object-cover"
-                                        src={duelRules}
-                                        alt=""
-                                    />
+                            )}
+                            {shopModal && (
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full bg-gray-900/80">
+                                    <ShopModal handleBuy={handleBuy} />
                                 </div>
-                                <GameScene />
-                                {duelModal && (
-                                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full bg-gray-900/80">
-                                        <DuelModal
-                                            background={background}
-                                            goblin={goblin}
-                                            goblinCategory={goblinCategory}
-                                            rank={rank}
-                                            goblinScore={goblinScore}
-                                            goblinDices={goblinDices}
-                                            image={image}
-                                            portrait={portrait}
-                                            slayerName={slayerName}
-                                            tag={tag}
-                                            slayerScore={slayerScore}
-                                            slayerDices={slayerDices}
-                                            slayerCategory={slayerCategory}
-                                            slayer={slayer}
-                                            duel={duel}
-                                            stopRoll={stopRoll}
-                                            handleCreate={handleCreate}
-                                            handleRoll={handleRoll}
-                                            handleSeek={handleSeek}
-                                            handleApply={handleApply}
-                                            handleBuy={handleBuy}
-                                            updateOrders={updateOrders}
-                                        />
-                                    </div>
-                                )}
-                                {shopModal && (
-                                    <div
-                                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full bg-gray-900/80"
-                                    >
-                                        <ShopModal handleBuy={handleBuy} />
-                                    </div>
-                                )}
-                            </div>
+                            )}
                         </div>
-                        <footer className="h-24"></footer>
                     </div>
-                )}
+                    <footer className="h-24"></footer>
+                </div>
             </div>
         </div>
     );

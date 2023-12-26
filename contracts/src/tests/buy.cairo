@@ -23,8 +23,7 @@ use slayer::tests::setup::{setup, setup::{Actions, SLAYER, ANYONE}};
 const SLAYER_NAME: felt252 = 'SLAYER';
 
 #[test]
-#[should_panic(expected: ('Buy: not enough gold', 'ENTRYPOINT_FAILED',))]
-fn test_play_buy() {
+fn test_buy() {
     // [Setup]
     let (world, eth, vrf, actions) = setup::spawn_game();
     let mut store = StoreTrait::new(world);
@@ -33,5 +32,25 @@ fn test_play_buy() {
     actions.play.create(world, SLAYER_NAME);
 
     // [Buy]
+    actions.play.buy(world, Item::ExtraRound);
+}
+
+#[test]
+#[should_panic(expected: ('Buy: not enough gold', 'ENTRYPOINT_FAILED',))]
+fn test_buy_revert_not_enough_gold() {
+    // [Setup]
+    let (world, eth, vrf, actions) = setup::spawn_game();
+    let mut store = StoreTrait::new(world);
+
+    // [Create]
+    actions.play.create(world, SLAYER_NAME);
+
+    // [Buy]
+    actions.play.buy(world, Item::ExtraRound);
+    actions.play.buy(world, Item::ExtraRound);
+    actions.play.buy(world, Item::ExtraRound);
+    actions.play.buy(world, Item::ExtraRound);
+    actions.play.buy(world, Item::ExtraRound);
+    actions.play.buy(world, Item::ExtraRound);
     actions.play.buy(world, Item::ExtraRound);
 }

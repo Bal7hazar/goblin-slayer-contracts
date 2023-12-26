@@ -42,11 +42,11 @@ const Score: React.FC<ScoreProps> = ({ category }) => {
             case 10:
                 return "foak";
             case 11:
-                return "small";
-            case 12:
-                return "large";
-            case 13:
                 return "full";
+            case 12:
+                return "small";
+            case 13:
+                return "large";
             case 14:
                 return "yahtzee";
             case 15:

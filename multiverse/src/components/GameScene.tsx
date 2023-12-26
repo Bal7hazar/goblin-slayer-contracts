@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import Character from "./Character";
+
 import mapData from "../assets/layers.json";
 import TILESET_IMAGE from "../assets/tileset.png";
 
@@ -7,7 +9,14 @@ const TILESET_WIDTH_IN_TILES = 27;
 const GROUND_LAYERS = ["Ground-1", "Ground-2", "Ground-3", "Ground-4"];
 const SCALE_FACTOR = 1.5;
 
-const GameScene = () => {
+interface TProps {
+    enabled: boolean;
+    tag: number;
+    handleShopModal: () => void;
+}
+
+const GameScene = (props: TProps) => {
+    const { enabled, tag, handleShopModal } = props;
     const [currentGroundIndex, setCurrentGroundIndex] = useState(0);
 
     useEffect(() => {
@@ -66,7 +75,7 @@ const GameScene = () => {
         <div className="flex justify-center items-center w-full h-full">
             <div className="relative">
                 <div
-                    className="relative"
+                    className="relative rounded-xl overflow-clip"
                     style={{
                         width: `${mapData.width * TILE_SIZE}px`,
                         height: `${mapData.height * TILE_SIZE}px`,
@@ -76,6 +85,11 @@ const GameScene = () => {
                 >
                     {renderTiles(GROUND_LAYERS[currentGroundIndex])}
                     {renderTiles("Objects", true)}
+                    <Character
+                        enabled={enabled}
+                        tag={tag}
+                        handleShopModal={handleShopModal}
+                    />
                 </div>
             </div>
         </div>

@@ -32,9 +32,9 @@ enum Category {
     TwoPairs,
     ThreeOfAKind,
     FourOfAKind,
+    FullHouse,
     SmallStraight,
     LargeStraight,
-    FullHouse,
     Yahtzee,
     Chance,
 }
@@ -54,9 +54,9 @@ impl CategoryIntoU8 of Into<Category, u8> {
             Category::TwoPairs => 8,
             Category::ThreeOfAKind => 9,
             Category::FourOfAKind => 10,
-            Category::SmallStraight => 11,
-            Category::LargeStraight => 12,
-            Category::FullHouse => 13,
+            Category::FullHouse => 11,
+            Category::SmallStraight => 12,
+            Category::LargeStraight => 13,
             Category::Yahtzee => 14,
             Category::Chance => 15,
         }
@@ -397,34 +397,42 @@ impl ScoreZeroable of Zeroable<Score> {
 impl ScorePartialEq of PartialEq<Score> {
     #[inline(always)]
     fn eq(lhs: @Score, rhs: @Score) -> bool {
-        return lhs.value == rhs.value;
+        return lhs.category == rhs.category && lhs.value == rhs.value;
     }
 
     #[inline(always)]
     fn ne(lhs: @Score, rhs: @Score) -> bool {
-        return lhs.value != rhs.value;
+        return lhs.category != rhs.category || lhs.value != rhs.value;
     }
 }
 
 impl ScorePartialOrd of PartialOrd<Score> {
     #[inline(always)]
     fn lt(lhs: Score, rhs: Score) -> bool {
-        return (lhs.value < rhs.value) || (lhs.value == rhs.value && lhs.max < rhs.max);
+        return (lhs.category < rhs.category)
+            || (lhs.category == rhs.category && lhs.value < rhs.value)
+            || (lhs.category == rhs.category && lhs.value == rhs.value && lhs.max < rhs.max);
     }
 
     #[inline(always)]
     fn le(lhs: Score, rhs: Score) -> bool {
-        return (lhs.value < rhs.value) || (lhs.value == rhs.value && lhs.max <= rhs.max);
+        return (lhs.category < rhs.category)
+            || (lhs.category == rhs.category && lhs.max <= rhs.max)
+            || (lhs.category == rhs.category && lhs.value <= rhs.value);
     }
 
     #[inline(always)]
     fn gt(lhs: Score, rhs: Score) -> bool {
-        return (lhs.value > rhs.value) || (lhs.value == rhs.value && lhs.max > rhs.max);
+        return (lhs.category > rhs.category)
+            || (lhs.category == rhs.category && lhs.max > rhs.max)
+            || (lhs.category == rhs.category && lhs.value > rhs.value);
     }
 
     #[inline(always)]
     fn ge(lhs: Score, rhs: Score) -> bool {
-        return (lhs.value > rhs.value) || (lhs.value == rhs.value && lhs.max >= rhs.max);
+        return (lhs.category > rhs.category)
+            || (lhs.category == rhs.category && lhs.max >= rhs.max)
+            || (lhs.category == rhs.category && lhs.value >= rhs.value);
     }
 }
 
@@ -669,5 +677,39 @@ mod tests {
         let dices = array![1, 1, 1, 4, 2];
         let score: Score = ScoreTrait::best(dices.span());
         assert_eq!(score.value, 3);
+    }
+
+    #[test]
+    fn test_compare_pairs() {
+        let dices = array![1, 1, 6, 4, 2];
+        let score: Score = ScoreTrait::best(dices.span());
+        let dices = array![6, 1, 2, 4, 1];
+        let score2: Score = ScoreTrait::best(dices.span());
+        assert(score == score2, 'Score: wrong ==');
+        assert(!(score != score2), 'Score: wrong !=');
+        assert(score >= score2, 'Score: wrong >=');
+        assert(!(score > score2), 'Score: wrong >');
+        assert(score <= score2, 'Score: wrong <=');
+        assert(!(score < score2), 'Score: wrong <');
+    }
+
+    #[test]
+    fn test_compare_pair_and_toak() {
+        let dices = array![1, 1, 1, 4, 5];
+        let score: Score = ScoreTrait::best(dices.span());
+        let dices = array![6, 6, 1, 2, 3];
+        let score2: Score = ScoreTrait::best(dices.span());
+        assert(score != score2, 'Score: wrong ==');
+        assert(score > score2, 'Score: wrong >');
+    }
+
+    #[test]
+    fn test_compare_fullhouse_and_small_straight() {
+        let dices = array![2, 6, 6, 2, 6];
+        let score: Score = ScoreTrait::best(dices.span());
+        let dices = array![6, 3, 2, 4, 1];
+        let score2: Score = ScoreTrait::best(dices.span());
+        assert(score != score2, 'Score: wrong ==');
+        assert(score < score2, 'Score: wrong <');
     }
 }

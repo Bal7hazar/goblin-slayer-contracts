@@ -24,7 +24,7 @@ const Actions: React.FC<ActionsProps> = ({
         return (
             <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
                 <div className="flex flex-col justify-center w-1/2 p-1">
-                    <p>Create a new slayer to start!</p>
+                    <p>New slayer?</p>
                 </div>
                 <div className="flex w-1/2 justify-around">
                     <Action onClick={handleCreate}>Create</Action>
@@ -41,11 +41,12 @@ const Actions: React.FC<ActionsProps> = ({
                 </div>
                 <div className="flex w-1/2 justify-around">
                     <Action onClick={handleSeek}>Seek</Action>
-                    <Action onClick={handleBuy}>Buy</Action>
                 </div>
             </div>
         );
     }
+
+    const disabled = slayer.items == 0;
 
     if (duel.slayer_dices == 0) {
         return (
@@ -57,7 +58,27 @@ const Actions: React.FC<ActionsProps> = ({
                 </div>
                 <div className="flex w-1/2 justify-around">
                     <Action onClick={handleRoll}>Start</Action>
-                    <Action onClick={handleApply}>Item</Action>
+                    <Action onClick={handleApply} disabled={disabled}>
+                        Bonus
+                    </Action>
+                </div>
+            </div>
+        );
+    }
+
+    if (duel.round == duel.round_count) {
+        return (
+            <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
+                <div className="flex flex-col justify-center w-1/2 p-1">
+                    <p>
+                        Round {duel.round} / {duel.round_count}
+                    </p>
+                </div>
+                <div className="flex w-1/2 justify-around">
+                    <Action onClick={handleRoll}>Finish</Action>
+                    <Action onClick={handleApply} disabled={disabled}>
+                        Bonus
+                    </Action>
                 </div>
             </div>
         );
@@ -72,7 +93,9 @@ const Actions: React.FC<ActionsProps> = ({
             </div>
             <div className="flex w-1/2 justify-around gap-1">
                 <Action onClick={handleRoll}>Roll</Action>
-                <Action onClick={handleApply}>Item</Action>
+                <Action onClick={handleApply} disabled={disabled}>
+                    Bonus
+                </Action>
             </div>
         </div>
     );

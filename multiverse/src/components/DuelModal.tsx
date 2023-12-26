@@ -2,19 +2,17 @@ import React from "react";
 import Actions from "./Actions";
 import Dices from "./Dices";
 import Score from "./Score";
+import goblin0 from "/src/assets/goblin-0-avatar-256.png";
+import slayer0 from "/src/assets/slayer-0-avatar-256.png";
 
 interface DuelModalProps {
     background: string;
     goblin: string;
     goblinCategory: number;
     rank: string;
-    goblinScore: number;
     goblinDices: number;
-    image: string;
-    portrait: string;
     slayerName: string;
     tag: string;
-    slayerScore: number;
     slayerDices: number;
     slayerCategory: number;
     slayer: any;
@@ -34,13 +32,9 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
         goblin,
         goblinCategory,
         rank,
-        goblinScore,
         goblinDices,
-        image,
-        portrait,
         slayerName,
         tag,
-        slayerScore,
         slayerDices,
         slayerCategory,
         slayer,
@@ -56,17 +50,16 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
 
     return (
         <div className="flex flex-col justify-center items-center m-auto z-0">
-            <div
-                onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()}>
                 <Score category={goblinCategory} />
                 <div className="relative max-w-xl flex flex-col gap-2 rounded-xl bg-slate-100 text-slate-900 overflow-clip w-80 h-96">
                     <img
                         src={background}
-                        className="absolute top-0 w-full h-full object-cover opacity-50 z-0"
+                        className="absolute top-0 w-full h-full object-cover opacity-80 z-0"
                         alt=""
                     />
                     <div className="z-10 max-w-xl flex flex-col gap-2 h-full">
-                        <div className="flex justify-between gap-1 p-2">
+                        <div className="flex justify-between items-start gap-1 p-2">
                             <div className="flex flex-col justify-start items-start grow px-2">
                                 <div className="flex justify-left items-center gap-4">
                                     <h2 className="text-2xl text-center uppercase">
@@ -77,9 +70,6 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                                             {rank}
                                         </h3>
                                     </div>
-                                    <p className="text-center uppercase text-xl">
-                                        {goblinScore}
-                                    </p>
                                 </div>
                                 <Dices
                                     dices={BigInt(goblinDices)}
@@ -87,20 +77,24 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                                     stopRoll={stopRoll}
                                 />
                             </div>
-                            <div className="rounded-xl border-2 bg-white border-black max-w-20 h-20 overflow-clip">
+                            <div className="w-20 h-20 overflow-clip flex justify-center items-center">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={image}
+                                    src={`/src/assets/goblin-${
+                                        duel ? duel.rank : 0
+                                    }-avatar-256.png`}
                                     alt=""
                                 />
                             </div>
                         </div>
                         <div className="grow" />
-                        <div className="flex justify-between gap-1 p-2">
-                            <div className="rounded-xl border-2 bg-white border-black max-w-20 h-20 overflow-clip">
+                        <div className="flex justify-between items-end gap-1 p-2">
+                            <div className="w-20 h-20 overflow-clip">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={portrait}
+                                    src={`/src/assets/slayer-${
+                                        slayer ? slayer.tag : 0
+                                    }-avatar-256.png`}
                                     alt=""
                                 />
                             </div>
@@ -112,9 +106,6 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                                     stopRoll={stopRoll}
                                 />
                                 <div className="flex justify-right items-center gap-4">
-                                    <p className="text-center uppercase text-xl">
-                                        {slayerScore}
-                                    </p>
                                     <div className="flex items-center px-2 my-2 border-black border-solid border rounded-xl bg-slate-800 text-slate-200">
                                         <h3 className="text-sm text-center">
                                             {tag}
