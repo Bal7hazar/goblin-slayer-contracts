@@ -92,6 +92,9 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
         updateOrders,
     } = props;
 
+    console.log('Slayer', slayer);
+    console.log('Duel', duel);
+
     return (
         <div className="flex flex-col justify-center items-center m-auto z-0">
             <div onClick={(e) => e.stopPropagation()}>
