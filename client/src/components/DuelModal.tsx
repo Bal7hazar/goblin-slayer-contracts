@@ -2,8 +2,28 @@ import React from "react";
 import Actions from "./Actions";
 import Dices from "./Dices";
 import Score from "./Score";
-import goblin0 from "/src/assets/goblin-0-avatar-256.png";
-import slayer0 from "/src/assets/slayer-0-avatar-256.png";
+
+// Images
+
+import goblin0 from "../assets/goblin-0-avatar-256.png";
+import goblin1 from "../assets/goblin-1-avatar-256.png";
+import goblin2 from "../assets/goblin-2-avatar-256.png";
+import goblin3 from "../assets/goblin-3-avatar-256.png";
+import goblin4 from "../assets/goblin-4-avatar-256.png";
+import goblin5 from "../assets/goblin-5-avatar-256.png";
+import goblin6 from "../assets/goblin-6-avatar-256.png";
+
+import slayer0 from "../assets/slayer-0-avatar-256.png";
+import slayer1 from "../assets/slayer-1-avatar-256.png";
+import slayer2 from "../assets/slayer-2-avatar-256.png";
+import slayer3 from "../assets/slayer-3-avatar-256.png";
+import slayer4 from "../assets/slayer-4-avatar-256.png";
+import slayer5 from "../assets/slayer-5-avatar-256.png";
+import slayer6 from "../assets/slayer-6-avatar-256.png";
+import slayer7 from "../assets/slayer-7-avatar-256.png";
+import slayer8 from "../assets/slayer-8-avatar-256.png";
+import slayer9 from "../assets/slayer-9-avatar-256.png";
+import slayer10 from "../assets/slayer-10-avatar-256.png";
 
 interface DuelModalProps {
     background: string;
@@ -25,6 +45,30 @@ interface DuelModalProps {
     handleBuy: () => void;
     updateOrders: (index: number, rolling: boolean) => void;
 }
+
+const GOLBINS = [
+    goblin0,
+    goblin1,
+    goblin2,
+    goblin3,
+    goblin4,
+    goblin5,
+    goblin6,
+];
+
+const SLAYERS = [
+    slayer0,
+    slayer1,
+    slayer2,
+    slayer3,
+    slayer4,
+    slayer5,
+    slayer6,
+    slayer7,
+    slayer8,
+    slayer9,
+    slayer10,
+];
 
 const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
     const {
@@ -80,9 +124,7 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                             <div className="w-20 h-20 overflow-clip flex justify-center items-center">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={`/src/assets/goblin-${
-                                        duel ? duel.rank : 0
-                                    }-avatar-256.png`}
+                                    src={duel ? GOLBINS[duel.rank] : GOLBINS[0]}
                                     alt=""
                                 />
                             </div>
@@ -92,9 +134,7 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                             <div className="w-20 h-20 overflow-clip">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={`/src/assets/slayer-${
-                                        slayer ? slayer.tag : 0
-                                    }-avatar-256.png`}
+                                    src={slayer ? SLAYERS[slayer.tag] : SLAYERS[0]}
                                     alt=""
                                 />
                             </div>

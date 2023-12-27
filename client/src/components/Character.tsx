@@ -1,5 +1,33 @@
 import React, { useState, useEffect, useRef } from "react";
 
+// Images
+
+import slayer0 from "../assets/slayer-0.png";
+import slayer1 from "../assets/slayer-1.png";
+import slayer2 from "../assets/slayer-2.png";
+import slayer3 from "../assets/slayer-3.png";
+import slayer4 from "../assets/slayer-4.png";
+import slayer5 from "../assets/slayer-5.png";
+import slayer6 from "../assets/slayer-6.png";
+import slayer7 from "../assets/slayer-7.png";
+import slayer8 from "../assets/slayer-8.png";
+import slayer9 from "../assets/slayer-9.png";
+import slayer10 from "../assets/slayer-10.png";
+
+const SLAYERS = [
+    slayer0,
+    slayer1,
+    slayer2,
+    slayer3,
+    slayer4,
+    slayer5,
+    slayer6,
+    slayer7,
+    slayer8,
+    slayer9,
+    slayer10,
+];
+
 const SPRITE_SIZE = 32;
 const TILE_SIZE = 16;
 const ACTIONS: { [key: string]: number[] } = {
@@ -319,10 +347,9 @@ const Character = (props: TProps) => {
         return {
             width: `${SPRITE_SIZE}px`,
             height: `${SPRITE_SIZE}px`,
-            backgroundImage: `url(/src/assets/slayer-${tag}.png)`,
-            backgroundPosition: `-${step * SPRITE_SIZE}px -${
-                directionIndexRef.current * SPRITE_SIZE
-            }px`,
+            backgroundImage: `url(${SLAYERS[tag]})`,
+            backgroundPosition: `-${step * SPRITE_SIZE}px -${directionIndexRef.current * SPRITE_SIZE
+                }px`,
             top: `${positionRef.current.y}px`,
             left: `${positionRef.current.x}px`,
             transition: "top 0.5s linear, left 0.5s linear",

@@ -1,7 +1,7 @@
 import React from "react";
 import Action from "./Action";
-import background from "/src/assets/shop.svg";
-import gold from "/src/assets/gold-64.png";
+import background from "../assets/shop.svg";
+import gold from "../assets/gold-64.png";
 
 const ROUND_NAME = "Bonus";
 const ROUND_PRICE = 10;

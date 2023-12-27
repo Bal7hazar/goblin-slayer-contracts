@@ -1,8 +1,6 @@
 import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import { shortString } from "starknet";
-import goldImage from "/src/assets/gold-64.png";
-import xpImage from "/src/assets/xp-64.png";
 import { getRank, getTag, getTitle } from "../hooks/utils";
 
 const GET_DATA = gql`

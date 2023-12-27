@@ -1,11 +1,11 @@
 import { forwardRef } from "react";
-import gold from "/src/assets/gold-64.png";
-import xp from "/src/assets/xp-64.png";
-import bonus from "/src/assets/bonus-64.png";
-import avatar from "/src/assets/avatar.png";
-import fight from "/src/assets/duel-256.png";
-import trophee from "/src/assets/trophee-256.png";
-import shop from "/src/assets/shop-256.png";
+import gold from "../assets/gold-64.png";
+import xp from "../assets/xp-64.png";
+import bonus from "../assets/bonus-64.png";
+import avatar from "../assets/avatar.png";
+import fight from "../assets/duel-256.png";
+import trophee from "../assets/trophee-256.png";
+import shop from "../assets/shop-256.png";
 
 interface TProps {
     slayerName: string;
