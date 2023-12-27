@@ -18,7 +18,13 @@ interface TProps {
 }
 
 const GameScene = (props: TProps) => {
-    const { enabled, tag, handleDuelModal, handleShopModal, handleLeaderboard } = props;
+    const {
+        enabled,
+        tag,
+        handleDuelModal,
+        handleShopModal,
+        handleLeaderboard,
+    } = props;
     const [currentGroundIndex, setCurrentGroundIndex] = useState(0);
 
     useEffect(() => {
@@ -63,8 +69,9 @@ const GameScene = (props: TProps) => {
             const tileStyle = getTileStyle(tileId - 1, tileIndex, layer.width);
             return (
                 <div
-                    key={`${isObjectLayer ? "object" : "ground"
-                        }-tile-${tileIndex}`}
+                    key={`${
+                        isObjectLayer ? "object" : "ground"
+                    }-tile-${tileIndex}`}
                     style={tileStyle}
                     className="absolute"
                 />

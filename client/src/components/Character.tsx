@@ -41,6 +41,14 @@ const HILL_TILES = new Set([
     "56,84",
     "56,68",
     "56,52",
+    "120,116",
+    "136,116",
+    "136,100",
+    "136,84",
+    "120,84",
+    "104,84",
+    "104,100",
+    "104,116",
 ]);
 
 const WATER_TILES = new Set([
@@ -143,6 +151,7 @@ const GRASS_TILES = new Set([
     "72,52",
     "72,68",
     "72,84",
+    "120,100",
 ]);
 
 const OBJECT_TILES = new Set(["136,180", "40,84"]);
@@ -151,11 +160,13 @@ const SHOP_DRECTION_INDEX = 4;
 const SHOP_TILES = new Set(["40,4"]);
 
 const SIGN_DRECTION_INDEX = 4;
-const SIGN_TILES = new Set([
-    "56,4",
-    "40,100",
-    "136,196",
-]);
+const SIGN_TILES = new Set(["56,4", "40,100", "136,196"]);
+
+const TUNNEL_IN_DRECTION_INDEX = 4;
+const TUNNEL_IN_TILES = new Set(["152,180"]);
+
+const TUNNEL_OUT_DRECTION_INDEX = 4;
+const TUNNEL_OUT_TILES = new Set(["120,100"]);
 
 interface TProps {
     enabled: boolean;
@@ -166,7 +177,13 @@ interface TProps {
 }
 
 const Character = (props: TProps) => {
-    const { enabled, tag, handleDuelModal, handleShopModal, handleLeaderboard } = props;
+    const {
+        enabled,
+        tag,
+        handleDuelModal,
+        handleShopModal,
+        handleLeaderboard,
+    } = props;
     const [action, setAction] = useState("STANDING");
     const [stepIndex, setStepIndex] = useState(0);
     const positionRef = useRef({ x: 40, y: 4 });
@@ -223,7 +240,6 @@ const Character = (props: TProps) => {
                 setTimeout(() => {
                     isMovingRef.current = false;
                     setAction("STANDING");
-                    console.log(`${newX},${newY}`)
                     if (GRASS_TILES.has(`${newX},${newY}`)) {
                         handleDuelModal();
                     }
@@ -240,6 +256,20 @@ const Character = (props: TProps) => {
                     directionIndexRef.current == SIGN_DRECTION_INDEX
                 ) {
                     handleLeaderboard();
+                } else if (
+                    TUNNEL_IN_TILES.has(`${newX},${newY}`) &&
+                    directionIndexRef.current == TUNNEL_IN_DRECTION_INDEX
+                ) {
+                    newX = 120;
+                    newY = 100;
+                    break;
+                } else if (
+                    TUNNEL_OUT_TILES.has(`${newX},${newY}`) &&
+                    directionIndexRef.current == TUNNEL_OUT_DRECTION_INDEX
+                ) {
+                    newX = 152;
+                    newY = 180;
+                    break;
                 }
                 isMovingRef.current = false;
                 return;
@@ -288,8 +318,9 @@ const Character = (props: TProps) => {
             width: `${SPRITE_SIZE}px`,
             height: `${SPRITE_SIZE}px`,
             backgroundImage: `url(/src/assets/slayer-${tag}.png)`,
-            backgroundPosition: `-${step * SPRITE_SIZE}px -${directionIndexRef.current * SPRITE_SIZE
-                }px`,
+            backgroundPosition: `-${step * SPRITE_SIZE}px -${
+                directionIndexRef.current * SPRITE_SIZE
+            }px`,
             top: `${positionRef.current.y}px`,
             left: `${positionRef.current.x}px`,
             transition: "top 0.5s linear, left 0.5s linear",

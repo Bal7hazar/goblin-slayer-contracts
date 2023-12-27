@@ -6,29 +6,19 @@ import { faVolumeHigh, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 
 import music from "../audio/chill.mp3";
 
-// interface TProps {
-//     music: string;
-// }
+interface TProps {
+    audioRef: React.RefObject<HTMLAudioElement>;
+    playing: boolean;
+    toggleMusic: () => void;
+}
 
-const Audio = () => {
-    // const { music } = props;
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef<any>(null);
-
-    const toggleMusic = () => {
-        if (audioRef.current && !isPlaying) {
-            audioRef.current.play();
-            setIsPlaying(true);
-        } else if (isPlaying) {
-            audioRef.current.pause();
-            setIsPlaying(false);
-        }
-    };
+const Audio = (props: TProps) => {
+    const { audioRef, playing, toggleMusic } = props;
 
     return (
         <div className="h-4 w-4 flex justify-center items-center">
             <FontAwesomeIcon
-                icon={isPlaying ? faVolumeHigh : faVolumeMute}
+                icon={playing ? faVolumeHigh : faVolumeMute}
                 onClick={toggleMusic}
             />
             <audio ref={audioRef} preload="metadata" loop>

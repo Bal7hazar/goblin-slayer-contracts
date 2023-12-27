@@ -11,7 +11,7 @@ const Action: React.FC<ActionProps> = ({ onClick, disabled, children }) => {
         return (
             <button
                 className={`border-slate-500 border-solid border rounded p-1 px-4 bg-slate-300 text-slate-100 min-w-16 cursor-not-allowed`}
-                onClick={() => { }}
+                onClick={() => {}}
             >
                 {children}
             </button>

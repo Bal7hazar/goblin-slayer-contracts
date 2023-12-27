@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useComponentValue } from "@dojoengine/react";
 import { Entity } from "@dojoengine/recs";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
@@ -49,6 +49,8 @@ function App() {
     const [shopModal, setShopModal] = useState(false);
     const [leaderboard, setLeaderboard] = useState(false);
     const [enableMove, setEnableMove] = useState(false);
+    const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+    const audioRef = useRef<any>(null);
 
     const {
         setup: {
@@ -127,6 +129,9 @@ function App() {
     };
 
     const handleCreate = async () => {
+        if (!isPlayingMusic) {
+            toggleMusic();
+        }
         await provider.play.create({
             account,
             name: "ohayo",
@@ -170,11 +175,25 @@ function App() {
         setOrders(new_orders);
     };
 
+    const toggleMusic = () => {
+        if (audioRef.current && !isPlayingMusic) {
+            audioRef.current.play();
+            setIsPlayingMusic(true);
+        } else if (isPlayingMusic) {
+            audioRef.current.pause();
+            setIsPlayingMusic(false);
+        }
+    };
+
     return (
         <div className="relative">
             <div className="z-0">
                 <div className="h-screen z-0 flex flex-col">
-                    <WalletScreen />
+                    <WalletScreen
+                        audioRef={audioRef}
+                        playing={isPlayingMusic}
+                        toggleMusic={toggleMusic}
+                    />
                     <div
                         className="relative flex flex-col px-2 md:px-20 grow z-0"
                         onClick={handleCloseModals}
@@ -195,7 +214,7 @@ function App() {
                             <div className="absolute top-1/2 right-12 -translate-y-1/3 w-1/4 hidden md:block">
                                 <img src={duelRules} alt="duel-rules" />
                             </div>
-                            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 translate-y-1/4 w-1/6 hidden md:block">
+                            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 translate-y-1/6 w-1/3 hidden md:block">
                                 <img src={keyRules} alt="keyboard-rules" />
                             </div>
                             <div className="absolute top-24 left-1/4 -translate-x-1/3 w-1/6 hidden md:block">

@@ -2,7 +2,14 @@ import { displayAddress, useDojo } from "../DojoContext";
 import Action from "./Action";
 import Audio from "./Audio";
 
-export const WalletScreen = () => {
+interface TProps {
+    audioRef: React.RefObject<HTMLAudioElement>;
+    playing: boolean;
+    toggleMusic: () => void;
+}
+
+export const WalletScreen = (props: TProps) => {
+    const { audioRef, playing, toggleMusic } = props;
     const {
         setup: {
             account: { create, list, select, account, isDeploying },
@@ -13,7 +20,7 @@ export const WalletScreen = () => {
         <div className="px-8 md:px-20 py-2 bg-slate-800 flex justify-between items-center gap-2">
             <div className="grow hidden md:block" />
             <div className="flex gap-2 items-center h-8">
-                <Action onClick={create}>
+                {/* <Action onClick={create}>
                     {isDeploying ? "Spawning..." : "Deploy"}
                 </Action>
                 <input
@@ -33,8 +40,12 @@ export const WalletScreen = () => {
                             </option>
                         );
                     })}
-                </select>
-                <Audio />
+                </select> */}
+                <Audio
+                    audioRef={audioRef}
+                    playing={playing}
+                    toggleMusic={toggleMusic}
+                />
                 {/* <div>
                         <button
                             className="border-black border-solid border rounded p-1 px-4"
