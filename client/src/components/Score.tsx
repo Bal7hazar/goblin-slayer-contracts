@@ -14,6 +14,8 @@ interface ScoreProps {
 
 const Score: React.FC<ScoreProps> = ({ category }) => {
     const images = [pair, double, toak, foak, full, small, large, yahtzee];
+    console.log('images', images);
+    console.log('category', category);
 
     // Helpers
 
