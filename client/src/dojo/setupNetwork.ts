@@ -1,6 +1,6 @@
 import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
-import manifest from "../../../contracts/target/dev/manifest.json";
+import manifest from "./manifest.json";
 import * as torii from "@dojoengine/torii-client";
 import { Slayer } from "./generated/Slayer";
 
