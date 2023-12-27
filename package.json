@@ -2,7 +2,7 @@
     "name": "slayer-verse",
     "version": "0.0.1",
     "workspaces": [
-        "multiverse",
+        "client",
         "server"
     ],
     "devDependencies": {

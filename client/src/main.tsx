@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { setup } from "./dojo/setup";
-import { DojoProvider } from "./DojoContext";
+import { setup } from "./dojo/setup.ts";
+import { DojoProvider } from "./DojoContext.tsx";
 import {
     ApolloClient,
     InMemoryCache,
