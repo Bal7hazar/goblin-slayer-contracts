@@ -262,6 +262,7 @@ const Character = (props: TProps) => {
                 ) {
                     newX = 120;
                     newY = 100;
+                    directionIndexRef.current = 0;
                     break;
                 } else if (
                     TUNNEL_OUT_TILES.has(`${newX},${newY}`) &&
@@ -269,6 +270,7 @@ const Character = (props: TProps) => {
                 ) {
                     newX = 152;
                     newY = 180;
+                    directionIndexRef.current = 0;
                     break;
                 }
                 isMovingRef.current = false;
