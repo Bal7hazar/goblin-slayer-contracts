@@ -13,7 +13,7 @@ import {
 } from "@apollo/client";
 
 const client = new ApolloClient({
-    uri: `${import.meta.env.VITE_PUBLIC_TORII}/graphql`,
+    uri: import.meta.env.VITE_PUBLIC_TORII,
     cache: new InMemoryCache(),
 });
 

@@ -2,3 +2,4 @@
 .ds_store
 node_modules
 .env
+*.log
