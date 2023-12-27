@@ -12,11 +12,13 @@ const SCALE_FACTOR = 1.5;
 interface TProps {
     enabled: boolean;
     tag: number;
+    handleDuelModal: () => void;
     handleShopModal: () => void;
+    handleLeaderboard: () => void;
 }
 
 const GameScene = (props: TProps) => {
-    const { enabled, tag, handleShopModal } = props;
+    const { enabled, tag, handleDuelModal, handleShopModal, handleLeaderboard } = props;
     const [currentGroundIndex, setCurrentGroundIndex] = useState(0);
 
     useEffect(() => {
@@ -61,9 +63,8 @@ const GameScene = (props: TProps) => {
             const tileStyle = getTileStyle(tileId - 1, tileIndex, layer.width);
             return (
                 <div
-                    key={`${
-                        isObjectLayer ? "object" : "ground"
-                    }-tile-${tileIndex}`}
+                    key={`${isObjectLayer ? "object" : "ground"
+                        }-tile-${tileIndex}`}
                     style={tileStyle}
                     className="absolute"
                 />
@@ -88,7 +89,9 @@ const GameScene = (props: TProps) => {
                     <Character
                         enabled={enabled}
                         tag={tag}
+                        handleDuelModal={handleDuelModal}
                         handleShopModal={handleShopModal}
+                        handleLeaderboard={handleLeaderboard}
                     />
                 </div>
             </div>

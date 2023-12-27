@@ -8,6 +8,7 @@ const ACTIONS: { [key: string]: number[] } = {
     SWORD_ATTACK: [5, 6, 7, 8],
 };
 const MAP_BOUNDS = { minX: 8, maxX: 216, minY: 0, maxY: 212 };
+
 const HILL_TILES = new Set([
     "56,36",
     "72,36",
@@ -41,6 +42,7 @@ const HILL_TILES = new Set([
     "56,68",
     "56,52",
 ]);
+
 const WATER_TILES = new Set([
     "88,68",
     "104,68",
@@ -61,18 +63,110 @@ const WATER_TILES = new Set([
     "120,180",
     "120,212",
 ]);
+
+const GRASS_TILES = new Set([
+    "136,212",
+    "104,212",
+    "88,212",
+    "72,212",
+    "56,212",
+    "40,212",
+    "24,212",
+    "8,212",
+    "8,196",
+    "8,180",
+    "40,180",
+    "56,180",
+    "72,180",
+    "88,180",
+    "104,180",
+    "168,180",
+    "184,180",
+    "200,180",
+    "200,164",
+    "200,148",
+    "200,132",
+    "200,116",
+    "200,100",
+    "200,84",
+    "200,68",
+    "200,52",
+    "200,36",
+    "200,20",
+    "184,20",
+    "168,20",
+    "152,20",
+    "136,20",
+    "120,20",
+    "104,20",
+    "88,20",
+    "72,20",
+    "56,20",
+    "40,20",
+    "8,4",
+    "8,20",
+    "8,36",
+    "8,52",
+    "8,68",
+    "8,84",
+    "8,100",
+    "8,116",
+    "8,132",
+    "8,148",
+    "8,164",
+    "40,164",
+    "40,148",
+    "40,132",
+    "40,116",
+    "40,68",
+    "40,52",
+    "40,36",
+    "72,116",
+    "72,132",
+    "72,148",
+    "88,148",
+    "104,148",
+    "136,148",
+    "152,148",
+    "168,148",
+    "168,132",
+    "168,116",
+    "168,100",
+    "168,84",
+    "168,68",
+    "168,52",
+    "152,52",
+    "136,52",
+    "120,52",
+    "104,52",
+    "88,52",
+    "72,52",
+    "72,68",
+    "72,84",
+]);
+
 const OBJECT_TILES = new Set(["136,180", "40,84"]);
-const SHOP_TILE = "40,4";
+
 const SHOP_DRECTION_INDEX = 4;
+const SHOP_TILES = new Set(["40,4"]);
+
+const SIGN_DRECTION_INDEX = 4;
+const SIGN_TILES = new Set([
+    "56,4",
+    "40,100",
+    "136,196",
+]);
 
 interface TProps {
     enabled: boolean;
     tag: number;
+    handleDuelModal: () => void;
     handleShopModal: () => void;
+    handleLeaderboard: () => void;
 }
 
 const Character = (props: TProps) => {
-    const { enabled, tag, handleShopModal } = props;
+    const { enabled, tag, handleDuelModal, handleShopModal, handleLeaderboard } = props;
     const [action, setAction] = useState("STANDING");
     const [stepIndex, setStepIndex] = useState(0);
     const positionRef = useRef({ x: 40, y: 4 });
@@ -129,14 +223,23 @@ const Character = (props: TProps) => {
                 setTimeout(() => {
                     isMovingRef.current = false;
                     setAction("STANDING");
+                    console.log(`${newX},${newY}`)
+                    if (GRASS_TILES.has(`${newX},${newY}`)) {
+                        handleDuelModal();
+                    }
                 }, ACTIONS.SWORD_ATTACK.length * 200);
                 return;
             case "e":
                 if (
-                    `${newX},${newY}` == SHOP_TILE &&
+                    SHOP_TILES.has(`${newX},${newY}`) &&
                     directionIndexRef.current == SHOP_DRECTION_INDEX
                 ) {
                     handleShopModal();
+                } else if (
+                    SIGN_TILES.has(`${newX},${newY}`) &&
+                    directionIndexRef.current == SIGN_DRECTION_INDEX
+                ) {
+                    handleLeaderboard();
                 }
                 isMovingRef.current = false;
                 return;
@@ -185,9 +288,8 @@ const Character = (props: TProps) => {
             width: `${SPRITE_SIZE}px`,
             height: `${SPRITE_SIZE}px`,
             backgroundImage: `url(/src/assets/slayer-${tag}.png)`,
-            backgroundPosition: `-${step * SPRITE_SIZE}px -${
-                directionIndexRef.current * SPRITE_SIZE
-            }px`,
+            backgroundPosition: `-${step * SPRITE_SIZE}px -${directionIndexRef.current * SPRITE_SIZE
+                }px`,
             top: `${positionRef.current.y}px`,
             left: `${positionRef.current.x}px`,
             transition: "top 0.5s linear, left 0.5s linear",

@@ -208,7 +208,9 @@ function App() {
                                 <GameScene
                                     enabled={enableMove}
                                     tag={slayer ? slayer.tag : 0}
+                                    handleDuelModal={handleDuelModal}
                                     handleShopModal={handleShopModal}
+                                    handleLeaderboard={handleLeaderboard}
                                 />
                             </div>
                             {duelModal && (
