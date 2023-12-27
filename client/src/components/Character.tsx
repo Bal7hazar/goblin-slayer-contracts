@@ -348,8 +348,9 @@ const Character = (props: TProps) => {
             width: `${SPRITE_SIZE}px`,
             height: `${SPRITE_SIZE}px`,
             backgroundImage: `url(${SLAYERS[tag]})`,
-            backgroundPosition: `-${step * SPRITE_SIZE}px -${directionIndexRef.current * SPRITE_SIZE
-                }px`,
+            backgroundPosition: `-${step * SPRITE_SIZE}px -${
+                directionIndexRef.current * SPRITE_SIZE
+            }px`,
             top: `${positionRef.current.y}px`,
             left: `${positionRef.current.x}px`,
             transition: "top 0.5s linear, left 0.5s linear",

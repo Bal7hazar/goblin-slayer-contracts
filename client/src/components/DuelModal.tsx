@@ -46,15 +46,7 @@ interface DuelModalProps {
     updateOrders: (index: number, rolling: boolean) => void;
 }
 
-const GOLBINS = [
-    goblin0,
-    goblin1,
-    goblin2,
-    goblin3,
-    goblin4,
-    goblin5,
-    goblin6,
-];
+const GOLBINS = [goblin0, goblin1, goblin2, goblin3, goblin4, goblin5, goblin6];
 
 const SLAYERS = [
     slayer0,
@@ -91,9 +83,6 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
         handleBuy,
         updateOrders,
     } = props;
-
-    console.log('Slayer', slayer);
-    console.log('Duel', duel);
 
     return (
         <div className="flex flex-col justify-center items-center m-auto z-0">
@@ -137,7 +126,11 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                             <div className="w-20 h-20 overflow-clip">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={slayer ? SLAYERS[slayer.tag] : SLAYERS[0]}
+                                    src={
+                                        slayer
+                                            ? SLAYERS[slayer.tag]
+                                            : SLAYERS[0]
+                                    }
                                     alt=""
                                 />
                             </div>
