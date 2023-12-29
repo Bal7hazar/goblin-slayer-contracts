@@ -39,9 +39,10 @@ const Actions: React.FC<ActionsProps> = ({
         return (
             <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
                 <div className="flex flex-col justify-center w-1/2 p-1">
-                    <p>{`You ${slayer.xp == 0 ? "lose" : "win"}!`}</p>
+                    <p>{`You ${slayer.xp == 0 ? "lose" : "win"}! Again?`}</p>
                 </div>
                 <div className="flex w-1/2 justify-around">
+                    <Action onClick={handleSeek}>Seek</Action>
                     <Action onClick={handleCloseModals}>Close</Action>
                 </div>
             </div>
