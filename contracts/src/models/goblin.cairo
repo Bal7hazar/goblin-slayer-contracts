@@ -8,17 +8,17 @@ use slayer::constants::DEFAULT_DICE_COUNT;
 
 // Constants
 
-const MULTIPLIER: u256 = 100000;
+const MULTIPLIER: u256 = 100;
 
 #[derive(Drop, Copy)]
 enum Rank {
-    Goblin, // Rate: 68+% with nothing predefined
-    Rider, // Rate: 20% with a pair
-    Hobgoblin, // Rate: 10.0% with a 3 of a kind
-    Shaman, // Rate: 1.0% with a double pair
-    Champion, // Rate: 0.1% with a fullhouse
-    Lord, // Rate: 0.01% with a large straight
-    Paladin, // Rate: 0.001% with a yahtzee
+    Goblin, // Rate: 37% with nothing predefined
+    Rider, // Rate: 32% with a pair
+    Hobgoblin, // Rate: 16% with a 3 of a kind
+    Shaman, // Rate: 8% with a double pair
+    Champion, // Rate: 4% with a fullhouse
+    Lord, // Rate: 2% with a large straight
+    Paladin, // Rate: 1% with a yahtzee
 }
 
 impl RankIntoU8 of Into<Rank, u8> {
@@ -81,15 +81,15 @@ impl GoblinImpl of GoblinTrait {
         let number = seed.into() % MULTIPLIER;
         if number < 1 {
             return Rank::Paladin;
-        } else if number < 10 {
+        } else if number < 3 {
             return Rank::Lord;
-        } else if number < 100 {
+        } else if number < 7 {
             return Rank::Champion;
-        } else if number < 1000 {
+        } else if number < 15 {
             return Rank::Shaman;
-        } else if number < 10000 {
+        } else if number < 31 {
             return Rank::Hobgoblin;
-        } else if number < 20000 {
+        } else if number < 63 {
             return Rank::Rider;
         } else {
             return Rank::Goblin;
@@ -100,12 +100,16 @@ impl GoblinImpl of GoblinTrait {
         let mut dices: Array<u8> = array![];
         match self.rank {
             Rank::Goblin => {
+                dices.append(1);
+                dices.append(2);
                 loop {
-                    if dices.len() >= count.into() {
+                    if dices.len() + 2 >= count.into() {
                         break;
                     }
                     dices.append(dice.roll());
                 };
+                dices.append(dice.face_count);
+                dices.append(dice.face_count - 1);
                 dices
             },
             Rank::Rider => {
@@ -113,11 +117,16 @@ impl GoblinImpl of GoblinTrait {
                 dices.append(value);
                 dices.append(value);
                 loop {
-                    if dices.len() >= count.into() {
+                    if dices.len() + 1 >= count.into() {
                         break;
                     }
-                    dices.append(dice.roll());
+                    let new = dice.roll();
+                    if new != value {
+                        dices.append(new);
+                    };
                 };
+                // Add the last dice without checking for randomness
+                dices.append(dice.roll());
                 dices
             },
             Rank::Hobgoblin => {
@@ -126,11 +135,16 @@ impl GoblinImpl of GoblinTrait {
                 dices.append(value);
                 dices.append(value);
                 loop {
-                    if dices.len() >= count.into() {
+                    if dices.len() + 1 >= count.into() {
                         break;
                     }
-                    dices.append(dice.roll());
+                    let new = dice.roll();
+                    if new != value {
+                        dices.append(new);
+                    };
                 };
+                // Add the last dice without checking for randomness
+                dices.append(dice.roll());
                 dices
             },
             Rank::Shaman => {
@@ -141,11 +155,16 @@ impl GoblinImpl of GoblinTrait {
                 dices.append(value);
                 dices.append(value);
                 loop {
-                    if dices.len() >= count.into() {
+                    if dices.len() + 1 >= count.into() {
                         break;
                     }
-                    dices.append(dice.roll());
+                    let new = dice.roll();
+                    if new != value {
+                        dices.append(new);
+                    };
                 };
+                // Add the last dice without checking for randomness
+                dices.append(dice.roll());
                 dices
             },
             Rank::Champion => {
@@ -166,17 +185,20 @@ impl GoblinImpl of GoblinTrait {
             },
             Rank::Lord => {
                 let mut value = dice.roll();
+                if value == dice.face_count {
+                    value -= 1;
+                };
                 dices.append(value);
                 loop {
                     if dices.len() >= count.into() {
                         break;
                     }
-                    dices.append(value);
                     if value == 1 {
-                        value = dice.face_count;
+                        value = dice.face_count - 1;
                     } else {
                         value -= 1;
                     };
+                    dices.append(value);
                 };
                 dices
             },

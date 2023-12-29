@@ -99,19 +99,19 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
     const [slayerAction, setSlayerAction] = useState("STANDING");
 
     useEffect(() => {
-        if (duel && slayer) {
-            setGoblinAction("STANDING");
-            setSlayerAction("STANDING");
-        } else if (slayer) {
-            if (slayer.xp > 0) {
+        if (slayer && duel) {
+            if (duel.over && slayer.xp > 0) {
                 setGoblinAction("DYING");
                 setSlayerAction("JUMPING");
-            } else {
+            } else if (duel.over) {
                 setGoblinAction("JUMPING");
                 setSlayerAction("DYING");
+            } else {
+                setGoblinAction("STANDING");
+                setSlayerAction("STANDING");
             }
         }
-    }, [duel]);
+    }, [duel, slayer]);
 
     const handlePlay = () => {
         setSlayerAction("SWORD_ATTACK");

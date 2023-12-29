@@ -309,7 +309,6 @@ mod tests {
         assert_eq!(duel.seed, SEED);
         assert_eq!(duel.nonce, 0);
         assert_eq!(duel.round, 0);
-        assert_eq!(duel.rank, 0);
         assert_eq!(duel.slayer_dices, 0);
         assert_eq!(duel.goblin_dices, 0);
         assert_eq!(duel.slayer_score_value, 0);

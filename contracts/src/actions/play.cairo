@@ -121,9 +121,11 @@ mod play {
 
             // TODO: Disable on testnet
             let seed = get_tx_info().unbox().transaction_hash;
+            slayer.duel_id += 1;
             let mut duel: Duel = DuelTrait::new(slayer.duel_id, slayer.id, seed);
             duel.start();
             store.set_duel(duel);
+            store.set_slayer(slayer);
         // TODO: Enable on testnet
         // // [Interaction] Approve fees
         // let eth_dispatcher = IERC20Dispatcher { contract_address: ETH_ADDRESS() };
@@ -203,7 +205,6 @@ mod play {
 
             // [Effect] Update slayer if duel is over
             if duel.over {
-                slayer.duel_id += 1;
                 duel.reward(ref slayer);
                 store.set_slayer(slayer);
             }

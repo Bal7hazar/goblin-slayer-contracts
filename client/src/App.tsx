@@ -139,7 +139,7 @@ function App() {
     };
 
     const handleSeek = async () => {
-        if (!duel) {
+        if (duel ? duel.over : true) {
             await provider.play.seek({
                 account,
             });
@@ -152,12 +152,6 @@ function App() {
             orders: orders,
         });
         setOrders(0x0);
-
-        // setTimeout(() => {
-        //     if (duel && duel.round == duel.round_count) {
-        //         handleCloseModals();
-        //     }
-        // }, 3000);
     };
 
     const handleBuy = async () => {
@@ -271,9 +265,10 @@ function App() {
                                     <ShopModal
                                         handleBuy={handleBuy}
                                         disabled={
-                                            duel
-                                                ? duel.seed != BigInt(0)
-                                                : false
+                                            (slayer
+                                                ? slayer.gold < BigInt(10)
+                                                : false) ||
+                                            (duel ? !duel.over : false)
                                         }
                                     />
                                 </div>
