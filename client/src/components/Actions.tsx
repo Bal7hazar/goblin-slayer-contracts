@@ -42,7 +42,7 @@ const Actions: React.FC<ActionsProps> = ({
                     <p>
                         {duel
                             ? `You ${slayer.xp == 0 ? "lose" : "win"}! Again?`
-                            : `Welcome!`}
+                            : `Welcome Slayer!`}
                     </p>
                 </div>
                 <div className="flex w-1/2 justify-around">
