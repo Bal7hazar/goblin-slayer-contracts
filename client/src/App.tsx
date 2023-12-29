@@ -139,9 +139,11 @@ function App() {
     };
 
     const handleSeek = async () => {
-        await provider.play.seek({
-            account,
-        });
+        if (!duel) {
+            await provider.play.seek({
+                account,
+            });
+        }
     };
 
     const handleRoll = async () => {
@@ -150,6 +152,12 @@ function App() {
             orders: orders,
         });
         setOrders(0x0);
+
+        // setTimeout(() => {
+        //     if (duel && duel.round == duel.round_count) {
+        //         handleCloseModals();
+        //     }
+        // }, 3000);
     };
 
     const handleBuy = async () => {
@@ -230,6 +238,7 @@ function App() {
                                     handleDuelModal={handleDuelModal}
                                     handleShopModal={handleShopModal}
                                     handleLeaderboard={handleLeaderboard}
+                                    handleSeek={handleSeek}
                                 />
                             </div>
                             {duelModal && (
@@ -252,6 +261,7 @@ function App() {
                                         handleSeek={handleSeek}
                                         handleApply={handleApply}
                                         handleBuy={handleBuy}
+                                        handleCloseModals={handleCloseModals}
                                         updateOrders={updateOrders}
                                     />
                                 </div>

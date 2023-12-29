@@ -9,6 +9,7 @@ interface ActionsProps {
     handleApply: () => void;
     handleSeek: () => void;
     handleBuy: () => void;
+    handleCloseModals: () => void;
 }
 
 const Actions: React.FC<ActionsProps> = ({
@@ -19,6 +20,7 @@ const Actions: React.FC<ActionsProps> = ({
     handleApply,
     handleSeek,
     handleBuy,
+    handleCloseModals,
 }) => {
     if (!slayer) {
         return (
@@ -37,14 +39,27 @@ const Actions: React.FC<ActionsProps> = ({
         return (
             <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
                 <div className="flex flex-col justify-center w-1/2 p-1">
-                    <p>What will Slayer do?</p>
+                    <p>{`You ${slayer.xp == 0 ? "lose" : "win"}!`}</p>
                 </div>
                 <div className="flex w-1/2 justify-around">
-                    <Action onClick={handleSeek}>Seek</Action>
+                    <Action onClick={handleCloseModals}>Close</Action>
                 </div>
             </div>
         );
     }
+
+    // if (slayer && duel ? duel.over : true) {
+    //     return (
+    //         <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
+    //             <div className="flex flex-col justify-center w-1/2 p-1">
+    //                 <p>What will Slayer do?</p>
+    //             </div>
+    //             <div className="flex w-1/2 justify-around">
+    //                 <Action onClick={handleSeek}>Seek</Action>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     const disabled = slayer.items == 0;
 

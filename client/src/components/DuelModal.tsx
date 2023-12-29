@@ -1,29 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Actions from "./Actions";
 import Dices from "./Dices";
 import Score from "./Score";
+import Character from "./CharacterDuel";
 
 // Images
 
-import goblin0 from "../assets/goblin-0-avatar-256.png";
-import goblin1 from "../assets/goblin-1-avatar-256.png";
-import goblin2 from "../assets/goblin-2-avatar-256.png";
-import goblin3 from "../assets/goblin-3-avatar-256.png";
-import goblin4 from "../assets/goblin-4-avatar-256.png";
-import goblin5 from "../assets/goblin-5-avatar-256.png";
-import goblin6 from "../assets/goblin-6-avatar-256.png";
+import goblin0 from "../assets/goblin-0-128.png";
+import goblin1 from "../assets/goblin-1-128.png";
+import goblin2 from "../assets/goblin-2-128.png";
+import goblin3 from "../assets/goblin-3-128.png";
+import goblin4 from "../assets/goblin-4-128.png";
+import goblin5 from "../assets/goblin-5-128.png";
+import goblin6 from "../assets/goblin-6-128.png";
 
-import slayer0 from "../assets/slayer-0-avatar-256.png";
-import slayer1 from "../assets/slayer-1-avatar-256.png";
-import slayer2 from "../assets/slayer-2-avatar-256.png";
-import slayer3 from "../assets/slayer-3-avatar-256.png";
-import slayer4 from "../assets/slayer-4-avatar-256.png";
-import slayer5 from "../assets/slayer-5-avatar-256.png";
-import slayer6 from "../assets/slayer-6-avatar-256.png";
-import slayer7 from "../assets/slayer-7-avatar-256.png";
-import slayer8 from "../assets/slayer-8-avatar-256.png";
-import slayer9 from "../assets/slayer-9-avatar-256.png";
-import slayer10 from "../assets/slayer-10-avatar-256.png";
+import slayer0 from "../assets/slayer-0-128.png";
+import slayer1 from "../assets/slayer-1-128.png";
+import slayer2 from "../assets/slayer-2-128.png";
+import slayer3 from "../assets/slayer-3-128.png";
+import slayer4 from "../assets/slayer-4-128.png";
+import slayer5 from "../assets/slayer-5-128.png";
+import slayer6 from "../assets/slayer-6-128.png";
+import slayer7 from "../assets/slayer-7-128.png";
+import slayer8 from "../assets/slayer-8-128.png";
+import slayer9 from "../assets/slayer-9-128.png";
+import slayer10 from "../assets/slayer-10-128.png";
 
 interface DuelModalProps {
     background: string;
@@ -43,6 +44,7 @@ interface DuelModalProps {
     handleSeek: () => void;
     handleApply: () => void;
     handleBuy: () => void;
+    handleCloseModals: () => void;
     updateOrders: (index: number, rolling: boolean) => void;
 }
 
@@ -61,6 +63,14 @@ const SLAYERS = [
     slayer9,
     slayer10,
 ];
+
+const ACTIONS: { [key: string]: number[] } = {
+    STANDING: [0, 1],
+    WALKING: [2, 3, 4],
+    SWORD_ATTACK: [5, 6, 7, 8],
+    DYING: [19, 20, 21, 22, 23, 24],
+    JUMPING: [25, 28],
+};
 
 const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
     const {
@@ -81,8 +91,32 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
         handleApply,
         handleSeek,
         handleBuy,
+        handleCloseModals,
         updateOrders,
     } = props;
+
+    const [goblinAction, setGoblinAction] = useState("STANDING");
+    const [slayerAction, setSlayerAction] = useState("STANDING");
+
+    useEffect(() => {
+        if (duel && slayer) {
+            setGoblinAction("STANDING");
+            setSlayerAction("STANDING");
+        } else if (slayer) {
+            if (slayer.xp > 0) {
+                setGoblinAction("DYING");
+                setSlayerAction("JUMPING");
+            } else {
+                setGoblinAction("JUMPING");
+                setSlayerAction("DYING");
+            }
+        }
+    }, [duel]);
+
+    const handlePlay = () => {
+        setSlayerAction("SWORD_ATTACK");
+        handleRoll();
+    };
 
     return (
         <div className="flex flex-col justify-center items-center m-auto z-0">
@@ -95,7 +129,7 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                         alt=""
                     />
                     <div className="z-10 max-w-xl flex flex-col gap-2 h-full">
-                        <div className="flex justify-between items-start gap-1 p-2">
+                        <div className="relative flex justify-between items-start gap-1 p-2">
                             <div className="flex flex-col justify-start items-start grow px-2">
                                 <div className="flex justify-left items-center gap-4">
                                     <h2 className="text-2xl text-center uppercase">
@@ -113,25 +147,21 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                                     stopRoll={stopRoll}
                                 />
                             </div>
-                            <div className="w-20 h-20 overflow-clip flex justify-center items-center">
-                                <img
-                                    className="w-full h-full object-cover"
-                                    src={duel ? GOLBINS[duel.rank] : GOLBINS[0]}
-                                    alt=""
+                            <div className="relative -translate-x-36 -translate-y-4">
+                                <Character
+                                    image={GOLBINS[duel ? duel.rank : 0]}
+                                    directionIndex={7}
+                                    action={goblinAction}
                                 />
                             </div>
                         </div>
                         <div className="grow" />
                         <div className="flex justify-between items-end gap-1 p-2">
-                            <div className="w-20 h-20 overflow-clip">
-                                <img
-                                    className="w-full h-full object-cover"
-                                    src={
-                                        slayer
-                                            ? SLAYERS[slayer.tag]
-                                            : SLAYERS[0]
-                                    }
-                                    alt=""
+                            <div className="relative -translate-x-16 -translate-y-24">
+                                <Character
+                                    image={SLAYERS[slayer ? slayer.tag : 0]}
+                                    directionIndex={3}
+                                    action={slayerAction}
                                 />
                             </div>
                             <div className="flex flex-col justify-end items-end grow px-2">
@@ -157,10 +187,11 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                             slayer={slayer}
                             duel={duel}
                             handleCreate={handleCreate}
-                            handleRoll={handleRoll}
+                            handleRoll={handlePlay}
                             handleApply={handleApply}
                             handleSeek={handleSeek}
                             handleBuy={handleBuy}
+                            handleCloseModals={handleCloseModals}
                         />
                     </div>
                 </div>

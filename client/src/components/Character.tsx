@@ -34,6 +34,7 @@ const ACTIONS: { [key: string]: number[] } = {
     STANDING: [0, 1],
     WALKING: [2, 3, 4],
     SWORD_ATTACK: [5, 6, 7, 8],
+    DYING: [19, 20, 21, 22, 23, 24],
 };
 const MAP_BOUNDS = { minX: 8, maxX: 216, minY: 0, maxY: 212 };
 
@@ -202,6 +203,7 @@ interface TProps {
     handleDuelModal: () => void;
     handleShopModal: () => void;
     handleLeaderboard: () => void;
+    handleSeek: () => void;
 }
 
 const Character = (props: TProps) => {
@@ -211,6 +213,7 @@ const Character = (props: TProps) => {
         handleDuelModal,
         handleShopModal,
         handleLeaderboard,
+        handleSeek,
     } = props;
     const [action, setAction] = useState("STANDING");
     const [stepIndex, setStepIndex] = useState(0);
@@ -262,6 +265,9 @@ const Character = (props: TProps) => {
                 directionIndexRef.current = 2;
                 break;
             case "q":
+                if (GRASS_TILES.has(`${newX},${newY}`)) {
+                    handleSeek();
+                }
                 setAction("SWORD_ATTACK");
                 setStepIndex(0);
                 isMovingRef.current = true;

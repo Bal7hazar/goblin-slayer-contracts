@@ -15,6 +15,7 @@ interface TProps {
     handleDuelModal: () => void;
     handleShopModal: () => void;
     handleLeaderboard: () => void;
+    handleSeek: () => void;
 }
 
 const GameScene = (props: TProps) => {
@@ -24,6 +25,7 @@ const GameScene = (props: TProps) => {
         handleDuelModal,
         handleShopModal,
         handleLeaderboard,
+        handleSeek,
     } = props;
     const [currentGroundIndex, setCurrentGroundIndex] = useState(0);
 
@@ -99,6 +101,7 @@ const GameScene = (props: TProps) => {
                         handleDuelModal={handleDuelModal}
                         handleShopModal={handleShopModal}
                         handleLeaderboard={handleLeaderboard}
+                        handleSeek={handleSeek}
                     />
                 </div>
             </div>
