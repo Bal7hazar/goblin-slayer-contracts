@@ -1,7 +1,7 @@
 {
   "world": {
     "name": "dojo::world::world",
-    "address": "0x30832a638845f546cc820df104d36bac9e779c21ba4ad3e2a3bd6f8d8a566c5",
+    "address": "0x5a5719cdf14d12207354a1f1b3c6ce8814fcd9b328c7e3950c78b99f373a46a",
     "class_hash": "0x5ac623f0c96059936bd2d0904bdd31799e430fe08a0caff7a5f497260b16497",
     "abi": [
       {
@@ -948,7 +948,7 @@
   "contracts": [
     {
       "name": "slayer::actions::play::play",
-      "address": "0x4f5843ca840df66ad6ba0a428883e262d9814014f8e68542c5ec21f9bc37fba",
+      "address": "0x719fcd2cc92c0b43092f45f062f85c5f08f8dd05767e2c1de02c091ab3110ae",
       "class_hash": "0xe2ad1bbb6737c3d218b44f90d7cb4e63e073317a30baff2c24f52a0975e942",
       "abi": [
         {
