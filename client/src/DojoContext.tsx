@@ -103,7 +103,8 @@ export const DojoContextProvider = ({ children, value }: DojoProviderProps) => {
         [rpcProvider, masterAddress, privateKey]
     );
 
-    const { create, list, get, account, select, isDeploying, clear } = useBurner();
+    const { create, list, get, account, select, isDeploying, clear } =
+        useBurner();
 
     return (
         <DojoContext.Provider

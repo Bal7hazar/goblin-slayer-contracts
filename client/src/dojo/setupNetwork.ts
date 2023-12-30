@@ -19,7 +19,9 @@ export async function setupNetwork() {
     // Create a new RPCProvider instance.
     const provider = new Slayer(
         VITE_PUBLIC_WORLD_ADDRESS,
-        VITE_PUBLIC_DEV ? await import("../../../contracts/target/dev/manifest.json") : manifest,
+        VITE_PUBLIC_DEV
+            ? await import("../../../contracts/target/dev/manifest.json")
+            : manifest,
         VITE_PUBLIC_NODE_URL
     );
 

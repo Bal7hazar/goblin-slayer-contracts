@@ -96,7 +96,7 @@ function App() {
 
     const handleName = (name: string) => {
         setSlayerName(name.toUpperCase());
-    }
+    };
 
     const handleCloseModals = async () => {
         setDuelModal(false);

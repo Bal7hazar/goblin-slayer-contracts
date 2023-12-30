@@ -63,16 +63,32 @@ const Leaderboard = (props: TProps) => {
     const getSlayer = (rank: number, { name, title, xp, self }: TSlayer) => {
         return (
             <div key={rank} className="w-full flex justify-between">
-                <div className={`w-32 flex justify-center items-center underline-offset-2 ${self && 'underline text-red-400'}`}>
+                <div
+                    className={`w-32 flex justify-center items-center underline-offset-2 ${
+                        self && "underline text-red-400"
+                    }`}
+                >
                     {`#${rank}`}
                 </div>
-                <div className={`w-32 flex justify-center items-center uppercase bold underline-offset-2 ${self && 'underline text-red-400'}`}>
+                <div
+                    className={`w-32 flex justify-center items-center uppercase bold underline-offset-2 ${
+                        self && "underline text-red-400"
+                    }`}
+                >
                     {name}
                 </div>
-                <div className={`w-32 flex justify-center items-center underline-offset-2 ${self && 'underline text-red-400'}`}>
+                <div
+                    className={`w-32 flex justify-center items-center underline-offset-2 ${
+                        self && "underline text-red-400"
+                    }`}
+                >
                     {xp}
                 </div>
-                <div className={`grow flex justify-center items-center underline-offset-2 ${self && 'underline text-red-400'}`}>
+                <div
+                    className={`grow flex justify-center items-center underline-offset-2 ${
+                        self && "underline text-red-400"
+                    }`}
+                >
                     {title}
                 </div>
             </div>

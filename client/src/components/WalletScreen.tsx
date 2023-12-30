@@ -22,11 +22,7 @@ export const WalletScreen = (props: TProps) => {
     }, [name]);
 
     const {
-        account: {
-            create,
-            account,
-            clear,
-        },
+        account: { create, account, clear },
     } = useDojo();
 
     const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,8 +54,8 @@ export const WalletScreen = (props: TProps) => {
                     icon={faArrowsRotate}
                     onClick={handleRefresh}
                     style={{
-                        color: name ? 'inherit' : 'gray',
-                        cursor: name ? 'pointer' : 'not-allowed',
+                        color: name ? "inherit" : "gray",
+                        cursor: name ? "pointer" : "not-allowed",
                     }}
                 />
                 {/* <FontAwesomeIcon
