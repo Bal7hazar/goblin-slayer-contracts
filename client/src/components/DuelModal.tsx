@@ -39,7 +39,6 @@ interface DuelModalProps {
     slayer: any;
     duel: any;
     stopRoll: boolean;
-    handleCreate: () => void;
     handleRoll: () => void;
     handleSeek: () => void;
     handleApply: () => void;
@@ -86,7 +85,6 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
         slayer,
         duel,
         stopRoll,
-        handleCreate,
         handleRoll,
         handleApply,
         handleSeek,
@@ -186,7 +184,6 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
                         <Actions
                             slayer={slayer}
                             duel={duel}
-                            handleCreate={handleCreate}
                             handleRoll={handlePlay}
                             handleApply={handleApply}
                             handleSeek={handleSeek}

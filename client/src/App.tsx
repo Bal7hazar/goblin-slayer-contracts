@@ -32,23 +32,22 @@ function App() {
 
     // const { image, background, portrait } = useTerraformer();
 
+    const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState(0x1f);
     const [tag, setTag] = useState("Starter");
     const [rank, setRank] = useState("Normal");
     const [title, setTitle] = useState("Slayer");
     const [goblin, setGoblin] = useState("Goblin");
     const [goblinDices, setGoblinDices] = useState(0);
-    const [goblinScore, setGoblinScore] = useState(0);
     const [goblinCategory, setGoblinCategory] = useState(0);
-    const [slayerName, setSlayerName] = useState("Anonymous");
+    const [slayerName, setSlayerName] = useState("OHAYO");
     const [slayerDices, setSlayerDices] = useState(0);
-    const [slayerScore, setSlayerScore] = useState(0);
     const [slayerCategory, setSlayerCategory] = useState(0);
     const [stopRoll, setStopRoll] = useState(false);
-    const [duelModal, setDuelModal] = useState(true);
+    const [duelModal, setDuelModal] = useState(false);
     const [shopModal, setShopModal] = useState(false);
     const [leaderboard, setLeaderboard] = useState(false);
-    const [enableMove, setEnableMove] = useState(false);
+    const [enableMove, setEnableMove] = useState(true);
     const [isPlayingMusic, setIsPlayingMusic] = useState(false);
     const audioRef = useRef<any>(null);
 
@@ -56,8 +55,7 @@ function App() {
         setup: {
             components: { Duel, Slayer },
             network: { provider },
-            // account: { create, list, select, account, isDeploying, clear },
-            masterAccount: account,
+            account: { account },
         },
     } = useDojo();
 
@@ -83,16 +81,22 @@ function App() {
         if (duel) {
             setRank(getRank(duel.rank));
             setGoblinDices(duel.goblin_dices);
-            setGoblinScore(duel.goblin_score_value);
             setGoblinCategory(duel.goblin_score_category);
             setSlayerDices(duel.slayer_dices);
-            setSlayerScore(duel.slayer_score_value);
             setSlayerCategory(duel.slayer_score_category);
         }
         setStopRoll(!stopRoll);
     }, [slayer, duel]);
 
+    useEffect(() => {
+        handleCreate();
+    }, [slayerName]);
+
     // Handlers
+
+    const handleName = (name: string) => {
+        setSlayerName(name.toUpperCase());
+    }
 
     const handleCloseModals = async () => {
         setDuelModal(false);
@@ -132,10 +136,12 @@ function App() {
         if (!isPlayingMusic) {
             toggleMusic();
         }
+        setLoading(true);
         await provider.play.create({
             account,
-            name: "ohayo",
+            name: slayerName.toUpperCase(),
         });
+        setLoading(false);
     };
 
     const handleSeek = async () => {
@@ -192,9 +198,11 @@ function App() {
             <div className="z-0">
                 <div className="h-screen z-0 flex flex-col">
                     <WalletScreen
+                        name={slayerName}
                         audioRef={audioRef}
                         playing={isPlayingMusic}
                         toggleMusic={toggleMusic}
+                        handleName={handleName}
                     />
                     <div
                         className="relative flex flex-col px-2 md:px-20 grow z-0"
@@ -250,7 +258,6 @@ function App() {
                                         slayer={slayer}
                                         duel={duel}
                                         stopRoll={stopRoll}
-                                        handleCreate={handleCreate}
                                         handleRoll={handleRoll}
                                         handleSeek={handleSeek}
                                         handleApply={handleApply}
@@ -275,7 +282,7 @@ function App() {
                             )}
                             {leaderboard && (
                                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gray-900/80 flex justify-center items-center">
-                                    <Leaderboard />
+                                    <Leaderboard slayer={slayer} />
                                 </div>
                             )}
                         </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { shortString } from "starknet";
 import { getRank, getTag, getTitle } from "../hooks/utils";
@@ -8,6 +8,7 @@ const GET_DATA = gql`
         slayerModels(first: 10000) {
             edges {
                 node {
+                    id
                     name
                     tag
                     title
@@ -22,10 +23,20 @@ interface TSlayer {
     name: string;
     title: string;
     xp: string;
+    self: boolean;
 }
 
-const Leaderboard = () => {
-    const { loading, error, data } = useQuery(GET_DATA);
+interface TProps {
+    slayer: any;
+}
+
+const Leaderboard = (props: TProps) => {
+    const { slayer } = props;
+    const { loading, error, data, refetch } = useQuery(GET_DATA);
+
+    useEffect(() => {
+        refetch();
+    }, [slayer, refetch]);
 
     const getHeader = () => {
         return (
@@ -49,17 +60,19 @@ const Leaderboard = () => {
         );
     };
 
-    const getSlayer = (rank: number, { name, title, xp }: TSlayer) => {
+    const getSlayer = (rank: number, { name, title, xp, self }: TSlayer) => {
         return (
-            <div className="w-full flex justify-between">
-                <div className="w-32 flex justify-center items-center">{`#${rank}`}</div>
-                <div className="w-32 flex justify-center items-center uppercase">
+            <div key={rank} className="w-full flex justify-between">
+                <div className={`w-32 flex justify-center items-center underline-offset-2 ${self && 'underline text-red-400'}`}>
+                    {`#${rank}`}
+                </div>
+                <div className={`w-32 flex justify-center items-center uppercase bold underline-offset-2 ${self && 'underline text-red-400'}`}>
                     {name}
                 </div>
-                <div className="w-32 flex justify-center items-center">
+                <div className={`w-32 flex justify-center items-center underline-offset-2 ${self && 'underline text-red-400'}`}>
                     {xp}
                 </div>
-                <div className="grow flex justify-center items-center">
+                <div className={`grow flex justify-center items-center underline-offset-2 ${self && 'underline text-red-400'}`}>
                     {title}
                 </div>
             </div>
@@ -71,11 +84,12 @@ const Leaderboard = () => {
 
     const slayers: TSlayer[] = data.slayerModels.edges
         .map((edge: any) => {
-            const { name, tag, title, xp } = edge.node;
+            const { id, name, tag, title, xp } = edge.node;
             return {
                 name: shortString.decodeShortString(name.toString()),
                 title: `${getTitle(title)} ${getTag(tag)} Slayer`,
                 xp: parseInt(xp.toString(), 16),
+                self: BigInt(id) === BigInt(slayer ? slayer.id : 0),
             };
         })
         .sort((a: any, b: any) => b.xp - a.xp)

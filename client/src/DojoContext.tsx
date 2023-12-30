@@ -6,7 +6,7 @@ import { SetupResult } from "./dojo/setup";
 interface DojoContextType extends SetupResult {
     masterAccount: Account;
     account: {
-        create: () => void;
+        create: () => Promise<Account>;
         list: () => any[];
         get: (id: string) => any;
         select: (id: string) => void;
@@ -103,13 +103,7 @@ export const DojoContextProvider = ({ children, value }: DojoProviderProps) => {
         [rpcProvider, masterAddress, privateKey]
     );
 
-    const { create, list, get, account, select, isDeploying, clear } =
-        useBurner();
-
-    // if (!list().length && !isDeploying) {
-    //   create();
-    //   return;
-    // }
+    const { create, list, get, account, select, isDeploying, clear } = useBurner();
 
     return (
         <DojoContext.Provider
@@ -118,7 +112,6 @@ export const DojoContextProvider = ({ children, value }: DojoProviderProps) => {
                 masterAccount,
                 account: {
                     create,
-
                     list,
                     get,
                     select,

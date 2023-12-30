@@ -4,7 +4,6 @@ import Action from "./Action";
 interface ActionsProps {
     slayer: any;
     duel: any;
-    handleCreate: () => void;
     handleRoll: () => void;
     handleApply: () => void;
     handleSeek: () => void;
@@ -15,7 +14,6 @@ interface ActionsProps {
 const Actions: React.FC<ActionsProps> = ({
     slayer,
     duel,
-    handleCreate,
     handleRoll,
     handleApply,
     handleSeek,
@@ -26,11 +24,11 @@ const Actions: React.FC<ActionsProps> = ({
         return (
             <div className="flex justify-between border-black border-solid border-2 rounded p-1 bg-slate-200 m-1">
                 <div className="flex flex-col justify-center w-1/2 p-1">
-                    <p>New slayer?</p>
+                    <p>Loading ...</p>
                 </div>
-                <div className="flex w-1/2 justify-around">
+                {/* <div className="flex w-1/2 justify-around">
                     <Action onClick={handleCreate}>Create</Action>
-                </div>
+                </div> */}
             </div>
         );
     }
