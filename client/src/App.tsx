@@ -133,18 +133,26 @@ function App() {
     };
 
     const handleCreate = async () => {
-        if (!isPlayingMusic) {
-            toggleMusic();
-        }
+        console.log('create');
+
         setLoading(true);
         await provider.play.create({
             account,
             name: slayerName.toUpperCase(),
         });
         setLoading(false);
+
+        if (!isPlayingMusic) {
+            try {
+                toggleMusic();
+            } catch (err) {
+                console.log(err);
+            }
+        }
     };
 
     const handleSeek = async () => {
+        console.log('seek');
         if (duel ? duel.over : true) {
             await provider.play.seek({
                 account,
@@ -153,6 +161,7 @@ function App() {
     };
 
     const handleRoll = async () => {
+        console.log('roll');
         await provider.play.roll({
             account,
             orders: orders,
@@ -161,6 +170,7 @@ function App() {
     };
 
     const handleBuy = async () => {
+        console.log('buy');
         await provider.play.buy({
             account,
             item: 0,
@@ -168,6 +178,7 @@ function App() {
     };
 
     const handleApply = async () => {
+        console.log('apply');
         await provider.play.apply({
             account,
             item: 0,
