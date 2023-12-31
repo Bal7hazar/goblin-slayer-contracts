@@ -1,15 +1,74 @@
 # Slayer
 
-## Trailer
+## About the Game
 
-You can learn more about the game watching first the [video trailer](https://www.youtube.com/watch?v=42Oa_rTH3m0)
+Slayer is a groundbreaking gaming experience inspired by the universe of the popular manga, Goblin Slayer.
+
+This game is deployed on Starknet, to offer a novel and immersive gameplay experience. Developed using the innovative Dojo framework, it combines elements of strategy, role-playing, and real-time action, ensuring a thrilling adventure for all players.
+
+You can learn more about the game watching the [video trailer](https://www.youtube.com/watch?v=42Oa_rTH3m0)
 
 ## How to play?
 
-- Open the client: https://slayer-client.vercel.app/
-- If it is the first time you play the game, create a new Slayer by providing a name
-- Follow the displayed instructions to play
-- Reach the top of the leaderboard
+This rulebook serves as a comprehensive guide to the exciting and challenging world of Slayer game.
+
+Embark on your adventure, outwit the goblins, and rise to the top of the leaderboard!
+
+### Starting Up
+
+Open the client: https://slayer-client.vercel.app/
+
+Account Setup: Upon launching the game, a burner account is automatically deployed and stored in cache. Players have the option to personalize their gaming experience by renaming the default account name and deploying a new burner account.
+
+### Movement and Interaction
+
+#### Navigation
+
+Players can move freely across the game map using the WASD keys.
+
+#### Interacting with the Environment
+
+Press the 'E' key to interact with specific locations on the map. These locations are hidden and must be discovered by the player.
+
+#### Initiating Duels
+
+The 'Q' key triggers a duel with a goblin hiding in the tall grass.
+
+### Combat and Duels
+
+#### Duel Mechanics
+
+Duels are turn-based dice games spread over three rounds.
+
+Players face goblins of varying difficulty levels, each with a dice score determined by a unique seed.
+
+To win, players must outscore the goblin in dice rolls over the three rounds.
+
+Each round offers the option to re-roll some or all dice to improve the score.
+
+### Progress and Rewards
+
+#### Earning Gold and Experience
+
+Victories in duels reward players with gold and experience points.
+
+#### Character Enhancement and Leaderboard
+
+Experience points enhance the visual appearance of the player's character and help climb the ranks in the game's leaderboard.
+
+#### Purchasing Bonuses
+
+Gold can be used to buy in-game bonuses, like extra rounds in duels. Note that the in-game shop is inaccessible during duels.
+
+Titles and Recognition: Accumulated experience and gold grant players titles that are visible to others in the leaderboard.
+
+### Risks and Penalties
+
+#### Consequences of Defeat:
+
+Failing in a duel results in the loss of all accumulated experience.
+
+Players are reset to the base gold level and lose any acquired bonuses.
 
 ## VRF Version
 
