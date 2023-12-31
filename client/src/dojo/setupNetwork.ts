@@ -3,8 +3,8 @@ import { world } from "./world";
 import { Account, num } from "starknet";
 import * as torii from "@dojoengine/torii-client";
 import { Slayer } from "./generated/Slayer";
-import manifest from "./manifest.json";
-// import manifest from "../../../contracts/target/dev/manifest.json";
+// import manifest from "./manifest.json";
+import manifest from "../../../contracts/goerli/manifest.json";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
