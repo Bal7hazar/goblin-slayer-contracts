@@ -18,6 +18,7 @@ mod tests {
     mod create;
     mod seek;
     mod play;
+    mod vrf_play;
     mod buy;
     mod apply;
 

@@ -1,0 +1,41 @@
+// Core imports
+
+use debug::PrintTrait;
+
+// Starknet imports
+
+use starknet::testing::set_contract_address;
+
+// Dojo imports
+
+use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+
+// Internal imports
+
+use slayer::store::{Store, StoreTrait};
+use slayer::models::slayer::{Slayer, SlayerTrait};
+use slayer::models::duel::{Duel, DuelTrait};
+use slayer::actions::play::IPlayDispatcherTrait;
+use slayer::tests::setup::{setup, setup::{Actions, SLAYER, ANYONE}};
+use slayer::tests::mocks::vrf::{IVRFDispatcher, IVRFDispatcherTrait};
+
+// Constants
+
+const SLAYER_NAME: felt252 = 'SLAYER';
+
+#[test]
+fn test_vrf_play_roll() {
+    // [Setup]
+    let (world, eth, vrf, actions) = setup::spawn_game();
+    let mut store = StoreTrait::new(world);
+
+    // [Create]
+    actions.play.create(world, SLAYER_NAME);
+    // [Seek]
+    actions.play.request_seek(world);
+    vrf.submit_random();
+
+    // [Play]
+    let orders = integer::BoundedU8::max();
+    actions.play.roll(world, orders)
+}

@@ -14,11 +14,17 @@ use slayer::models::slayer::Item;
 
 #[starknet::interface]
 trait IPlay<TContractState> {
+    fn get_eth_address(self: @TContractState) -> ContractAddress;
+    fn get_vrf_address(self: @TContractState) -> ContractAddress;
+    fn initialize(
+        ref self: TContractState, eth_address: ContractAddress, vrf_address: ContractAddress
+    );
     fn create(ref self: TContractState, world: IWorldDispatcher, name: felt252,);
     fn seek(ref self: TContractState, world: IWorldDispatcher,);
     fn roll(ref self: TContractState, world: IWorldDispatcher, orders: u8,);
     fn buy(ref self: TContractState, world: IWorldDispatcher, item: Item,);
     fn apply(ref self: TContractState, world: IWorldDispatcher, item: Item,);
+    fn request_seek(ref self: TContractState, world: IWorldDispatcher,);
     fn receive_random_words(
         ref self: TContractState,
         requestor_address: ContractAddress,
@@ -67,6 +73,11 @@ mod play {
     // Errors
 
     mod errors {
+        const CONTRACT_ALREADY_INITIALIZED: felt252 = 'Contract already initialized';
+        const CONTRACT_NOT_INITIALIZED: felt252 = 'Contract not initialized';
+        const ETH_ADDRESS_NULL: felt252 = 'ETH address is null';
+        const VRF_ADDRESS_ALREADY_SET: felt252 = 'VRF address already set';
+        const VRF_ADDRESS_NULL: felt252 = 'VRF address is null';
         const CREATE_SLAYER_ALREADY_EXISTS: felt252 = 'Create: slayer already exists';
         const SEEK_SLAYER_NOT_FOUND: felt252 = 'Seek: slayer not found';
         const SEEK_SLAYER_ALREADY_IN_DUEL: felt252 = 'Seek: slayer already in duel';
@@ -86,12 +97,40 @@ mod play {
 
     #[storage]
     struct Storage {
+        eth_address: ContractAddress,
+        vrf_address: ContractAddress,
         requesters: LegacyMap<u64, felt252>,
         worlds: LegacyMap<u64, IWorldDispatcher>,
     }
 
     #[external(v0)]
     impl Play of IPlay<ContractState> {
+        // TODO: unsafe, for testnet purpose only
+        fn initialize(
+            ref self: ContractState, eth_address: ContractAddress, vrf_address: ContractAddress
+        ) {
+            assert(
+                self.eth_address.read().is_zero() && self.vrf_address.read().is_zero(),
+                errors::CONTRACT_ALREADY_INITIALIZED
+            );
+            assert(eth_address.is_non_zero(), errors::ETH_ADDRESS_NULL);
+            assert(vrf_address.is_non_zero(), errors::VRF_ADDRESS_NULL);
+            self.vrf_address.write(vrf_address);
+            self.eth_address.write(eth_address);
+        }
+
+        fn get_eth_address(self: @ContractState) -> ContractAddress {
+            let address = self.eth_address.read();
+            assert(address.is_non_zero(), errors::CONTRACT_NOT_INITIALIZED);
+            address
+        }
+
+        fn get_vrf_address(self: @ContractState) -> ContractAddress {
+            let address = self.vrf_address.read();
+            assert(address.is_non_zero(), errors::CONTRACT_NOT_INITIALIZED);
+            address
+        }
+
         fn create(ref self: ContractState, world: IWorldDispatcher, name: felt252) {
             // [Setup] Datastore
             let mut store: Store = StoreTrait::new(world);
@@ -126,25 +165,40 @@ mod play {
             duel.start();
             store.set_duel(duel);
             store.set_slayer(slayer);
-        // TODO: Enable on testnet
-        // // [Interaction] Approve fees
-        // let eth_dispatcher = IERC20Dispatcher { contract_address: ETH_ADDRESS() };
-        // let amount: u256 = (CALLBACK_FEE_LIMIT + WEI_PREMIUM_FEE).into();
-        // eth_dispatcher.approve(VRF_ADDRESS(), amount);
+        }
 
-        // // [Interaction] Request randomness
-        // let vrf = IRandomnessDispatcher { contract_address: VRF_ADDRESS() };
-        // let seed: u64 = get_block_timestamp();
-        // let callback_address: ContractAddress = get_contract_address();
-        // let num_words = 1;
-        // let request_id = vrf
-        //     .request_random(
-        //         seed, callback_address, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, num_words
-        //     );
+        fn request_seek(ref self: ContractState, world: IWorldDispatcher,) {
+            // [Setup] Datastore
+            let mut store: Store = StoreTrait::new(world);
 
-        // // [Effect] Store request data
-        // self.requesters.write(request_id, caller);
-        // self.worlds.write(request_id, world);
+            // [Check] Slayer exists
+            let caller: felt252 = get_caller_address().into();
+            let mut slayer: Slayer = store.slayer(caller);
+            assert(slayer.name.is_non_zero(), errors::SEEK_SLAYER_NOT_FOUND);
+
+            // [Check] Slayer not already in duel
+            let duel: Duel = store.current_duel(slayer);
+            assert(duel.seed.is_zero() || duel.over, errors::SEEK_SLAYER_ALREADY_IN_DUEL);
+
+            // [Interaction] Approve fees
+            let eth_address = self.get_eth_address();
+            let vrf_address = self.get_vrf_address();
+            let eth_dispatcher = IERC20Dispatcher { contract_address: eth_address };
+            let amount: u256 = (CALLBACK_FEE_LIMIT + WEI_PREMIUM_FEE).into();
+            eth_dispatcher.approve(vrf_address, amount);
+            // [Interaction] Request randomness
+            let vrf = IRandomnessDispatcher { contract_address: vrf_address };
+            let seed: u64 = get_block_timestamp();
+            let callback_address: ContractAddress = get_contract_address();
+            let num_words = 1;
+            let request_id = vrf
+                .request_random(
+                    seed, callback_address, CALLBACK_FEE_LIMIT, PUBLISH_DELAY, num_words
+                );
+
+            // [Effect] Store request data
+            self.requesters.write(request_id, caller);
+            self.worlds.write(request_id, world);
         }
 
         fn receive_random_words(
@@ -155,7 +209,8 @@ mod play {
         ) {
             // [Check] Caller is VRF
             let caller = get_caller_address();
-            assert(get_caller_address() == VRF_ADDRESS(), errors::SEEK_CALLER_IS_NOT_VRF);
+            let vrf_address = self.get_vrf_address();
+            assert(get_caller_address() == vrf_address, errors::SEEK_CALLER_IS_NOT_VRF);
 
             // [Check] Request exists
             let slayer_address = self.requesters.read(request_id);

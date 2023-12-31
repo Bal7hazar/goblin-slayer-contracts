@@ -1,6 +1,11 @@
 mod setup {
+    // Core imports
+
+    use debug::PrintTrait;
+
     // Starknet imports
 
+    use slayer::actions::play::IPlayDispatcherTrait;
     use starknet::ContractAddress;
     use starknet::testing::{set_contract_address, set_transaction_hash};
 
@@ -68,6 +73,9 @@ mod setup {
         // [Setup] Systems
         let play_address = deploy_contract(play::TEST_CLASS_HASH, array![].span());
         let actions = Actions { play: IPlayDispatcher { contract_address: play_address }, };
+
+        // [Setup] Contracts
+        actions.play.initialize(eth.contract_address, vrf.contract_address);
 
         // [Return]
         set_transaction_hash(TX_HASH);

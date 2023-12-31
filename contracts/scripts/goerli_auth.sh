@@ -2,7 +2,7 @@
 set -euo pipefail
 pushd $(dirname "$0")/..
 
-export RPC_URL="http://localhost:5050/";
+export RPC_URL="https://free-rpc.nethermind.io/goerli-juno";
 
 export WORLD_ADDRESS=$(cat ./target/dev/manifest.json | jq -r '.world.address')
 
@@ -19,6 +19,7 @@ MODELS=("Slayer" "Duel" )
 
 for model in ${MODELS[@]}; do
     sozo auth writer $model $ACTIONS_ADDRESS --world $WORLD_ADDRESS --rpc-url $RPC_URL
+    sleep 120
 done
 
 echo "Default authorizations have been successfully set."

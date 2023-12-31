@@ -25,23 +25,15 @@ const PUBLISH_DELAY: u64 = 0; // 0 block
 
 // Addresses
 
-// fn ETH_ADDRESS() -> starknet::ContractAddress {
-//     starknet::contract_address_const::<
-//         0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
-//     >()
-// }
-
 fn ETH_ADDRESS() -> starknet::ContractAddress {
-    starknet::contract_address_const::<0x3>()
+    starknet::contract_address_const::<
+        0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+    >()
 }
 
-// fn VRF_ADDRESS() -> starknet::ContractAddress {
-//     starknet::contract_address_const::<
-//         0x693d551265f0be7ccb3c869c64b5920929caaf486497788d43cb37dd17d6be6
-//     >()
-// }
-
 fn VRF_ADDRESS() -> starknet::ContractAddress {
-    starknet::contract_address_const::<0x4>()
+    starknet::contract_address_const::<
+        0x693d551265f0be7ccb3c869c64b5920929caaf486497788d43cb37dd17d6be6
+    >()
 }
 
