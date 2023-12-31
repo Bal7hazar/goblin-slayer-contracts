@@ -18,7 +18,9 @@ Embark on your adventure, outwit the goblins, and rise to the top of the leaderb
 
 Open the client: https://slayer-client.vercel.app/
 
-Account Setup: Upon launching the game, a burner account is automatically deployed and stored in cache. Players have the option to personalize their gaming experience by renaming the default account name and deploying a new burner account.
+#### Account Setup
+
+Upon launching the game, a burner account is automatically deployed and stored in cache. Players have the option to personalize their gaming experience by renaming the default account name and deploying a new burner account.
 
 ### Movement and Interaction
 
@@ -60,11 +62,13 @@ Experience points enhance the visual appearance of the player's character and he
 
 Gold can be used to buy in-game bonuses, like extra rounds in duels. Note that the in-game shop is inaccessible during duels.
 
-Titles and Recognition: Accumulated experience and gold grant players titles that are visible to others in the leaderboard.
+#### Titles and Recognition
+
+Accumulated experience and gold grant players titles that are visible to others in the leaderboard.
 
 ### Risks and Penalties
 
-#### Consequences of Defeat:
+#### Consequences of Defeat
 
 Failing in a duel results in the loss of all accumulated experience.
 
