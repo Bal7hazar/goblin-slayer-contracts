@@ -117,11 +117,9 @@ export const DojoContextProvider = ({ children, value }: DojoProviderProps) => {
                     get,
                     select,
                     clear,
-                    account: account ? account : masterAccount,
+                    account: masterAccount,
                     isDeploying,
-                    accountDisplay: account
-                        ? displayAddress(account.address)
-                        : displayAddress(masterAddress.address),
+                    accountDisplay: displayAddress(masterAddress.address),
                 },
             }}
         >
