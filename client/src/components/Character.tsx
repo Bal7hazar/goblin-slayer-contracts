@@ -14,6 +14,11 @@ import slayer8 from "../assets/slayer-8.png";
 import slayer9 from "../assets/slayer-9.png";
 import slayer10 from "../assets/slayer-10.png";
 
+// Sounds
+
+import axeSound from "../audio/axe.mp3";
+import travelSound from "../audio/travel.mp3";
+
 const SLAYERS = [
     slayer0,
     slayer1,
@@ -265,6 +270,9 @@ const Character = (props: TProps) => {
                 directionIndexRef.current = 2;
                 break;
             case "q":
+                // Manage sound effect
+                new Audio(axeSound).play();
+                // Manage animation
                 if (GRASS_TILES.has(`${newX},${newY}`)) {
                     handleSeek();
                 }
@@ -294,6 +302,7 @@ const Character = (props: TProps) => {
                     TUNNEL_IN_TILES.has(`${newX},${newY}`) &&
                     directionIndexRef.current == TUNNEL_IN_DRECTION_INDEX
                 ) {
+                    new Audio(travelSound).play();
                     newX = 120;
                     newY = 100;
                     directionIndexRef.current = 0;
@@ -302,6 +311,7 @@ const Character = (props: TProps) => {
                     TUNNEL_OUT_TILES.has(`${newX},${newY}`) &&
                     directionIndexRef.current == TUNNEL_OUT_DRECTION_INDEX
                 ) {
+                    new Audio(travelSound).play();
                     newX = 152;
                     newY = 180;
                     directionIndexRef.current = 0;

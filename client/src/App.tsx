@@ -27,6 +27,17 @@ import { WalletScreen } from "./components/WalletScreen";
 
 import background from "./assets/duel-background.png";
 
+// Sounds
+
+import mainTheme from "./audio/chill.mp3";
+import fightTheme from "./audio/duel.mp3";
+import shopSound from "./audio/shop.mp3";
+import buySound from "./audio/buy.mp3";
+import rollSound from "./audio/axe.mp3";
+import applySound from "./audio/apply.mp3";
+import leaderboardSound from "./audio/leaderboard.mp3";
+import duelSound from "./audio/sword.mp3";
+
 function App() {
     // States
 
@@ -49,7 +60,7 @@ function App() {
     const [leaderboard, setLeaderboard] = useState(false);
     const [enableMove, setEnableMove] = useState(true);
     const [isPlayingMusic, setIsPlayingMusic] = useState(false);
-    const audioRef = useRef<any>(null);
+    const audioRef = useRef(new Audio());
 
     const {
         setup: {
@@ -103,6 +114,12 @@ function App() {
         setShopModal(false);
         setLeaderboard(false);
         setEnableMove(true);
+        audioRef.current.pause();
+        audioRef.current = new Audio(mainTheme);
+        audioRef.current.loop = true;
+        if (isPlayingMusic) {
+            audioRef.current.play();
+        }
     };
 
     const handleDuelModal = async () => {
@@ -110,6 +127,13 @@ function App() {
         setShopModal(false);
         setLeaderboard(false);
         // Toggle the modal
+        if (!duelModal) {
+            audioRef.current.pause();
+            audioRef.current = new Audio(fightTheme);
+            audioRef.current.loop = true;
+            audioRef.current.play();
+            new Audio(duelSound).play();
+        }
         setEnableMove(duelModal);
         setDuelModal(!duelModal);
     };
@@ -119,6 +143,9 @@ function App() {
         setDuelModal(false);
         setLeaderboard(false);
         // Toggle the modal
+        if (!shopModal) {
+            new Audio(shopSound).play();
+        }
         setEnableMove(shopModal);
         setShopModal(!shopModal);
     };
@@ -128,13 +155,14 @@ function App() {
         setDuelModal(false);
         setShopModal(false);
         // Toggle the modal
+        if (!leaderboard) {
+            new Audio(leaderboardSound).play();
+        }
         setEnableMove(leaderboard);
         setLeaderboard(!leaderboard);
     };
 
     const handleCreate = async () => {
-        console.log('create');
-
         setLoading(true);
         await provider.play.create({
             account,
@@ -152,7 +180,6 @@ function App() {
     };
 
     const handleSeek = async () => {
-        console.log('seek');
         if (duel ? duel.over : true) {
             await provider.play.seek({
                 account,
@@ -161,7 +188,7 @@ function App() {
     };
 
     const handleRoll = async () => {
-        console.log('roll');
+        new Audio(rollSound).play();
         await provider.play.roll({
             account,
             orders: orders,
@@ -170,7 +197,7 @@ function App() {
     };
 
     const handleBuy = async () => {
-        console.log('buy');
+        new Audio(buySound).play();
         await provider.play.buy({
             account,
             item: 0,
@@ -178,7 +205,7 @@ function App() {
     };
 
     const handleApply = async () => {
-        console.log('apply');
+        new Audio(applySound).play();
         await provider.play.apply({
             account,
             item: 0,
@@ -210,7 +237,6 @@ function App() {
                 <div className="h-screen z-0 flex flex-col">
                     <WalletScreen
                         name={slayerName}
-                        audioRef={audioRef}
                         playing={isPlayingMusic}
                         toggleMusic={toggleMusic}
                         handleName={handleName}

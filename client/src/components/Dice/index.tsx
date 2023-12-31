@@ -11,6 +11,10 @@ import {
     valueClassMap,
 } from "./_utils";
 
+// Sounds
+
+import diceSound from "../../audio/dice.mp3";
+
 const { useState, useEffect, forwardRef, useImperativeHandle } = React;
 
 const getFaceArray = (
@@ -91,6 +95,7 @@ const Dice = forwardRef((props: TProps, ref: any) => {
             if (!onRoll) return;
             onRoll(props.index, false);
         } else {
+            new Audio(diceSound).play();
             setRolling(true);
 
             if (!onRoll) return;

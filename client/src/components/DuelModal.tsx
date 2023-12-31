@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Actions from "./Actions";
 import Dices from "./Dices";
 import Score from "./Score";
@@ -25,6 +25,11 @@ import slayer7 from "../assets/slayer-7-128.png";
 import slayer8 from "../assets/slayer-8-128.png";
 import slayer9 from "../assets/slayer-9-128.png";
 import slayer10 from "../assets/slayer-10-128.png";
+
+// Sounds
+
+import winSound from "../audio/win.mp3";
+import loseSound from "../audio/lose.mp3";
 
 interface DuelModalProps {
     background: string;
@@ -95,21 +100,33 @@ const DuelModal: React.FC<DuelModalProps> = (props: DuelModalProps) => {
 
     const [goblinAction, setGoblinAction] = useState("STANDING");
     const [slayerAction, setSlayerAction] = useState("STANDING");
+    const [running, setRunning] = useState(false);
+    const audioRef = useRef(new Audio());
 
     useEffect(() => {
-        if (slayer && duel) {
-            if (duel.over && slayer.xp > 0) {
+        if (duel) {
+            if (!running && duel.over && duel.won > 0) {
+                audioRef.current.pause();
+                audioRef.current = new Audio(winSound);
+                audioRef.current.play();
                 setGoblinAction("DYING");
                 setSlayerAction("JUMPING");
-            } else if (duel.over) {
+                setRunning(true);
+            } else if (!running && duel.over) {
+                audioRef.current.pause();
+                audioRef.current = new Audio(loseSound);
+                audioRef.current.play();
                 setGoblinAction("JUMPING");
                 setSlayerAction("DYING");
+                setRunning(true);
             } else {
+                audioRef.current.pause();
                 setGoblinAction("STANDING");
                 setSlayerAction("STANDING");
+                setRunning(false);
             }
         }
-    }, [duel, slayer]);
+    }, [duel]);
 
     const handlePlay = () => {
         setSlayerAction("SWORD_ATTACK");

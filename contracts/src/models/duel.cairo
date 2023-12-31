@@ -50,6 +50,7 @@ struct Duel {
     goblin_score_max: u8,
     goblin_score_category: u8,
     over: bool,
+    won: bool,
     round_count: u8,
     dice_count: u8,
 }
@@ -86,6 +87,7 @@ impl DuelImpl of DuelTrait {
             goblin_score_max: 0,
             goblin_score_category: 0,
             over: false,
+            won: false,
             round_count: DEFAULT_ROUND_COUNT,
             dice_count: DEFAULT_DICE_COUNT,
         }
@@ -140,6 +142,7 @@ impl DuelImpl of DuelTrait {
         // [Effect] Update duel state
         if self.round == self.round_count.into() {
             self.over = true;
+            self.won = self.slayer_score() > self.goblin_score();
         }
         self.round += 1;
     }
@@ -318,6 +321,7 @@ mod tests {
         assert_eq!(duel.goblin_score_max, 0);
         assert_eq!(duel.goblin_score_category, 0);
         assert_eq!(duel.over, false);
+        assert_eq!(duel.won, false);
     }
 
     #[test]

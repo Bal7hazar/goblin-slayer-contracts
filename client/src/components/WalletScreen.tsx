@@ -7,14 +7,13 @@ import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 
 interface TProps {
     name: string;
-    audioRef: React.RefObject<HTMLAudioElement>;
     playing: boolean;
     toggleMusic: () => void;
     handleName: (name: string) => void;
 }
 
 export const WalletScreen = (props: TProps) => {
-    const { name, audioRef, playing, toggleMusic, handleName } = props;
+    const { name, playing, toggleMusic, handleName } = props;
     const [value, setValue] = useState("");
 
     useEffect(() => {
@@ -66,11 +65,7 @@ export const WalletScreen = (props: TProps) => {
                     }}
                 /> */}
             </div>
-            <Audio
-                audioRef={audioRef}
-                playing={playing}
-                toggleMusic={toggleMusic}
-            />
+            <Audio playing={playing} toggleMusic={toggleMusic} />
         </div>
     );
 };
