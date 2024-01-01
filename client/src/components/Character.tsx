@@ -252,7 +252,7 @@ const Character = (props: TProps) => {
         let newX = positionRef.current.x;
         let newY = positionRef.current.y;
 
-        switch (event.key) {
+        switch (event.key.toLowerCase()) {
             case "w":
                 newY -= TILE_SIZE;
                 directionIndexRef.current = 4;
@@ -364,9 +364,8 @@ const Character = (props: TProps) => {
             width: `${SPRITE_SIZE}px`,
             height: `${SPRITE_SIZE}px`,
             backgroundImage: `url(${SLAYERS[tag]})`,
-            backgroundPosition: `-${step * SPRITE_SIZE}px -${
-                directionIndexRef.current * SPRITE_SIZE
-            }px`,
+            backgroundPosition: `-${step * SPRITE_SIZE}px -${directionIndexRef.current * SPRITE_SIZE
+                }px`,
             top: `${positionRef.current.y}px`,
             left: `${positionRef.current.x}px`,
             transition: "top 0.5s linear, left 0.5s linear",
